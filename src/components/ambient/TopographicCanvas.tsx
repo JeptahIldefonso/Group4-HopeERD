@@ -8,24 +8,24 @@ import React, { useEffect, useRef } from 'react';
 // ============================================================================
 export const TOPO_CONFIG = {
   // Density of contour elevation rings across screen (spacious, clear)
-  lineDensity: 20.0,
+  lineDensity: 22.0,
   // Standard contour line width in physical screen pixels
-  lineWidthPixels: 1.10,
+  lineWidthPixels: 1.25,
   // Index contour line width (every 5th line slightly bolder)
-  indexLineWidthPixels: 1.90,
-  // Visibility: low opacity (~14-22%) for subtle, elegant background texture
-  lineOpacity: 0.16,
-  indexLineOpacity: 0.26,
+  indexLineWidthPixels: 2.15,
+  // Visibility: highlighted contour lines (crisp, clearly defined)
+  lineOpacity: 0.32,
+  indexLineOpacity: 0.48,
   blurAmount: '0px',
-  vignetteOpacity: 0.40,
+  vignetteOpacity: 0.35,
 
   // Speed of gentle undulating terrain drift
   animationSpeed: 0.020,
 
-  // Soft cursor interaction (gentle subtle glimmer, not an aggressive starburst)
+  // Soft cursor interaction (gentle subtle glimmer)
   starSpikeLength: 0.055,
   starDiagSpikeLength: 0.035,
-  starBrightness: 0.12,
+  starBrightness: 0.15,
   mouseLerp: 0.08,
   mouseFadeSpeed: 0.06,
 
@@ -33,13 +33,13 @@ export const TOPO_CONFIG = {
   grainStrength: 0.003,
 
   // Color Palette: Light enterprise colors
-  // Off-white / light-gray base with pale gray-green contours
+  // Off-white / light-gray base with highlighted sage-green contours
   colors: {
     baseBg: [0.961, 0.965, 0.957], // #F5F6F4 Main page background
-    surfaceSubtle: [0.941, 0.949, 0.937], // #F0F2EF Secondary surface
-    surfaceSection: [0.914, 0.929, 0.914], // #E9EDE9 Subtle section background
-    contourSage: [0.550, 0.620, 0.570], // Pale gray-green (#8CA092 muted stroke)
-    indexHighlight: [0.380, 0.480, 0.420], // Index contour (#617A6B)
+    surfaceSubtle: [0.938, 0.945, 0.934], // #EFF1EE Secondary surface
+    surfaceSection: [0.908, 0.922, 0.908], // #E7EBE7 Subtle section background
+    contourSage: [0.380, 0.480, 0.420], // Highlighted sage-emerald contour (#617A6B)
+    indexHighlight: [0.220, 0.340, 0.270], // Highlight index contour (#385745)
     // Subtle mouse glimmer
     starNucleus: [0.85, 0.92, 0.88],
     starHalo: [0.88, 0.94, 0.90],
@@ -414,7 +414,7 @@ export function TopographicCanvas() {
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `radial-gradient(ellipse at center, rgba(245, 246, 244, 0.88) 25%, rgba(245, 246, 244, 0.40) 85%)`,
+          background: `radial-gradient(ellipse at center, rgba(245, 246, 244, 0.70) 20%, rgba(245, 246, 244, 0.15) 80%)`,
         }}
       />
     </div>
