@@ -19,17 +19,27 @@ import {
   Receipt,
   Download,
   Filter,
+  BarChart3,
 } from 'lucide-react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 
 interface ReportsViewProps {
   data: ReportsData;
 }
 
-type ReportTab = 'period' | 'employee' | 'department' | 'product' | 'payments';
+type ReportTab = 'overview' | 'period' | 'employee' | 'department' | 'product' | 'payments';
 type PeriodFilter = 'ALL' | '2026' | '2026-10' | '2026-09';
 
 export function ReportsView({ data }: ReportsViewProps) {
-  const [activeTab, setActiveTab] = useState<ReportTab>('period');
+  const [activeTab, setActiveTab] = useState<ReportTab>('overview');
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>('ALL');
 
   // Filter Sales By Period
@@ -89,6 +99,7 @@ export function ReportsView({ data }: ReportsViewProps) {
         {/* Navigation Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           {[
+            { id: 'overview' as const, label: 'Overview', icon: BarChart3 },
             { id: 'period' as const, label: 'Sales by period', icon: Calendar },
             { id: 'employee' as const, label: 'Sales by employee', icon: User },
             { id: 'department' as const, label: 'Sales by department', icon: Building },
@@ -145,6 +156,103 @@ export function ReportsView({ data }: ReportsViewProps) {
           </Button>
         </div>
       </div>
+
+      {/* Report 0: Overview Charts */}
+      {activeTab === 'overview' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Sales by Month Chart */}
+            <div className="bg-white rounded-[4px] border border-[rgba(4,26,36,0.16)] p-5">
+              <div className="border-b border-[rgba(4,26,36,0.08)] pb-3 mb-4">
+                <h3 className="text-sm font-semibold text-[#041a24] tracking-tight">
+                  Sales by month
+                </h3>
+                <p className="text-xs text-[#41555f] mt-0.5">
+                  Monthly invoiced sales volume across recorded periods
+                </p>
+              </div>
+              <div className="h-[280px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={data.salesByPeriod} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAEAE4" />
+                    <XAxis
+                      dataKey="period"
+                      tickLine={false}
+                      axisLine={{ stroke: '#DFDFD7' }}
+                      tick={{ fill: '#41555f', fontSize: 11 }}
+                    />
+                    <YAxis
+                      tickLine={false}
+                      axisLine={{ stroke: '#DFDFD7' }}
+                      tick={{ fill: '#41555f', fontSize: 11 }}
+                      tickFormatter={(v) => `₱${(v / 1000).toFixed(0)}k`}
+                    />
+                    <Tooltip
+                      formatter={(value: any) => [formatPHP(Number(value) || 0), 'Sales Total']}
+                      labelFormatter={(label) => `Month: ${label}`}
+                      contentStyle={{
+                        backgroundColor: '#FFFFFF',
+                        border: '1px solid rgba(4,26,36,0.16)',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                      }}
+                    />
+                    <Bar dataKey="totalSales" fill="#041a24" radius={[2, 2, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Sales by Department Chart */}
+            <div className="bg-white rounded-[4px] border border-[rgba(4,26,36,0.16)] p-5">
+              <div className="border-b border-[rgba(4,26,36,0.08)] pb-3 mb-4">
+                <h3 className="text-sm font-semibold text-[#041a24] tracking-tight">
+                  Sales by department
+                </h3>
+                <p className="text-xs text-[#41555f] mt-0.5">
+                  Point-in-time revenue contribution by workforce division
+                </p>
+              </div>
+              <div className="h-[280px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={data.salesByDepartment}
+                    layout="vertical"
+                    margin={{ top: 10, right: 20, left: 20, bottom: 0 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#EAEAE4" />
+                    <XAxis
+                      type="number"
+                      tickLine={false}
+                      axisLine={{ stroke: '#DFDFD7' }}
+                      tick={{ fill: '#41555f', fontSize: 11 }}
+                      tickFormatter={(v) => `₱${(v / 1000).toFixed(0)}k`}
+                    />
+                    <YAxis
+                      type="category"
+                      dataKey="deptName"
+                      tickLine={false}
+                      axisLine={{ stroke: '#DFDFD7' }}
+                      tick={{ fill: '#041a24', fontSize: 11 }}
+                      width={110}
+                    />
+                    <Tooltip
+                      formatter={(value: any) => [formatPHP(Number(value) || 0), 'Department Sales']}
+                      contentStyle={{
+                        backgroundColor: '#FFFFFF',
+                        border: '1px solid rgba(4,26,36,0.16)',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                      }}
+                    />
+                    <Bar dataKey="totalSales" fill="#334155" radius={[0, 2, 2, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Report 1: Sales by period */}
       {activeTab === 'period' && (

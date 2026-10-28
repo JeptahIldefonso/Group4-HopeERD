@@ -20,14 +20,14 @@ The system does not maintain running customer balances, credit ledgers, or payme
 - Views defined with `WITH (security_invoker = true)` to adhere strictly to caller RLS.
 - Anon public privileges revoked on all tables, views, sequences, and routines.
 
-### Milestone 2: Formal Overview Dashboard Redesign (Anti-Slop Implementation)
-- Redesigned `/dashboard` into an uncluttered, formal Overview:
-  1. **Page Header:** Breadcrumb (`HOPE Group4 / Overview`), title (`Overview`), PHT timestamp (`Data as of {date, time} (PHT)`), unified **Period filter** dropdown (`This month`, `Last month`, `Last 3 months`, `This year`), and role-based **Quick actions** dropdown (`New Sale`, `Record Payment`).
-  2. **Information Strip:** Dismissible banner with `lib/brand.ts` text and a `"How it works"` link triggering a role-tailored side drawer panel.
-  3. **Four Equal KPI Tiles:** `Total sales`, `Payments received`, `Number of sales`, and `Active customers` (distinct customers with $\ge 1$ sale in the period), each with small percentage change vs. equivalent previous period.
-  4. **Recent Activity Tables:** Compact side-by-side tables for *"Recent sales"* and *"Recent payments"*.
-  5. **Discreet Footer:** Formal system title and versioning.
-- Standardized typography: Inter/Geist Sans for all labels, dates, headers, and tabular numbers; Newsreader serif exclusively reserved for the brand wordmark.
+### Milestone 2: Home Page & Canonical ERD Overview (Replacing Dashboard)
+- Replaced the `/dashboard` route with an operational Home page at `/` (and redirected `/dashboard` to `/`):
+  1. **Block 1: Welcome Card:** Personalized greeting (*“Welcome back, {firstName}.”*), company mission statement, and direct action triggers for **New Sale** (admin/sales) and **Record Payment** (admin/cashier).
+  2. **Block 2: Database Status Card:** Real-time health check calling `supabase.rpc('get_home_summary')`, measuring query response time, presenting connection status (*“Everything is connected and working.”*), checked timestamp in PHT, manual Refresh action, and 3 summary chips (*10 tables*, *9 relationships*, *{total rows} rows*). Cached at most 30s.
+  3. **Block 3: ERD Card ("Our database"):** Interactive SVG diagram rendering all 10 Hope ERD tables, 9 relationships, crow's foot notation (`||`, `O<`, `|<`), module tint headers, live row-count chips, and table-hover highlighting with keyboard accessibility and role-restricted navigation.
+  4. **Block 4: Explore the System Grid:** Two-column responsive module directory displaying cards for Employees, Products & Pricing, Customers & Payments, and Sales with order badges, table chips, and direct entry buttons.
+- Relocated historical "Sales by month" and "Sales by department" charts to `/reports` under an Overview tab.
+- Purged all vanity counters, period filters, and redundant activity feeds.
 
 ### Milestone 3: Payment Security
 - Maintained clean transactional views `v_sales_summary` and `v_payments_ledger` with `security_invoker = true` without balance or status attributes.
@@ -122,7 +122,7 @@ The system does not maintain running customer balances, credit ledgers, or payme
   - Validated via Zod, shows HOPE Group4, OR #, payment date, sale #, customer name, and amount.
 - **Sidebar Navigation Captions:**
   - In `lib/labels.ts`, defined single navigation array with primary label and subtitle caption:
-    - Dashboard: "Overview"
+    - Home: "ERD Overview"
     - Sales: "Sales Detail"
     - Customers: "Payments"
     - Products: "Price History"

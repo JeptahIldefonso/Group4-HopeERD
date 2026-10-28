@@ -67,7 +67,7 @@ export async function recordPaymentAction(input: RecordPaymentInput) {
 
         revalidatePath('/customers');
         revalidatePath('/sales');
-        revalidatePath('/dashboard');
+        revalidatePath('/');
         revalidatePath('/reports');
         return { success: true, orNo: (data as any)?.orNo };
       } catch (err: any) {
@@ -147,7 +147,7 @@ export async function recordPaymentAction(input: RecordPaymentInput) {
 
       revalidatePath('/customers');
       revalidatePath('/sales');
-      revalidatePath('/dashboard');
+      revalidatePath('/');
       revalidatePath('/reports');
 
       return { success: true, orNo };

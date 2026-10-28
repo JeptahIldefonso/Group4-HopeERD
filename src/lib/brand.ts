@@ -13,6 +13,7 @@ export const BRAND = {
   description: 'Operations system for point-in-time sales recording, official receipt payments, and customer accounts.',
   welcomeText: 'HOPE Group4 supplies PC parts such as processors, graphics cards, memory and storage. Use this system to record sales and receive payments.',
   infoStripText: 'HOPE Group4 supplies PC parts such as processors, graphics cards, memory and storage. Use this system to record sales and receive payments.',
+  homeIntro: 'HOPE Group4 supplies PC parts such as processors, graphics cards, memory and storage. This system keeps our sales, customers, products and employees in one database.',
   domain: 'hope-group4.vercel.app',
   currency: {
     symbol: '₱',

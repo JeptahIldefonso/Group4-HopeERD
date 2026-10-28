@@ -36,7 +36,7 @@ export function Sidebar({ userRole = 'admin', userName = 'Staff Member' }: Sideb
           {/* Brand Wordmark (Serif exclusively used for HOPE Group4) */}
           <div className="flex items-start justify-between pt-2 pb-5 border-b border-neutral-100">
             <Link
-              href="/dashboard"
+              href="/"
               className="group block lg:pl-1 text-center lg:text-left w-full"
               aria-label="HOPE Group4 - Sales & Payments"
             >
@@ -56,7 +56,7 @@ export function Sidebar({ userRole = 'admin', userName = 'Staff Member' }: Sideb
               const Icon = item.icon;
               const isActive =
                 pathname === item.href ||
-                (item.href !== '/dashboard' && pathname.startsWith(item.href + '/'));
+                (item.href !== '/' && pathname.startsWith(item.href + '/'));
 
               return (
                 <Link

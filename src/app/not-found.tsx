@@ -17,10 +17,10 @@ export default function NotFound() {
           </p>
         </div>
         <div>
-          <Link href="/dashboard">
+          <Link href="/">
             <Button variant="primary" className="inline-flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" />
-              Return to Dashboard
+              Return to Home
             </Button>
           </Link>
         </div>

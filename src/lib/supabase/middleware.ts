@@ -44,10 +44,10 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
-  // Redirect to dashboard if logged in and visiting login page
+  // Redirect to home if logged in and visiting login page
   if (user && isLoginPage) {
     const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
+    url.pathname = '/';
     return NextResponse.redirect(url);
   }
 

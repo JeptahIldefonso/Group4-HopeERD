@@ -29,7 +29,7 @@
 │  [ App Router ]                                                             │
 │    ├── /login                       ──> Admin / Sales / Cashier Auth        │
 │    └── /(dashboard)                 ──> Protected Layout                    │
-│          ├── /dashboard             ──> Executive KPIs & Recent Activity    │
+│          ├── / (Home)               ──> Live ERD & Database Connectivity    │
 │          ├── /sales                 ──> Sales Transactions & Sales Detail   │
 │          ├── /customers             ──> Customers & Payments Master-Detail  │
 │          ├── /products              ──> Product Catalog & Price History     │
@@ -60,7 +60,7 @@ The sidebar renders navigation items from a single configuration array in `lib/l
 
 | Label | Caption | Href | Access | Description |
 |---|---|---|---|---|
-| **Dashboard** | Overview | `/dashboard` | All roles | Key operations metrics, quick actions, recent sales and payments. |
+| **Home** | ERD Overview | `/` | All roles | System Home: live database status, interactive Hope ERD diagram, and module entry. |
 | **Sales** | Sales Detail | `/sales` | All roles | Invoiced transactions and line-item details. |
 | **Customers** | Payments | `/customers` | All roles | Master-detail customer directory and payment records. |
 | **Products** | Price History | `/products` | All roles | Component specifications, current prices, and historical changes. |
@@ -75,17 +75,25 @@ The sidebar renders navigation items from a single configuration array in `lib/l
 
 ## 3. Screen Breakdown & Functional Modules
 
-### 3.1 Screen 1: Overview Dashboard (`/dashboard`)
-* **Page Header:** Breadcrumb (`HOPE Group4 / Overview`), page title (`Overview`), timestamp (`Data as of {date, time} (PHT)`), Period filter (`This month`, `Last month`, `Last 3 months`, `This year`), and **Quick actions** menu.
-* **Quick Actions Menu:** Provides in-place triggers: *New Sale* (admin, sales), and *Record Payment* (opens shared `RecordPaymentDialog`, admin, cashier).
-* **Four KPI Cards:** 
-  1. `Total sales` (point-in-time pricing in period)
-  2. `Payments received` (official receipts in period)
-  3. `Number of sales` (transactions in period)
-  4. `Active customers` (distinct customers with $\ge 1$ sale in period)
-* **Recent Tables:** 
-  - *"Recent sales"*: 5 latest sales linking to `/sales/[transNo]`.
-  - *"Recent payments"*: 5 latest official receipts. The OR # links to `/receipts/[orNo]` and the customer name links directly to that customer's Payments view at `/customers?custNo=[custNo]`.
+### 3.1 Screen 1: Home Page (`/`)
+* **Core Role:** Serves as the landing hub for all authenticated users, replacing the legacy dashboard. Validates live database connectivity, illustrates canonical ERD relationships, and guides staff into the four operational sections without vanity KPI counters.
+* **Block 1: Welcome Card:**
+  - Personalized greeting: *“Welcome back, {firstName}.”*
+  - Brand intro (`homeIntro`): *“HOPE Group4 supplies PC parts such as processors, graphics cards, memory and storage. This system keeps our sales, customers, products and employees in one database.”*
+  - Quick action buttons: **New Sale** (admin, sales) and **Record Payment** (admin, cashier; triggers shared modal in place).
+* **Block 2: Database Status Card:**
+  - Evaluates database health via `supabase.rpc('get_home_summary')`.
+  - Success state: Green status dot, *“Everything is connected and working.”*, *“Connected to Supabase (PostgreSQL). All 10 tables responded. Checked {time} (PHT).”*, manual Refresh button, and 3 summary chips (*10 tables*, *9 relationships*, *{total rows} rows*).
+  - Failure state: Red status dot, *“Cannot reach the database.”*, *“Check your connection and try again.”*, Retry button. Sanitized against credential/URL exposure. Cached at most 30 seconds.
+* **Block 3: ERD Card ("Our database"):**
+  - Subtitle: *“10 tables and how they connect. Select a table to open its page.”*
+  - Interactive SVG diagram matching `src/lib/erd.ts` (10 tables, 9 relationships, 37 columns).
+  - Crow's foot cardinalities (`||`, `O<`, `|<`), module tint header fills (`--module-employees`, `--module-products`, `--module-customers`, `--module-sales`), live row-count chips, and italic relationship labels.
+  - Hover or keyboard focus isolates connected tables and paths while dimming unrelated entities. Click/Enter routes to module; non-admin interaction on Employees shows an *“Admin only”* tooltip.
+  - Mobile swipe container on viewports under 720px. Accessible `role="img"` with screen-reader tree.
+* **Block 4: Explore the System Grid:**
+  - Subtitle: *“Four sections, each built on its own tables.”*
+  - Two-column responsive card grid rendering `ERD_MODULES` with order badge in module tint, table chips with live counts, main list & detail summaries, and **Open {name}** action (disabled with *“Admin only”* lock badge for non-admins on Employees).
 
 ### 3.2 Screen 2: Products & Pricing (`/products`)
 * **Strict 2-Table Schema:** Built 100% on `PRODUCT` and `PRICEHIST`.

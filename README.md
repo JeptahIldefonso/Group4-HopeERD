@@ -14,7 +14,7 @@ The **HOPE Group4 Sales and Payments Monitoring System** is an enterprise sales 
 
 ### The Four Core Tabs
 
-The application is structured into four primary operational tabs (plus Overview and Reports):
+The application is structured into four primary operational tabs (plus Home and Reports):
 1. **Employees:** Workforce records, historical job assignments, and department assignments.
 2. **Products & Pricing:** Product specifications, current unit prices, and historical price adjustments.
 3. **Customers & Payments:** Master-detail customer directory, payment records (OR #, payment date, sale #, amount), and payment recording.
@@ -59,12 +59,18 @@ The sidebar displays each section label with a secondary descriptive caption:
 
 | Nav Item | Label | Caption | URL Path | Description & Role Access |
 |---|---|---|---|---|
-| **Overview** | **Dashboard** | Overview | `/dashboard` | Executive KPIs (Total sales, Payments received, Number of sales, Active customers), Recent sales, Recent payments, and Quick actions. (All roles) |
+| **Home** | **Home** | ERD Overview | `/` | Operational home page: live database connectivity status, interactive 10-table Hope ERD with relationships, and exploration cards for the four modules. (All roles) |
 | **Sales** | **Sales** | Sales Detail | `/sales` | Invoiced sales transactions, sales detail line items, CSV export, and New Sale modal. (All roles) |
 | **Customers** | **Customers** | Payments | `/customers` | Master-detail customer directory, Payments tab (OR #, Date, Sale #, Amount, Receipt action link), and Record Payment dialog. (All roles) |
 | **Products** | **Products** | Price History | `/products` | Hardware catalog with current prices, price trends, and Price History timeline. (All roles) |
 | **Employees** | **Employees** | Job, Department | `/employees` | Master-detail workforce directory, job assignment history, and department transfers. (Admin only) |
 | **Reports** | **Reports** | Summaries | `/reports` | Operational summaries: Sales by period, Sales by employee, Sales by department, Sales by product, and Payments by period with CSV export. (Admin only) |
+
+### Home Page Blocks (`/`)
+1. **Welcome Card:** Personalized greeting (*“Welcome back, {firstName}.”*), company introduction, and direct **New Sale** and **Record Payment** action buttons.
+2. **Database Status Card:** Server-rendered verification connecting to Supabase (`get_home_summary`), showing operational status, checked timestamp (PHT), a manual Refresh button, and 3 summary metric chips: *10 tables*, *9 relationships*, and *{total rows} rows*.
+3. **ERD Card ("Our database"):** Interactive SVG diagram rendering the 10 Hope ERD tables, 9 relationships, crow's foot cardinalities (`||`, `O<`, `|<`), module tint headers, and live row-count chips with hover-highlighting and role-aware navigation.
+4. **Explore the System Grid:** Two-column grid presenting cards for the 4 core business sections (Employees, Products & Pricing, Customers & Payments, Sales) with order badges, table chips, and direct entry buttons (restricted for non-admins on Employees).
 
 ### Additional Specialized Routes
 - **Sale Detail:** `/sales/[transNo]` — Transaction summary, itemized line items, official receipts, and in-place payment recording.
@@ -86,7 +92,7 @@ npm install
 npm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) in your browser. You will be redirected to `/dashboard` or `/login`.
+Visit [http://localhost:3000](http://localhost:3000) in your browser. You will be redirected to `/` or `/login`.
 
 ### Demo Login Credentials
 On the `/login` screen, use the **One-Click Demo Login** buttons:

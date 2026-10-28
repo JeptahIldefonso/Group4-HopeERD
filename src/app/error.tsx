@@ -45,10 +45,10 @@ export default function GlobalError({
             Try Again
           </Button>
 
-          <Link href="/dashboard">
+          <Link href="/">
             <Button type="button" variant="primary" size="sm" className="flex items-center gap-1.5">
               <Home className="h-3.5 w-3.5" />
-              Dashboard
+              Home
             </Button>
           </Link>
         </div>

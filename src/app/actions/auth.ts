@@ -68,7 +68,7 @@ export async function loginAction(formData: FormData) {
     cookieStore.set('hope_demo_role', DEMO_USERS[email].role, { path: '/', httpOnly: true, maxAge: 86400 });
     cookieStore.set('hope_demo_email', email, { path: '/', httpOnly: true, maxAge: 86400 });
     cookieStore.set('hope_demo_name', DEMO_USERS[email].name, { path: '/', httpOnly: true, maxAge: 86400 });
-    redirect('/dashboard');
+    redirect('/');
   }
 
   // Attempt Supabase Auth
@@ -84,7 +84,7 @@ export async function loginAction(formData: FormData) {
       const cookieStore = await cookies();
       const existingEmail = cookieStore.get('hope_demo_email')?.value;
       if (existingEmail && existingEmail.toLowerCase() === email) {
-        redirect('/dashboard');
+        redirect('/');
       }
       return { error: error.message };
     }
@@ -99,7 +99,7 @@ export async function loginAction(formData: FormData) {
     return { error: err?.message || 'Authentication failed. Please check your credentials.' };
   }
 
-  redirect('/dashboard');
+  redirect('/');
 }
 
 /**
@@ -146,7 +146,7 @@ export async function registerAction(formData: FormData) {
   cookieStore.set('hope_demo_email', email, { path: '/', httpOnly: true, maxAge: 86400 });
   cookieStore.set('hope_demo_name', fullName, { path: '/', httpOnly: true, maxAge: 86400 });
 
-  redirect('/dashboard');
+  redirect('/');
 }
 
 /**
@@ -165,7 +165,7 @@ export async function demoLoginAction(role: UserRole) {
   cookieStore.set('hope_demo_email', email, { path: '/', httpOnly: true, maxAge: 86400 });
   cookieStore.set('hope_demo_name', DEMO_USERS[email]?.name || 'Demo User', { path: '/', httpOnly: true, maxAge: 86400 });
 
-  redirect('/dashboard');
+  redirect('/');
 }
 
 /**

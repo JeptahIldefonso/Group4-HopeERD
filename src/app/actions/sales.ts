@@ -78,7 +78,7 @@ export async function createSaleAction(input: CreateSaleInput) {
         }
 
         revalidatePath('/sales');
-        revalidatePath('/dashboard');
+        revalidatePath('/');
         revalidatePath('/reports');
         revalidatePath('/customers');
         return { success: true, transNo: data };
@@ -167,7 +167,7 @@ export async function createSaleAction(input: CreateSaleInput) {
       db.exec('COMMIT');
 
       revalidatePath('/sales');
-      revalidatePath('/dashboard');
+      revalidatePath('/');
       revalidatePath('/reports');
       revalidatePath('/customers');
 

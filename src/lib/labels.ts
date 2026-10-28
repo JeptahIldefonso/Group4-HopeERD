@@ -4,7 +4,7 @@
 // ========================================================================
 
 import {
-  LayoutDashboard,
+  Home,
   ShoppingCart,
   Users,
   Package,
@@ -23,10 +23,10 @@ export interface NavigationItem {
 
 export const navigationItems: NavigationItem[] = [
   {
-    href: '/dashboard',
-    label: 'Dashboard',
-    caption: 'Overview',
-    icon: LayoutDashboard,
+    href: '/',
+    label: 'Home',
+    caption: 'ERD Overview',
+    icon: Home,
     roles: ['admin', 'sales', 'cashier'],
   },
   {
@@ -86,9 +86,9 @@ export const LABELS = {
 
   // Page Titles and Subtitles
   pages: {
-    dashboard: {
-      title: 'Dashboard',
-      subtitle: 'Today’s overview of sales and payments.',
+    home: {
+      title: 'Home',
+      subtitle: 'Canonical Hope ERD overview and live system verification.',
     },
     sales: {
       title: 'Sales',
@@ -116,16 +116,7 @@ export const LABELS = {
     },
   },
 
-  // Dashboard KPI Metric Cards
-  kpi: {
-    salesThisMonth: 'Sales this month',
-    paymentsReceivedThisMonth: 'Payments received this month',
-    salesCountThisMonth: 'Number of sales',
-    avgSaleValue: 'average sale value',
-    vsLastMonth: 'vs last month',
-  },
-
-  // Dashboard Charts
+  // Reports Overview Charts
   charts: {
     salesByMonthTitle: 'Sales by month',
     salesByMonthSubtitle: 'Last 6 months',
