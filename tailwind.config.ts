@@ -34,9 +34,9 @@ const config: Config = {
         'hairline-strong': '#041a24',
       },
       fontFamily: {
-        editorial: ['Newsreader', 'Georgia', 'Cambria', 'serif'],
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'Courier New', 'monospace'],
+        editorial: ['var(--font-editorial)', 'Newsreader', 'Georgia', 'Cambria', 'serif'],
+        sans: ['var(--font-sans)', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        mono: ['var(--font-mono)', 'JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'Courier New', 'monospace'],
       },
       borderRadius: {
         DEFAULT: '4px',

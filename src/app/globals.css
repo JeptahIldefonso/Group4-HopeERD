@@ -21,10 +21,6 @@
     --module-products: #e8f2ea;
     --module-customers: #faf0e6;
     --module-sales: #f4e8ee;
-
-    --font-editorial: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-mono: 'JetBrains Mono', Menlo, Monaco, Consolas, monospace;
   }
 
   body {
