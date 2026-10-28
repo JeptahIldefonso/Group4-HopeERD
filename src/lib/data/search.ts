@@ -5,7 +5,7 @@ import { formatPHP, formatDate } from '@/lib/utils';
 import { parseProductDescription } from '@/lib/products';
 
 export interface GlobalSearchResult {
-  type: 'customer' | 'sale' | 'product';
+  type: 'customer' | 'sale' | 'product' | 'receipt';
   id: string | number;
   title: string;
   subtitle: string;
@@ -41,13 +41,37 @@ export async function globalSearch(query: string): Promise<GlobalSearchResult[]>
             id: c.custNo,
             title: c.custName,
             subtitle: `Customer #${c.custNo} • Terms: ${c.payTerms}`,
-            url: `/customers/${c.custNo}`,
+            url: `/customers?custNo=${c.custNo}`,
           });
         });
       }
 
-      // 2. Sales by transaction number
-      const transNum = parseInt(trimmed, 10);
+      // 2. Receipts by OR number
+      const orNum = parseInt(trimmed.replace(/^OR\s*#?/i, ''), 10);
+      if (!isNaN(orNum)) {
+        const { data: receipts } = await supabase
+          .from('PAYMENT')
+          .select('ORNo, payDate, amount, SALES(custNo, CUSTOMER(custName))')
+          .eq('ORNo', orNum)
+          .limit(4);
+
+        if (receipts) {
+          receipts.forEach((r: any) => {
+            const custNo = r.SALES?.custNo;
+            const custName = r.SALES?.CUSTOMER?.custName || `Customer #${custNo}`;
+            results.push({
+              type: 'receipt',
+              id: r.ORNo,
+              title: `Official Receipt #${r.ORNo} — ${custName}`,
+              subtitle: `${formatDate(r.payDate)} • Amount: ${formatPHP(r.amount)}`,
+              url: `/customers?custNo=${custNo}&tab=payments`,
+            });
+          });
+        }
+      }
+
+      // 3. Sales by transaction number
+      const transNum = parseInt(trimmed.replace(/^#/, ''), 10);
       let salesQuery = supabase.from('v_sales_summary').select('*');
       if (!isNaN(transNum)) {
         salesQuery = salesQuery.eq('transNo', transNum);
@@ -68,7 +92,7 @@ export async function globalSearch(query: string): Promise<GlobalSearchResult[]>
         });
       }
 
-      // 3. Products by code or description
+      // 4. Products by code or description
       const { data: products } = await supabase
         .from('v_product_sales_analytics')
         .select('*')
@@ -118,11 +142,34 @@ function getLocalSearchResults(query: string): GlobalSearchResult[] {
       id: c.custNo,
       title: c.custName,
       subtitle: `Customer #${c.custNo} • Terms: ${c.payTerms}`,
-      url: `/customers/${c.custNo}`,
+      url: `/customers?custNo=${c.custNo}`,
     });
   });
 
-  // 2. Search Sales Transactions by transNo or customer name
+  // 2. Search Receipts by OR number (Task D: OR numbers open that customer's Payments tab)
+  const orDigits = query.replace(/^OR\s*#?/i, '').trim();
+  if (orDigits.length > 0) {
+    const receipts = db.prepare(`
+      SELECT p.ORNo, p.payDate, p.amount, s.custNo, c.custName
+      FROM PAYMENT p
+      JOIN SALES s ON p.transNo = s.transNo
+      JOIN CUSTOMER c ON s.custNo = c.custNo
+      WHERE CAST(p.ORNo AS TEXT) LIKE ?
+      LIMIT 4
+    `).all(`%${orDigits}%`) as any[];
+
+    receipts.forEach((r) => {
+      results.push({
+        type: 'receipt',
+        id: r.ORNo,
+        title: `Official Receipt #${r.ORNo} — ${r.custName}`,
+        subtitle: `${formatDate(r.payDate)} • Amount: ${formatPHP(r.amount)}`,
+        url: `/customers?custNo=${r.custNo}&tab=payments`,
+      });
+    });
+  }
+
+  // 3. Search Sales Transactions by transNo or customer name
   const sales = db.prepare(`
     SELECT transNo, salesDate, custName, totalAmount
     FROM v_sales_summary
@@ -140,7 +187,7 @@ function getLocalSearchResults(query: string): GlobalSearchResult[] {
     });
   });
 
-  // 3. Search Products by prodCode or description
+  // 4. Search Products by prodCode or description
   const products = db.prepare(`
     SELECT prodCode, description, unit, currentPrice
     FROM v_product_sales_analytics

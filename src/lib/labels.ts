@@ -6,7 +6,6 @@
 import {
   LayoutDashboard,
   ShoppingCart,
-  Receipt,
   Users,
   Package,
   Building2,
@@ -14,21 +13,69 @@ import {
 } from 'lucide-react';
 import type { UserRole } from '@/lib/types';
 
+export interface NavigationItem {
+  href: string;
+  label: string;
+  caption: string;
+  icon: any;
+  roles: UserRole[];
+}
+
+export const navigationItems: NavigationItem[] = [
+  {
+    href: '/dashboard',
+    label: 'Dashboard',
+    caption: 'Overview',
+    icon: LayoutDashboard,
+    roles: ['admin', 'sales', 'cashier'],
+  },
+  {
+    href: '/sales',
+    label: 'Sales',
+    caption: 'Sales Detail',
+    icon: ShoppingCart,
+    roles: ['admin', 'sales', 'cashier'],
+  },
+  {
+    href: '/customers',
+    label: 'Customers',
+    caption: 'Payments',
+    icon: Users,
+    roles: ['admin', 'sales', 'cashier'],
+  },
+  {
+    href: '/products',
+    label: 'Products',
+    caption: 'Price History',
+    icon: Package,
+    roles: ['admin', 'sales', 'cashier'],
+  },
+  {
+    href: '/employees',
+    label: 'Employees',
+    caption: 'Job, Department',
+    icon: Building2,
+    roles: ['admin'],
+  },
+  {
+    href: '/reports',
+    label: 'Reports',
+    caption: 'Summaries',
+    icon: BarChart3,
+    roles: ['admin'],
+  },
+];
+
 export const LABELS = {
   // Brand Header
   brandName: 'HOPE Group4',
   brandSubtitle: 'Sales & Payments',
 
   // Navigation Items
-  nav: [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['admin', 'sales', 'cashier'] as UserRole[] },
-    { name: 'Sales', href: '/sales', icon: ShoppingCart, roles: ['admin', 'sales', 'cashier'] as UserRole[] },
-    { name: 'Payments', href: '/payments', icon: Receipt, roles: ['admin', 'cashier'] as UserRole[] },
-    { name: 'Customers', href: '/customers', icon: Users, roles: ['admin', 'sales', 'cashier'] as UserRole[] },
-    { name: 'Products', href: '/products', icon: Package, roles: ['admin', 'sales', 'cashier'] as UserRole[] },
-    { name: 'Employees', href: '/employees', icon: Building2, roles: ['admin'] as UserRole[] },
-    { name: 'Reports', href: '/reports', icon: BarChart3, roles: ['admin'] as UserRole[] },
-  ],
+  nav: navigationItems.map((item) => ({
+    name: item.label,
+    ...item,
+  })),
 
   // Role Display Badges
   roles: {

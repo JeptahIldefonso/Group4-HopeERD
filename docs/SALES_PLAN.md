@@ -17,7 +17,7 @@
 
 Let staff record sales and look them up quickly. Every sale shows who bought, what was bought (product, quantity, computed amount), who sold it and which department that seller belonged to on the sale date.
 
-The module is a record of sales transactions. It is not a receivables tool: it never shows balances, payment status, due dates or overdue flags (see Section 17).
+The module is a record of sales transactions. It is not a debt tracking tool: it never shows balances, payment status, or due dates (see Section 17).
 
 Success means a panelist can pick any column of SALES or SALESDETAIL and see where it is entered and where it is displayed, and every amount on screen can be reproduced from the tables.
 
@@ -29,7 +29,7 @@ Success means a panelist can pick any column of SALES or SALESDETAIL and see whe
 2. **Computed values are never stored.** Unit price, line amount and sale total are calculated from SALESDETAIL and PRICEHIST every time they are shown.
 3. **A sale has at least one line item, one customer and one sales rep.** This follows the ERD relationships (SALES contains one or many SALESDETAIL; CUSTOMER and EMPLOYEE each relate to zero or many SALES).
 4. **History is protected.** Saved sales and their lines are never edited or deleted, and price and job history rules in other modules must not change old sales (Section 13).
-5. **No debt vocabulary.** The Sales module never shows or computes balance, paid amount, payment status, terms-and-due, overdue, partial, unpaid, installment or collections.
+5. **No debt vocabulary.** The Sales module never shows or computes balance, paid amount, payment status, terms, partial, unpaid, installment or collections.
 6. **Employees' sensitive data stays hidden.** Sales shows the rep's name and department only, never salary, birth date or gender.
 7. **Terminology:** "Sale", "Sales rep", "Customer", "Product", "Items", "Total".
 
@@ -217,7 +217,7 @@ Table of lines with columns: **Product**, **Unit**, **Quantity**, **Unit price**
 - Title: "Sale #{transNo}"
 - Sub-line: the sale date
 - Actions: **Print** (all roles), **Record payment** (Admin and Cashier only)
-- **Record payment** links to `/payments?transNo={transNo}&action=new`
+- **Record payment** opens the in-place Record Payment Dialog
 
 ### 9.2 Card: Sale information
 | Label | Source |
@@ -356,7 +356,7 @@ Replace the demo sales with data that exercises every behavior.
 |---|---|
 | Products and PRICEHIST | New price rows must be dated later than the product's latest sale date, and PRICEHIST rows cannot be edited or deleted. Without this rule, a backdated price would change old sale totals |
 | Employees | The Employees module's rules R-05, R-06 and R-10 keep job records and separation dates consistent with sales. Sales reads rep names and departments only through the safe views |
-| Payments | The Record payment button links to `/payments?transNo=...&action=new`. The Payments module validates that payments never exceed the sale total and lists the same receipts shown on the sale detail page |
+| Payments | The Record payment button opens the shared Record Payment Dialog. The Payments tab inside Customers & Payments validates that payments never exceed the sale total and lists the same receipts shown on the sale detail page |
 | Customers | The customer detail page lists that customer's sales from `v_sales_summary` and offers **New Sale** that opens `/sales/new?custNo=...`. Warranty status lives in Customers, not here |
 | Dashboard and Reports | Use `v_sales_summary` and `v_sale_lines` so totals match this module for any period |
 | Global search (Ctrl+K) | Sale numbers open `/sales/[transNo]` |
@@ -371,7 +371,7 @@ Replace the demo sales with data that exercises every behavior.
 - Money uses the peso format `₱159,450.00` with tabular numbers. Dates use `Oct 25, 2026`.
 - Use the existing design tokens and shared Button, Badge, Card, Table, Input, Dialog and Toast components. No new colors.
 - The Sales table style must match the Payments table style.
-- Forbidden words in the UI, docs and CSV headers for this module: balance, paid (as a status), unpaid, partial, overdue, status, due, terms and due, receivable, collections, installment, aging, outstanding, ledger.
+- Forbidden words in the UI, docs and CSV headers for this module: balance, paid (as a status), unpaid, partial, status, due, terms, installment, outstanding, ledger.
 
 ---
 
@@ -403,7 +403,7 @@ The **Export CSV** button offers two files, both limited to the current filters 
 ## 17. Out of scope and known limitations
 
 - No editing, cancelling, voiding or deleting of saved sales, and no returns, refunds, discounts or tax
-- No balance, payment status, due date, overdue tracking or installments. Receivables tracking is not included
+- No balance, payment status, due date, or installments. Debt tracking is not included
 - No stock count. Sales do not check or reduce inventory
 - No time of day on sales. The ERD stores only `salesDate`, so order within a day follows `transNo`
 - No warranty display on the Sales pages (warranty is shown in Customers and is an assumed 1-year rule)
@@ -469,7 +469,7 @@ After every step run `npm run lint` and `npm run build`, and commit to Git.
 2. Unit price, line amount and total are computed from PRICEHIST on the sale date and match across every screen.
 3. Rules R-01 to R-13 are enforced in the database, not only in the forms.
 4. A sale is always saved with its lines in one transaction and can never be edited or deleted afterward.
-5. The Sales module contains no balance, payment status, due date or overdue feature.
+5. The Sales module contains no balance, payment status, or due date feature.
 6. Role access holds for pages, actions and data (Section 5).
 7. `npm run lint` and `npm run build` pass, and all tests in Section 19 pass.
 8. `SYSTEM_DOCUMENTATION.md`, `BUILD_PLAN.md` and `COPY_DECK.md` match this plan.
@@ -500,7 +500,7 @@ docs/EMPLOYEES_PLAN.md and docs/Sales_PLAN.md first. List the files you read.
 Implement Step {N} of Section 18 of docs/Sales_PLAN.md only.
 Follow the plan exactly. Do not add tables or columns. Computed values (unit
 price, line amount, total) are never stored. Do not add any balance, status,
-due date or overdue feature. Write SQL files but do NOT run them.
+due date feature. Write SQL files but do NOT run them.
 Show the implementation plan first. When finished, run npm run lint and
 npm run build, screenshot the affected screens at desktop width, and report
 which rules (R-xx) and tests (T-xx) the step satisfies.

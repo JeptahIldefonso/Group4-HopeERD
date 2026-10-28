@@ -223,7 +223,6 @@ export async function recordCustomerPaymentAction(input: RecordPaymentInput) {
         }
 
         revalidatePath('/customers');
-        revalidatePath('/payments');
         return { success: true, orNo: validated.orNo };
       } catch (err: any) {
         return { error: err?.message || 'Database error recording payment.' };
@@ -263,7 +262,6 @@ export async function recordCustomerPaymentAction(input: RecordPaymentInput) {
     `).run(validated.orNo, validated.payDate, validated.amount, validated.transNo);
 
     revalidatePath('/customers');
-    revalidatePath('/payments');
     return { success: true, orNo: validated.orNo };
   } catch (err: any) {
     if (err instanceof z.ZodError) {

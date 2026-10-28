@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { formatPHP, formatDate } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { PrintButton } from './PrintButton';
+import { RecordPaymentDialog } from '@/components/payments/RecordPaymentDialog';
 import type { SaleDetailData } from '@/lib/data/sales';
 import {
   X,
@@ -34,6 +35,7 @@ export function SaleDetailPanel({
 }: SaleDetailPanelProps) {
   const isAdmin = userRole.toLowerCase() === 'admin';
   const isCashier = userRole.toLowerCase() === 'cashier' || isAdmin;
+  const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState(false);
 
   // Esc listener to close panel
   useEffect(() => {
@@ -92,17 +94,16 @@ export function SaleDetailPanel({
         <PrintButton />
 
         {isCashier && (
-          <Link href={`/payments?transNo=${sale.transNo}&action=new`}>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1.5 text-xs font-sans"
-            >
-              <CreditCard className="h-3.5 w-3.5 text-[#41555f]" />
-              <span>Record payment</span>
-            </Button>
-          </Link>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setIsRecordPaymentOpen(true)}
+            className="flex items-center gap-1.5 text-xs font-sans cursor-pointer"
+          >
+            <CreditCard className="h-3.5 w-3.5 text-[#41555f]" />
+            <span>Record payment</span>
+          </Button>
         )}
       </div>
 
@@ -257,7 +258,9 @@ export function SaleDetailPanel({
                 {payments.map((p) => (
                   <tr key={p.orNo} className="hover:bg-[#F8F8F6]">
                     <td className="py-2 px-3 font-mono font-medium text-[#041a24]">
-                      #{p.orNo}
+                      <Link href={`/receipts/${p.orNo}`} className="underline hover:text-black">
+                        OR #{p.orNo}
+                      </Link>
                     </td>
                     <td className="py-2 px-3 text-[#041a24] tabular-nums">
                       {formatDate(p.payDate)}
@@ -272,6 +275,14 @@ export function SaleDetailPanel({
           </div>
         )}
       </div>
+
+      {isRecordPaymentOpen && (
+        <RecordPaymentDialog
+          isOpen={isRecordPaymentOpen}
+          onClose={() => setIsRecordPaymentOpen(false)}
+          fixedTransNo={sale.transNo}
+        />
+      )}
     </div>
   );
 

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronDown, Plus, CreditCard, ShieldCheck, ChevronRight } from 'lucide-react';
 import { BRAND } from '@/lib/brand';
+import { RecordPaymentDialog } from '@/components/payments/RecordPaymentDialog';
 import type { UserRole } from '@/lib/types';
 import type { DashboardPeriod } from '@/lib/data/dashboard';
 
@@ -22,6 +23,7 @@ export function OverviewHeader({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
@@ -106,14 +108,17 @@ export function OverviewHeader({
                   </Link>
                 )}
                 {canRecordPayment && (
-                  <Link
-                    href="/payments?action=new"
-                    onClick={() => setIsActionsOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsActionsOpen(false);
+                      setIsRecordPaymentOpen(true);
+                    }}
+                    className="w-full text-left flex items-center gap-2 px-3 py-2 text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
                   >
                     <CreditCard className="h-3.5 w-3.5 text-neutral-500" />
                     <span>Record Payment</span>
-                  </Link>
+                  </button>
                 )}
                 <Link
                   href="/customers?tab=warranty"
@@ -128,6 +133,15 @@ export function OverviewHeader({
           </div>
         </div>
       </div>
+
+      {/* Shared Record Payment Dialog */}
+      <RecordPaymentDialog
+        isOpen={isRecordPaymentOpen}
+        onClose={() => setIsRecordPaymentOpen(false)}
+        onSuccess={() => {
+          router.refresh();
+        }}
+      />
     </div>
   );
 }

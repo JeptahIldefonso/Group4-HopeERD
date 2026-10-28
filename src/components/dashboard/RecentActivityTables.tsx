@@ -74,13 +74,6 @@ export function RecentActivityTables({
             <h3 className="text-sm font-semibold text-neutral-900">Recent payments</h3>
             <p className="text-xs text-neutral-500 mt-0.5">Latest 5 official receipts recorded</p>
           </div>
-          <Link
-            href="/payments"
-            className="inline-flex items-center gap-1 text-xs font-medium text-[#041a24] hover:underline"
-          >
-            <span>View all</span>
-            <ArrowRight className="h-3 w-3" />
-          </Link>
         </div>
 
         <div className="overflow-x-auto flex-1">
@@ -97,7 +90,7 @@ export function RecentActivityTables({
               {recentPayments.map((payment) => (
                 <tr key={payment.orNo} className="hover:bg-neutral-50/60 transition-colors">
                   <td className="py-2.5 px-4 font-mono font-medium text-neutral-900">
-                    <Link href={`/payments/${payment.orNo}`} className="hover:underline">
+                    <Link href={`/receipts/${payment.orNo}`} className="hover:underline">
                       OR #{payment.orNo}
                     </Link>
                   </td>
@@ -105,7 +98,12 @@ export function RecentActivityTables({
                     {formatDate(payment.payDate)}
                   </td>
                   <td className="py-2.5 px-3 text-neutral-800 font-medium truncate max-w-[180px]">
-                    {payment.custName}
+                    <Link
+                      href={payment.custNo ? `/customers?custNo=${payment.custNo}&tab=payments` : `/customers`}
+                      className="hover:underline hover:text-cyan-800"
+                    >
+                      {payment.custName}
+                    </Link>
                   </td>
                   <td className="py-2.5 px-4 text-right font-semibold text-neutral-900 tabular-nums">
                     {formatPHP(payment.amount)}

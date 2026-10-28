@@ -45,7 +45,7 @@ export function InfoStrip({ userRole = 'admin' }: InfoStripProps) {
       stepNum: 2,
       title: 'Record a payment',
       desc: 'Issue official receipts against customer sales with sequential OR numbering and atomic overpayment protection.',
-      href: '/payments',
+      href: '/customers?tab=payments',
       icon: Receipt,
       roles: ['admin', 'cashier'] as UserRole[],
     },

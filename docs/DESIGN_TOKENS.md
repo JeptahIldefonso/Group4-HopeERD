@@ -37,16 +37,17 @@ The palette adopts the **Monochromatic Raw Luxury / Editorial Broadsheet** aesth
   --status-paid-border:    rgba(28, 77, 41, 0.30);
 
   --status-partial-bg:     #FDF4E7;
-  --status-partial-text:   #824f11;
-  --status-partial-border: rgba(130, 79, 17, 0.30);
+  --status-warning-bg:     #FDF4E7;
+  --status-warning-text:   #824f11;
+  --status-warning-border: rgba(130, 79, 17, 0.30);
 
-  --status-overdue-bg:     #FCECEC;
-  --status-overdue-text:   #862525;
-  --status-overdue-border: rgba(134, 37, 37, 0.30);
+  --status-danger-bg:      #FCECEC;
+  --status-danger-text:    #862525;
+  --status-danger-border:  rgba(134, 37, 37, 0.30);
 
-  --status-unpaid-bg:      #F1F3F5;
-  --status-unpaid-text:    #495057;
-  --status-unpaid-border:  rgba(73, 80, 87, 0.25);
+  --status-neutral-bg:     #F1F3F5;
+  --status-neutral-text:   #495057;
+  --status-neutral-border: rgba(73, 80, 87, 0.25);
 }
 ```
 
@@ -63,7 +64,7 @@ The system establishes a clear tripartite typographic structure:
 | **Body & Descriptions** | Geist Sans / Inter (`--font-sans`) | `text-xs sm:text-sm text-[#1c313b] leading-normal` | Page subtitles, card descriptions, table cell text |
 | **Numbers & Currency** | Geist Sans / Inter (`--font-sans`) | `font-semibold tabular-nums tracking-tight` | Peso amounts (`₱8,495.00`), quantities, balances |
 | **Technical Metadata** | Geist Mono / JetBrains Mono (`--font-mono`) | `text-[10px] sm:text-xs font-mono text-[#41555f]` | Product codes (`CPU-R5-5600`), Sale `#5001`, `OR #9001`, timestamps |
-| **Status Badges & Pills** | Geist Mono / JetBrains Mono (`--font-mono`) | `text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.14em]` | Paid, Partial, Unpaid, Overdue status pills |
+| **Status Badges & Pills** | Geist Mono / JetBrains Mono (`--font-mono`) | `text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.14em]` | Valid, Expiring, Expired, Active status pills |
 
 ---
 
@@ -103,10 +104,10 @@ The system establishes a clear tripartite typographic structure:
 ### B. Status Badges & Pills (`src/components/ui/Badge.tsx`)
 - **Structure:** `inline-flex items-center px-2 py-0.5 text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.14em] rounded-[2px] border`.
 - **Semantics:**
-  - `PAID`: `bg-[#EAF3EC] text-[#1c4d29] border-[#1c4d29]/30`
-  - `PARTIAL`: `bg-[#FDF4E7] text-[#824f11] border-[#824f11]/30`
-  - `OVERDUE`: `bg-[#FCECEC] text-[#862525] border-[#862525]/30`
-  - `UNPAID`: `bg-[#F1F3F5] text-[#495057] border-[#495057]/30`
+  - `VALID`: `bg-[#EAF3EC] text-[#1c4d29] border-[#1c4d29]/30`
+  - `EXPIRING`: `bg-[#FDF4E7] text-[#824f11] border-[#824f11]/30`
+  - `EXPIRED`: `bg-[#FCECEC] text-[#862525] border-[#862525]/30`
+  - `ACTIVE`: `bg-[#EAF3EC] text-[#1c4d29] border-[#1c4d29]/30`
 
 ### C. Cards & Metric Containers (`src/components/ui/Card.tsx`)
 - **Structure:** `bg-white rounded-[4px] border border-[rgba(4,26,36,0.16)] shadow-[0_1px_2px_rgba(4,26,36,0.04)] hover:border-[#041a24] transition-colors`.

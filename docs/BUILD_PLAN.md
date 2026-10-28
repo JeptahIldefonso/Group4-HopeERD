@@ -7,7 +7,7 @@
 Sales (`SALES` + `SALESDETAIL`) and payments (`PAYMENT`) are recorded as separate transactional lists linked by sale transaction number (`transNo`).
 
 ### Limitations
-**Receivables tracking is not included.** The system does not maintain running debtor balances, customer credit ledgers, Statement of Account (SOA) forms, due dates, overdue counts, or payment settlement statuses (`PAID`, `PARTIAL`, `UNPAID`, `OVERDUE`).
+The system does not maintain running customer balances, credit ledgers, or payment settlement statuses (`PAID`, `PARTIAL`, `UNPAID`).
 
 ---
 
@@ -25,13 +25,12 @@ Sales (`SALES` + `SALESDETAIL`) and payments (`PAYMENT`) are recorded as separat
   1. **Page Header:** Breadcrumb (`HOPE Group4 / Overview`), title (`Overview`), PHT timestamp (`Data as of {date, time} (PHT)`), unified **Period filter** dropdown (`This month`, `Last month`, `Last 3 months`, `This year`), and role-based **Quick actions** dropdown (`New Sale`, `Record Payment`, `Check Warranty`).
   2. **Information Strip:** Dismissible banner with `lib/brand.ts` text and a `"How it works"` link triggering a role-tailored side drawer panel.
   3. **Four Equal KPI Tiles:** `Total sales`, `Payments received`, `Number of sales`, and `Active customers` (distinct customers with $\ge 1$ sale in the period), each with small percentage change vs. equivalent previous period.
-  4. **Recent Activity Tables:** Compact side-by-side tables for *"Recent sales"* and *"Recent payments"* (5 rows each with direct *"View all →"* links).
+  4. **Recent Activity Tables:** Compact side-by-side tables for *"Recent sales"* and *"Recent payments"*.
   5. **Discreet Footer:** Formal system title and versioning.
 - Standardized typography: Inter/Geist Sans for all labels, dates, headers, and tabular numbers; Newsreader serif exclusively reserved for the brand wordmark.
 
-### Milestone 3: Debt Feature Elimination & Payment Security
-- Dropped debt, balance, and aging views (`v_customer_aging`, `v_receivables_aging`, `v_customer_receivables`).
-- Recreated `v_sales_summary` and `v_payments_ledger` with `security_invoker = true` without balance, status, due dates, or overdue attributes.
+### Milestone 3: Payment Security
+- Maintained clean transactional views `v_sales_summary` and `v_payments_ledger` with `security_invoker = true` without balance or status attributes.
 - Defined PostgreSQL row-locking function `record_payment_receipt`:
   - Advisory lock on transaction ID to eliminate concurrent race conditions.
   - Row lock (`FOR UPDATE`) on `SALES`.
@@ -40,18 +39,16 @@ Sales (`SALES` + `SALESDETAIL`) and payments (`PAYMENT`) are recorded as separat
   - Assigns OR numbers monotonically inside the lock.
   - Role enforcement: restricted strictly to `admin` and `cashier` roles via `app_metadata`.
 
-### Milestone 4: Sales & Payments Screens
+### Milestone 4: Sales Architecture & Integrated Payments
 - **Sales Page (`/sales`):**
   - Table columns: Sale #, Date, Customer (wrapped to two lines), Sales rep and department, Items count, Total, Actions (View).
   - Filters: Period (Today, This week, This month, This year, All time), Department, Sales rep, Search box, and Export CSV.
   - "New Sale" button with single icon + label, restricted to `admin` and `sales`.
-  - Sale Detail Page (`/sales/[transNo]`): Items table with point-in-time prices, Grand Total, linked Official Receipts list, and "Record payment" button.
-- **Payments Page (`/payments`):**
-  - Table columns: OR #, Date, Sale #, Customer, Amount, Actions (Receipt).
-  - Uses the same Period dropdown as Sales. Search and Export CSV preserved.
-  - "Record Payment" button restricted to `admin` and `cashier`.
-  - Dialog pre-fills sale total and displays next OR preview.
-  - Validates URL parameter `/payments?transNo=...&action=new` with Zod (positive integer) and checks cashier/admin role before opening dialog.
+  - Sale Detail Page (`/sales/[transNo]`): Items table with point-in-time prices, Grand Total, linked Official Receipts list linking to `/receipts/[orNo]`, and an in-place "Record payment" button opening the shared `RecordPaymentDialog`.
+- **Integrated Payments Architecture:**
+  - Standalone `/payments` route redirected to `/customers`. Payments are natively integrated inside "Customers & Payments" and on each sale detail page.
+  - Shared `RecordPaymentDialog` used across Customers Payments tab, Sale detail, and Dashboard Quick actions.
+  - Standalone printable Official Receipt page at `/receipts/[orNo]`.
 
 ### Milestone 5: Dashboard & Reports Overhaul
 - **Dashboard (`/dashboard`):**
@@ -110,3 +107,29 @@ Sales (`SALES` + `SALESDETAIL`) and payments (`PAYMENT`) are recorded as separat
   - `database/16_product_policies_and_views.sql`: RLS policies and views `v_product_overview` and `v_price_history` created with `security_invoker = true`.
   - `database/17_product_seed.sql`: 15 products with 24 price records across 10 families, maintaining 100% price invariant on all past sales (total revenue ₱4,550,365.00), with 5 verification checks returning 0 violations.
 - **Verification & Quality:** Verified 100% passing tests (18/18 test suite), `npm run lint` with 0 warnings/errors, and `npm run build` successful compilation. Full desktop and tablet screenshots captured.
+
+### Milestone 10: Unified Customers & Payments Architecture and Navigation Captions
+- **Elimination of Standalone `/payments` List Route:**
+  - Removed `/payments` route and sidebar item; redirected `/payments` to `/customers`.
+  - Redirected `/payments/[orNo]` to `/receipts/[orNo]`.
+- **Master-Detail Customers & Payments Layout (`/customers`):**
+  - Left column: Searchable customer list showing customer name and customer number with active count. Selection synced via `?custNo=` and `?tab=`.
+  - Right detail view: Customer header (`custName`, Customer no., address, plain-text payment terms).
+  - Tab "Payments" (default): Table with OR #, Date, Sale #, Amount, Receipt action link, summary bar (`"{n} receipts - Total {sum}"`), "Record payment" button (admin/cashier), and "Export CSV". Empty state: *"No payments recorded for this customer."*
+  - Tab "Warranty": Preserved 365-day warranty rules and status badges.
+- **Shared Record Payment Dialog (`RecordPaymentDialog`):**
+  - Shared modal component used across Customers Payments tab, Sale detail page (`/sales/[transNo]`), and Dashboard Quick actions menu.
+  - Searchable or pre-selected sale, payment date default today, pre-filled sale total amount, read-only sequential OR preview, submit via `record_payment_receipt` RPC. Toast notification with *"Print receipt"* link to `/receipts/[orNo]`.
+- **Printable Official Receipt (`/receipts/[orNo]`):**
+  - Validated via Zod, shows HOPE Group4, OR #, payment date, sale #, customer name, and amount.
+- **Sidebar Navigation Captions:**
+  - In `lib/labels.ts`, defined single navigation array with primary label and subtitle caption:
+    - Dashboard: "Overview"
+    - Sales: "Sales Detail"
+    - Customers: "Payments"
+    - Products: "Price History"
+    - Employees: "Job, Department"
+    - Reports: "Summaries"
+  - Rendered with 52px row height, centered icons, 14px label, 2px gap, 12px muted caption, darker active caption, and tablet tooltip with `aria-label`.
+- **Complete Clean Architecture & File Cleanup:**
+  - Removed unimported legacy files `init_local_db.sql`, `inspect_db.js`, and `scratch/`.

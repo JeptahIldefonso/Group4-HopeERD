@@ -5,6 +5,7 @@ import { getCurrentUser } from '@/app/actions/auth';
 import { getSaleDetailData } from '@/lib/data/sales';
 import { formatPHP, formatDate } from '@/lib/utils';
 import { PrintButton } from '@/components/sales/PrintButton';
+import { SaleRecordPaymentButton } from '@/components/sales/SaleRecordPaymentButton';
 import { BRAND } from '@/lib/brand';
 import { ArrowLeft, CreditCard, Receipt, ExternalLink, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -50,12 +51,7 @@ export default async function SaleDetailPage({ params }: PageProps) {
 
         <div className="flex items-center gap-2">
           {canRecordPayment && (
-            <Link href={`/payments?transNo=${sale.transNo}&action=new`}>
-              <Button size="sm" variant="outline" className="gap-1.5 text-xs font-sans">
-                <CreditCard className="h-3.5 w-3.5 text-[#41555f]" />
-                <span>Record payment</span>
-              </Button>
-            </Link>
+            <SaleRecordPaymentButton transNo={sale.transNo} />
           )}
           <PrintButton />
         </div>
@@ -179,15 +175,10 @@ export default async function SaleDetailPage({ params }: PageProps) {
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-semibold text-[#041a24] flex items-center gap-1.5">
               <Receipt className="h-4 w-4 text-[#41555f]" />
-              <span>Official Receipts</span>
+              <span>Official Receipts ({payments.length})</span>
             </h2>
             {canRecordPayment && (
-              <Link
-                href={`/payments?transNo=${sale.transNo}&action=new`}
-                className="text-xs text-[#041a24] hover:underline font-medium inline-flex items-center gap-1"
-              >
-                <span>Record payment &rarr;</span>
-              </Link>
+              <SaleRecordPaymentButton transNo={sale.transNo} />
             )}
           </div>
 
@@ -203,19 +194,31 @@ export default async function SaleDetailPage({ params }: PageProps) {
                     <th className="py-2.5 px-3">OR #</th>
                     <th className="py-2.5 px-3">Payment date</th>
                     <th className="py-2.5 px-3 text-right">Amount</th>
+                    <th className="py-2.5 px-3 text-center">Receipt</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[rgba(4,26,36,0.08)] font-sans">
                   {payments.map((p) => (
                     <tr key={p.orNo} className="hover:bg-[#FAF8F5]">
-                      <td className="py-2 px-3 font-semibold text-[#041a24] font-mono">
-                        #{p.orNo}
+                      <td className="py-2.5 px-3 font-semibold text-[#041a24] font-mono">
+                        <Link href={`/receipts/${p.orNo}`} className="underline hover:text-black">
+                          OR #{p.orNo}
+                        </Link>
                       </td>
-                      <td className="py-2 px-3 text-[#041a24] font-sans tabular-nums">
+                      <td className="py-2.5 px-3 text-[#041a24] font-sans tabular-nums">
                         {formatDate(p.payDate)}
                       </td>
-                      <td className="py-2 px-3 text-right font-mono tabular-nums font-semibold text-[#041a24]">
+                      <td className="py-2.5 px-3 text-right font-mono tabular-nums font-semibold text-[#041a24]">
                         {formatPHP(p.amount)}
+                      </td>
+                      <td className="py-2.5 px-3 text-center">
+                        <Link
+                          href={`/receipts/${p.orNo}`}
+                          className="inline-flex items-center gap-1 text-[11px] font-medium text-[#041a24] hover:underline"
+                        >
+                          <span>Print OR</span>
+                          <ExternalLink className="w-3 h-3 text-[#41555f]" />
+                        </Link>
                       </td>
                     </tr>
                   ))}

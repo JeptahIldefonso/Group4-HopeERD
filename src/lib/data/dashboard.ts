@@ -36,6 +36,7 @@ export interface RecentPaymentItem {
   orNo: number;
   payDate: string;
   custName: string;
+  custNo: number;
   amount: number;
 }
 
@@ -138,6 +139,7 @@ export async function getDashboardData(requestedPeriod: DashboardPeriod = 'this_
       p.payDate,
       p.amount,
       p.transNo,
+      c.custNo,
       c.custName
     FROM PAYMENT p
     JOIN SALES s ON s.transNo = p.transNo
@@ -187,6 +189,7 @@ export async function getDashboardData(requestedPeriod: DashboardPeriod = 'this_
     orNo: Number(p.orNo),
     payDate: String(p.payDate),
     custName: String(p.custName),
+    custNo: Number(p.custNo),
     amount: Number(p.amount),
   }));
 

@@ -32,11 +32,11 @@
 1. **Sign-In & Role Security:**
    * *"We begin at our secure Sign-In gateway (`/login`). Public sign-ups are disabled. Role permissions are stored securely in `app_metadata` rather than user-editable metadata. Direct URL access without a verified session is strictly blocked."*
 2. **Executive Dashboard (`/dashboard`):**
-   * *"Once authenticated, executives see 4 KPI cards: Gross Invoiced Revenue, Total Cash Collected, Outstanding Receivables, and Active Staff. Below is our Department Revenue breakdown and our Recent Transactions feed derived from `SALES` and `PAYMENT`."*
+   * *"Once authenticated, executives see 4 KPI cards: Total sales, Payments received, Number of sales, and Active customers. Below are our Recent sales and Recent payments feeds derived from `SALES` and `PAYMENT`."*
 3. **Product Catalog & Price History (`/products`):**
-   * *"In the Products tab, clicking a hardware item like 'RTX 4060 GPU' opens its price timeline showing how its price evolved across effective dates."*
-4. **Finances & Collections (`/finances`):**
-   * *"In Finances, we see our sales ledger. Notice sale #5002 is marked **PARTIAL**. Let's post a payment by entering Official Receipt #9006 with $16,750. Watch the balance hit $0.00 and the status update immediately to **PAID**. If we attempted to pay $20,000, our database trigger would immediately reject the overpayment."*
+   * *"In the Products tab, clicking a hardware item like 'RTX 4060 GPU' opens its price timeline showing how its price evolved across effective dates in `PRICEHIST`."*
+4. **Customers & Payments (`/customers`):**
+   * *"In Customers & Payments, we see customer accounts and their official receipts. We can record a payment with auto-numbered Official Receipts. If an overpayment is attempted, our database RPC immediately rejects it."*
 5. **Customer Accounts & Warranty Checks (`/customers`):**
    * *"In Customer Accounts, our warranty engine calculates whether a device is under warranty by computing `salesDate + 365 days` evaluated in Philippine Time (`Asia/Manila`), dynamically flagging purchases as VALID WARRANTY or WARRANTY EXPIRED."*
 

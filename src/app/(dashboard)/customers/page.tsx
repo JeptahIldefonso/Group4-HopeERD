@@ -19,6 +19,7 @@ export default async function CustomersPage() {
         initialCustomers={pageData.customers}
         initialPayments={pageData.payments}
         initialSales={pageData.sales}
+        initialWarrantyItems={pageData.warrantyItems || []}
         metrics={pageData.metrics}
         userRole={userRole}
       />

@@ -1,41 +1,38 @@
 'use client';
 
-import React, { useState, useMemo, useEffect, useTransition } from 'react';
+import React, { useState, useMemo, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { CustomerDetailPanel } from './CustomerDetailPanel';
-import { AddCustomerModal } from './AddCustomerModal';
+import { RecordPaymentDialog } from '@/components/payments/RecordPaymentDialog';
 import { formatPHP, formatDate } from '@/lib/utils';
+import { calculateWarranty } from '@/lib/warranty';
 import type {
   CustomerOverviewItem,
   PaymentLedgerItem,
   CustomerSalesSummaryItem,
+  CustomerWarrantyItem,
   CustomerSummaryMetrics,
-  CustomerDetailData,
 } from '@/lib/data/customers';
 import {
   Search,
   Download,
-  Plus,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  ChevronLeft,
-  ChevronRight,
-  X,
-  AlertCircle,
-  Users,
   Receipt,
-  AlertTriangle,
+  FileSpreadsheet,
+  ExternalLink,
+  Shield,
   Clock,
-  CheckCircle2,
+  AlertCircle,
+  Plus,
 } from 'lucide-react';
 
 interface CustomersMainViewProps {
   initialCustomers: CustomerOverviewItem[];
   initialPayments: PaymentLedgerItem[];
   initialSales: CustomerSalesSummaryItem[];
+  initialWarrantyItems: CustomerWarrantyItem[];
   metrics: CustomerSummaryMetrics;
   userRole?: string;
 }
@@ -44,6 +41,7 @@ export function CustomersMainView({
   initialCustomers,
   initialPayments,
   initialSales,
+  initialWarrantyItems,
   metrics,
   userRole = 'sales',
 }: CustomersMainViewProps) {
@@ -52,38 +50,24 @@ export function CustomersMainView({
   const [, startTransition] = useTransition();
 
   const isAdmin = userRole.toLowerCase() === 'admin';
-  const isSales = userRole.toLowerCase() === 'sales' || isAdmin;
+  const isCashier = userRole.toLowerCase() === 'cashier' || isAdmin;
 
-  // Read URL State
-  const activeView = (searchParams.get('view') === 'payments' ? 'payments' : 'customers') as
-    | 'customers'
-    | 'payments';
-  const selectedTerm = searchParams.get('term') || 'ALL';
-  const selectedCode = searchParams.get('code') || null;
-  const searchQuery = searchParams.get('q') || '';
-  const statusFilter = (searchParams.get('status') || 'all') as 'all' | 'unpaid' | 'none';
-  const sortCol = searchParams.get('sort') || (activeView === 'payments' ? 'payDate' : 'custNo');
-  const sortOrder = (searchParams.get('order') || (activeView === 'payments' ? 'desc' : 'asc')) as
-    | 'asc'
-    | 'desc';
-  const currentPage = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
-  const pageSize = [10, 25, 50].includes(parseInt(searchParams.get('size') || '10', 10))
-    ? parseInt(searchParams.get('size') || '10', 10)
-    : 10;
+  // Search query for customer list
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Responsive drawer vs column
-  const [isDesktop, setIsDesktop] = useState(true);
-  useEffect(() => {
-    const checkWidth = () => setIsDesktop(window.innerWidth >= 1280);
-    checkWidth();
-    window.addEventListener('resize', checkWidth);
-    return () => window.removeEventListener('resize', checkWidth);
-  }, []);
+  // Selected customer state (URL synced ?custNo=)
+  const custNoParam = searchParams.get('custNo');
+  const initialCustNo = custNoParam
+    ? parseInt(custNoParam, 10)
+    : initialCustomers[0]?.custNo || 0;
+
+  // Active tab state (URL synced ?tab=payments or ?tab=warranty)
+  const activeTab = searchParams.get('tab') === 'warranty' ? 'warranty' : 'payments';
 
   // Modal state
-  const [isAddCustomerOpen, setIsAddCustomerOpen] = useState(false);
+  const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState(false);
 
-  // URL State Updater
+  // Update URL helper
   const updateUrl = (updates: Record<string, string | null>) => {
     startTransition(() => {
       const params = new URLSearchParams(searchParams.toString());
@@ -98,750 +82,421 @@ export function CustomersMainView({
     });
   };
 
-  // 1. Filtered Customers
+  // Filtered customers in left list
   const filteredCustomers = useMemo(() => {
-    return initialCustomers.filter((c) => {
-      // Term filter
-      if (selectedTerm !== 'ALL' && c.payTerms.toUpperCase() !== selectedTerm.toUpperCase()) {
-        return false;
-      }
+    if (!searchQuery.trim()) return initialCustomers;
+    const q = searchQuery.toLowerCase().trim();
+    return initialCustomers.filter(
+      (c) =>
+        c.custName.toLowerCase().includes(q) ||
+        String(c.custNo).includes(q) ||
+        c.address.toLowerCase().includes(q)
+    );
+  }, [initialCustomers, searchQuery]);
 
-      // Status filter
-      if (statusFilter === 'unpaid' && c.unpaidOrders <= 0) return false;
-      if (statusFilter === 'none' && c.ordersPlaced > 0) return false;
+  // Selected customer object
+  const selectedCustomer = useMemo(() => {
+    const found = initialCustomers.find((c) => c.custNo === initialCustNo);
+    return found || initialCustomers[0] || null;
+  }, [initialCustomers, initialCustNo]);
 
-      // Text search: matches custNo, custName, or address
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase().trim();
-        const matchesNo = String(c.custNo).includes(query);
-        const matchesName = c.custName.toLowerCase().includes(query);
-        const matchesAddr = c.address.toLowerCase().includes(query);
-        if (!matchesNo && !matchesName && !matchesAddr) return false;
-      }
+  // Payments for the selected customer
+  const customerPayments = useMemo(() => {
+    if (!selectedCustomer) return [];
+    return initialPayments.filter((p) => p.custNo === selectedCustomer.custNo);
+  }, [initialPayments, selectedCustomer]);
 
-      return true;
-    });
-  }, [initialCustomers, selectedTerm, statusFilter, searchQuery]);
+  // Warranty items for the selected customer
+  const customerWarranty = useMemo(() => {
+    if (!selectedCustomer) return [];
+    return initialWarrantyItems.filter((w) => w.custNo === selectedCustomer.custNo);
+  }, [initialWarrantyItems, selectedCustomer]);
 
-  // Set of matching customer numbers for filtering payments view
-  const matchingCustNoSet = useMemo(() => {
-    return new Set(filteredCustomers.map((c) => c.custNo));
-  }, [filteredCustomers]);
+  // Payments total sum for selected customer
+  const customerTotalPaid = useMemo(() => {
+    return customerPayments.reduce((acc, p) => acc + p.amount, 0);
+  }, [customerPayments]);
 
-  // 2. Filtered Payments (Section 7.3: filters to matching customers)
-  const filteredPayments = useMemo(() => {
-    return initialPayments.filter((p) => {
-      // If customer is known, apply customer-level filters (term, status, search)
-      if (p.custNo != null) {
-        if (!matchingCustNoSet.has(p.custNo)) return false;
-      } else {
-        // If unlinked, still show unless query excludes it
-        if (searchQuery) {
-          const query = searchQuery.toLowerCase().trim();
-          const matchesOr = String(p.orNo).includes(query);
-          const matchesTrans = String(p.transNo).includes(query);
-          if (!matchesOr && !matchesTrans) return false;
-        }
-      }
-      return true;
-    });
-  }, [initialPayments, matchingCustNoSet, searchQuery]);
-
-  // 3. Sorting
-  const sortedCustomers = useMemo(() => {
-    return [...filteredCustomers].sort((a, b) => {
-      let valA: any = (a as any)[sortCol];
-      let valB: any = (b as any)[sortCol];
-
-      if (valA === null || valA === undefined) valA = '';
-      if (valB === null || valB === undefined) valB = '';
-
-      if (typeof valA === 'number' && typeof valB === 'number') {
-        return sortOrder === 'asc' ? valA - valB : valB - valA;
-      }
-      return sortOrder === 'asc'
-        ? String(valA).localeCompare(String(valB))
-        : String(valB).localeCompare(String(valA));
-    });
-  }, [filteredCustomers, sortCol, sortOrder]);
-
-  const sortedPayments = useMemo(() => {
-    return [...filteredPayments].sort((a, b) => {
-      let valA: any = (a as any)[sortCol];
-      let valB: any = (b as any)[sortCol];
-
-      if (valA === null || valA === undefined) valA = '';
-      if (valB === null || valB === undefined) valB = '';
-
-      if (typeof valA === 'number' && typeof valB === 'number') {
-        return sortOrder === 'asc' ? valA - valB : valB - valA;
-      }
-      return sortOrder === 'asc'
-        ? String(valA).localeCompare(String(valB))
-        : String(valB).localeCompare(String(valA));
-    });
-  }, [filteredPayments, sortCol, sortOrder]);
-
-  // 4. Pagination
-  const totalCount = activeView === 'customers' ? sortedCustomers.length : sortedPayments.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-  const safePage = Math.min(currentPage, totalPages);
-  const startIdx = (safePage - 1) * pageSize;
-  const endIdx = Math.min(startIdx + pageSize, totalCount);
-
-  const paginatedCustomers = useMemo(() => {
-    return sortedCustomers.slice(startIdx, endIdx);
-  }, [sortedCustomers, startIdx, endIdx]);
-
-  const paginatedPayments = useMemo(() => {
-    return sortedPayments.slice(startIdx, endIdx);
-  }, [sortedPayments, startIdx, endIdx]);
-
-  // 5. Selected Customer Detail Object
-  const selectedCustomerDetail: CustomerDetailData | null = useMemo(() => {
-    if (!selectedCode) return null;
-    const custNum = parseInt(selectedCode, 10);
-    if (isNaN(custNum)) return null;
-
-    const cust = initialCustomers.find((c) => c.custNo === custNum);
-    if (!cust) return null;
-
-    const custPayments = initialPayments
-      .filter((p) => p.custNo === cust.custNo)
-      .sort((a, b) => b.payDate.localeCompare(a.payDate) || b.orNo - a.orNo);
-
-    const custSales = initialSales
-      .filter((s) => s.custNo === cust.custNo)
-      .sort((a, b) => b.salesDate.localeCompare(a.salesDate) || b.transNo - a.transNo);
-
-    return {
-      customer: {
-        custNo: cust.custNo,
-        custName: cust.custName,
-        address: cust.address,
-        payTerms: cust.payTerms,
-      },
-      summary: {
-        ordersPlaced: cust.ordersPlaced,
-        totalPaid: cust.totalPaid,
-        paymentCount: cust.paymentCount,
-        unpaidOrders: cust.unpaidOrders,
-        lastPaymentDate: cust.lastPaymentDate,
-        lastPaymentOrNo: cust.lastPaymentOrNo,
-        customerSince: cust.customerSince,
-      },
-      paymentHistory: custPayments.map((p) => ({
-        orNo: p.orNo,
-        payDate: p.payDate,
-        amount: p.amount,
-        transNo: p.transNo,
-      })),
-      eligibleTransactions: custSales.map((s) => ({
-        transNo: s.transNo,
-        salesDate: s.salesDate,
-      })),
-    };
-  }, [selectedCode, initialCustomers, initialPayments, initialSales]);
-
-  const hasUnknownCode = Boolean(selectedCode && !selectedCustomerDetail);
-
-  // Sorting Handler
-  const handleSort = (colKey: string) => {
-    if (sortCol === colKey) {
-      updateUrl({ order: sortOrder === 'asc' ? 'desc' : 'asc' });
-    } else {
-      updateUrl({ sort: colKey, order: 'asc', page: '1' });
-    }
-  };
-
-  // CSV Export (Section 14)
-  const handleExportCSV = () => {
+  // Export CSV of selected customer's payments
+  const handleExportPaymentsCSV = () => {
+    if (!selectedCustomer) return;
     const today = new Date().toISOString().split('T')[0];
+    const headers = ['OR #', 'Payment date', 'Sale #', 'Customer no.', 'Customer name', 'Amount'];
+    const rows = customerPayments.map((p) => [
+      p.orNo,
+      p.payDate,
+      p.transNo,
+      selectedCustomer.custNo,
+      `"${selectedCustomer.custName.replace(/"/g, '""')}"`,
+      p.amount.toFixed(2),
+    ]);
 
-    if (activeView === 'customers') {
-      const headers = [
-        'Customer no.',
-        'Customer Name',
-        'Address',
-        'Payment terms',
-      ];
-      const rows = filteredCustomers.map((c) => [
-        c.custNo,
-        `"${c.custName.replace(/"/g, '""')}"`,
-        `"${c.address.replace(/"/g, '""')}"`,
-        c.payTerms,
-      ]);
-
-      const csvContent =
-        'data:text/csv;charset=utf-8,' +
-        [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement('a');
-      link.setAttribute('href', encodedUri);
-      link.setAttribute('download', `customers-${today}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      const headers = [
-        'Date',
-        'OR No.',
-        'Customer no.',
-        'Customer name',
-        'Transaction no.',
-        'Amount',
-      ];
-      const rows = filteredPayments.map((p) => [
-        p.payDate,
-        p.orNo,
-        p.custNo ?? '',
-        p.custName ? `"${p.custName.replace(/"/g, '""')}"` : 'Unlinked',
-        p.transNo,
-        p.amount.toFixed(2),
-      ]);
-
-      const csvContent =
-        'data:text/csv;charset=utf-8,' +
-        [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement('a');
-      link.setAttribute('href', encodedUri);
-      link.setAttribute('download', `payments-${today}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `customer-${selectedCustomer.custNo}-payments-${today}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
-
-  const nextCustNo =
-    initialCustomers.length > 0
-      ? Math.max(...initialCustomers.map((c) => c.custNo)) + 1
-      : 1001;
 
   return (
     <div className="space-y-6">
-      {/* 7.1 Page Header */}
+      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[rgba(4,26,36,0.14)] pb-4">
         <div>
           <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-[#41555f] block">
-            HOPE Group4 / Customers
+            HOPE Group4 / Customers &amp; Payments
           </span>
           <h1 className="font-editorial text-2xl sm:text-3xl font-normal tracking-tight text-[#041a24] mt-1">
-            Customers
+            Customers &amp; Payments
           </h1>
           <p className="text-xs sm:text-sm text-[#41555f] mt-1">
-            Customer records and payment history.
+            Customer directory, payment terms, official receipts ledger, and product warranty tracking.
           </p>
         </div>
+      </div>
 
-        {/* Header Actions */}
-        <div className="flex items-center gap-2 self-start sm:self-auto">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleExportCSV}
-            className="flex items-center gap-1.5 font-sans text-xs"
-          >
-            <Download className="h-3.5 w-3.5 text-[#41555f]" />
-            <span>Export CSV</span>
-          </Button>
+      {/* Master-Detail Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start font-sans">
+        {/* Left Column (Master): Searchable Customer List */}
+        <div className="lg:col-span-4 xl:col-span-4 space-y-3">
+          <Card className="border border-[rgba(4,26,36,0.12)] bg-white rounded-[4px] shadow-none overflow-hidden">
+            {/* List Header with Count & Search */}
+            <div className="p-3.5 border-b border-[rgba(4,26,36,0.08)] bg-neutral-50/50 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-[#041a24]">
+                  Customers ({filteredCustomers.length})
+                </span>
+                <span className="text-[10px] font-mono text-[#41555f]">
+                  Total: {initialCustomers.length}
+                </span>
+              </div>
 
-          {isSales && (
-            <Button
-              type="button"
-              variant="primary"
-              size="sm"
-              onClick={() => setIsAddCustomerOpen(true)}
-              className="flex items-center gap-1.5 font-sans text-xs"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>Add Customer</span>
-            </Button>
+              {/* Search Box */}
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#41555f]" />
+                <input
+                  type="text"
+                  placeholder="Search customer name, no..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full h-8 pl-8 pr-3 text-xs rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white text-[#041a24] placeholder:text-neutral-400 focus:outline-none focus:border-[#041a24]"
+                />
+              </div>
+            </div>
+
+            {/* Customer List Stream */}
+            <div className="divide-y divide-[rgba(4,26,36,0.06)] max-h-[600px] overflow-y-auto">
+              {filteredCustomers.length === 0 ? (
+                <div className="p-6 text-center text-xs text-[#41555f]">
+                  No customers found.
+                </div>
+              ) : (
+                filteredCustomers.map((c) => {
+                  const isSelected = selectedCustomer?.custNo === c.custNo;
+                  return (
+                    <button
+                      key={c.custNo}
+                      type="button"
+                      onClick={() => updateUrl({ custNo: String(c.custNo) })}
+                      className={`w-full text-left px-3.5 py-3 transition-colors flex items-center justify-between cursor-pointer ${
+                        isSelected
+                          ? 'bg-neutral-100/90 text-[#041a24] font-semibold border-l-4 border-[#041a24]'
+                          : 'hover:bg-neutral-50 text-[#041a24]'
+                      }`}
+                    >
+                      <div className="min-w-0 pr-2">
+                        <p className="text-xs font-semibold leading-snug truncate">
+                          {c.custName}
+                        </p>
+                        <p className="text-[11px] font-mono text-[#41555f] mt-0.5">
+                          Customer #{c.custNo}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-[10px] font-mono text-[#41555f] px-1.5 py-0.5 rounded bg-neutral-100 border border-[rgba(4,26,36,0.08)]">
+                          {c.payTerms}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          </Card>
+        </div>
+
+        {/* Right Column (Detail): Selected Customer Overview, Payments & Warranty */}
+        <div className="lg:col-span-8 xl:col-span-8 space-y-4">
+          {selectedCustomer ? (
+            <Card className="border border-[rgba(4,26,36,0.12)] bg-white rounded-[4px] shadow-none overflow-hidden">
+              {/* Customer Detail Header */}
+              <div className="p-5 border-b border-[rgba(4,26,36,0.08)] bg-neutral-50/30 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div>
+                  <h2 className="font-editorial text-2xl font-normal text-[#041a24] leading-tight">
+                    {selectedCustomer.custName}
+                  </h2>
+
+                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-y-1 sm:gap-x-4 text-xs text-[#41555f]">
+                    <div>
+                      <span className="text-[#41555f]">Customer no.: </span>
+                      <span className="font-mono font-semibold text-[#041a24]">
+                        #{selectedCustomer.custNo}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-[#41555f]">Payment terms: </span>
+                      <span className="font-medium text-[#041a24]">
+                        {selectedCustomer.payTerms}
+                      </span>
+                    </div>
+
+                    <div className="sm:col-span-3 mt-1">
+                      <span className="text-[#41555f]">Address: </span>
+                      <span className="text-[#041a24] font-normal leading-relaxed">
+                        {selectedCustomer.address}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Header Action Buttons */}
+                <div className="flex items-center gap-2 shrink-0">
+                  {isCashier && (
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="sm"
+                      onClick={() => setIsRecordPaymentOpen(true)}
+                      className="flex items-center gap-1.5 text-xs font-sans"
+                    >
+                      <Receipt className="h-3.5 w-3.5" />
+                      <span>Record Payment</span>
+                    </Button>
+                  )}
+
+                  {activeTab === 'payments' && customerPayments.length > 0 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleExportPaymentsCSV}
+                      className="flex items-center gap-1.5 text-xs font-sans"
+                    >
+                      <Download className="h-3.5 w-3.5 text-[#41555f]" />
+                      <span>Export CSV</span>
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              {/* Sub-Tabs: Payments (default) vs Warranty */}
+              <div className="flex items-center gap-2 px-5 pt-3 border-b border-[rgba(4,26,36,0.08)] bg-white">
+                <button
+                  type="button"
+                  onClick={() => updateUrl({ tab: 'payments' })}
+                  className={`py-2 px-3 text-xs font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${
+                    activeTab === 'payments'
+                      ? 'border-[#041a24] text-[#041a24] font-semibold'
+                      : 'border-transparent text-neutral-500 hover:text-[#041a24]'
+                  }`}
+                >
+                  <Receipt className="w-3.5 h-3.5" />
+                  <span>Payments ({customerPayments.length})</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => updateUrl({ tab: 'warranty' })}
+                  className={`py-2 px-3 text-xs font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-2 ${
+                    activeTab === 'warranty'
+                      ? 'border-[#041a24] text-[#041a24] font-semibold'
+                      : 'border-transparent text-neutral-500 hover:text-[#041a24]'
+                  }`}
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  <span>Warranty ({customerWarranty.length})</span>
+                </button>
+              </div>
+
+              {/* Tab 1: Payments */}
+              {activeTab === 'payments' && (
+                <div className="p-5 space-y-4">
+                  {/* Summary Line */}
+                  <div className="flex items-center justify-between text-xs text-[#41555f] border-b border-[rgba(4,26,36,0.06)] pb-2.5">
+                    <div>
+                      <span className="font-semibold text-[#041a24] font-mono tabular-nums">
+                        {customerPayments.length}
+                      </span>{' '}
+                      receipts &bull; Total{' '}
+                      <span className="font-semibold text-[#041a24] font-mono tabular-nums">
+                        {formatPHP(customerTotalPaid)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Payments Table */}
+                  {customerPayments.length === 0 ? (
+                    <div className="py-12 text-center text-xs text-[#41555f] space-y-1">
+                      <p className="font-semibold text-[#041a24]">No payments recorded for this customer.</p>
+                      <p className="text-[11px] text-[#41555f]">
+                        Use the &ldquo;Record Payment&rdquo; button above to record an official receipt.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto rounded-[4px] border border-[rgba(4,26,36,0.12)]">
+                      <table className="w-full text-left text-xs font-sans">
+                        <thead>
+                          <tr className="border-b border-[rgba(4,26,36,0.1)] bg-[#F8F8F6] text-[#041a24]">
+                            <th className="py-2.5 px-3 font-semibold whitespace-nowrap">OR #</th>
+                            <th className="py-2.5 px-3 font-semibold whitespace-nowrap">Date</th>
+                            <th className="py-2.5 px-3 font-semibold whitespace-nowrap">Sale #</th>
+                            <th className="py-2.5 px-3 font-semibold text-right whitespace-nowrap">Amount</th>
+                            <th className="py-2.5 px-3 font-semibold text-center whitespace-nowrap">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[rgba(4,26,36,0.06)]">
+                          {customerPayments.map((p) => (
+                            <tr key={p.orNo} className="hover:bg-[#FAF8F5] transition-colors">
+                              <td className="py-2.5 px-3 font-mono font-medium text-[#041a24] whitespace-nowrap">
+                                OR #{p.orNo}
+                              </td>
+                              <td className="py-2.5 px-3 whitespace-nowrap text-[#041a24] tabular-nums">
+                                {formatDate(p.payDate)}
+                              </td>
+                              <td className="py-2.5 px-3 font-mono text-[#041a24] whitespace-nowrap">
+                                <Link
+                                  href={`/sales/${p.transNo}`}
+                                  className="underline hover:text-black"
+                                >
+                                  #{p.transNo}
+                                </Link>
+                              </td>
+                              <td className="py-2.5 px-3 text-right font-mono tabular-nums font-semibold text-[#041a24] whitespace-nowrap">
+                                {formatPHP(p.amount)}
+                              </td>
+                              <td className="py-2.5 px-3 text-center whitespace-nowrap">
+                                <Link
+                                  href={`/receipts/${p.orNo}`}
+                                  className="inline-flex items-center gap-1 text-[11px] font-medium text-[#041a24] hover:underline"
+                                >
+                                  <span>Receipt</span>
+                                  <ExternalLink className="w-3 h-3 text-[#41555f]" />
+                                </Link>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Tab 2: Warranty */}
+              {activeTab === 'warranty' && (
+                <div className="p-5 space-y-4">
+                  {/* Warranty Information Notice */}
+                  <div className="p-3 bg-[#FAF8F5] border border-[rgba(4,26,36,0.12)] rounded-[4px] text-xs text-[#41555f] leading-relaxed">
+                    <span className="font-semibold text-[#041a24]">1-Year Limited Hardware Warranty: </span>
+                    365 calendar days from date of purchase. Warranty coverage is an explicit business policy derived strictly from the sale transaction date.
+                  </div>
+
+                  {customerWarranty.length === 0 ? (
+                    <div className="py-12 text-center text-xs text-[#41555f]">
+                      No purchases recorded for this customer.
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto rounded-[4px] border border-[rgba(4,26,36,0.12)]">
+                      <table className="w-full text-left text-xs font-sans">
+                        <thead>
+                          <tr className="border-b border-[rgba(4,26,36,0.1)] bg-[#F8F8F6] text-[#041a24]">
+                            <th className="py-2.5 px-3 font-semibold whitespace-nowrap">Sale #</th>
+                            <th className="py-2.5 px-3 font-semibold whitespace-nowrap">Sale Date</th>
+                            <th className="py-2.5 px-3 font-semibold whitespace-nowrap">Product Code</th>
+                            <th className="py-2.5 px-3 font-semibold min-w-[200px]">Description</th>
+                            <th className="py-2.5 px-3 font-semibold text-center whitespace-nowrap">Qty</th>
+                            <th className="py-2.5 px-3 font-semibold whitespace-nowrap">Warranty Until</th>
+                            <th className="py-2.5 px-3 font-semibold text-center whitespace-nowrap">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[rgba(4,26,36,0.06)]">
+                          {customerWarranty.map((item, idx) => {
+                            const w = calculateWarranty(item.salesDate);
+                            return (
+                              <tr
+                                key={`${item.transNo}-${item.prodCode}-${idx}`}
+                                className="hover:bg-[#FAF8F5] transition-colors"
+                              >
+                                <td className="py-2.5 px-3 font-mono font-medium text-[#041a24] whitespace-nowrap">
+                                  <Link
+                                    href={`/sales/${item.transNo}`}
+                                    className="underline hover:text-black"
+                                  >
+                                    #{item.transNo}
+                                  </Link>
+                                </td>
+                                <td className="py-2.5 px-3 whitespace-nowrap text-[#041a24] tabular-nums">
+                                  {formatDate(item.salesDate)}
+                                </td>
+                                <td className="py-2.5 px-3 font-mono font-medium text-[#041a24] whitespace-nowrap">
+                                  {item.prodCode}
+                                </td>
+                                <td className="py-2.5 px-3 text-[#41555f] leading-snug line-clamp-1">
+                                  {item.description}
+                                </td>
+                                <td className="py-2.5 px-3 text-center font-mono tabular-nums text-[#041a24]">
+                                  {item.quantity}
+                                </td>
+                                <td className="py-2.5 px-3 font-mono text-[11px] text-[#41555f] whitespace-nowrap">
+                                  {formatDate(w.warrantyUntilStr)}
+                                </td>
+                                <td className="py-2.5 px-3 text-center whitespace-nowrap">
+                                  {w.status === 'VALID' && (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[10px] font-mono font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                      Valid
+                                    </span>
+                                  )}
+                                  {w.status === 'EXPIRING_SOON' && (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[10px] font-mono font-medium bg-amber-50 text-amber-800 border border-amber-200">
+                                      Expiring soon
+                                    </span>
+                                  )}
+                                  {w.status === 'EXPIRED' && (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-[2px] text-[10px] font-mono font-medium bg-neutral-100 text-neutral-600 border border-neutral-200">
+                                      Expired
+                                    </span>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
+            </Card>
+          ) : (
+            <Card className="p-8 text-center text-xs text-[#41555f] border border-[rgba(4,26,36,0.12)] bg-white rounded-[4px]">
+              Select a customer from the left to view payments and warranty records.
+            </Card>
           )}
         </div>
       </div>
 
-      {/* View Tabs & Search Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pt-1">
-        {/* Left: View Tabs (Customers & Payments) */}
-        <div className="inline-flex p-1.5 bg-[#EAEAE4] rounded-[6px] border border-[rgba(4,26,36,0.16)] gap-1.5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)]">
-          <button
-            type="button"
-            onClick={() => updateUrl({ view: 'customers', page: '1' })}
-            className={`inline-flex items-center gap-2.5 px-6 py-2.5 text-sm sm:text-base font-semibold rounded-[4px] transition-all ${
-              activeView === 'customers'
-                ? 'bg-[#041a24] text-white shadow-sm'
-                : 'text-[#041a24] hover:bg-white/70 font-medium'
-            }`}
-          >
-            <span>Customers</span>
-            <span
-              className={`text-xs font-mono tabular-nums px-2.5 py-0.5 rounded-full ${
-                activeView === 'customers'
-                  ? 'bg-white/20 text-white font-bold'
-                  : 'bg-black/10 text-[#041a24] font-semibold'
-              }`}
-            >
-              {filteredCustomers.length}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => updateUrl({ view: 'payments', page: '1' })}
-            className={`inline-flex items-center gap-2.5 px-6 py-2.5 text-sm sm:text-base font-semibold rounded-[4px] transition-all ${
-              activeView === 'payments'
-                ? 'bg-[#041a24] text-white shadow-sm'
-                : 'text-[#041a24] hover:bg-white/70 font-medium'
-            }`}
-          >
-            <span>Payments</span>
-            <span
-              className={`text-xs font-mono tabular-nums px-2.5 py-0.5 rounded-full ${
-                activeView === 'payments'
-                  ? 'bg-white/20 text-white font-bold'
-                  : 'bg-black/10 text-[#041a24] font-semibold'
-              }`}
-            >
-              {filteredPayments.length}
-            </span>
-          </button>
-        </div>
-
-        {/* Right: Search & Order Status Filter */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-          {/* Search Box */}
-          <div className="relative min-w-[240px] sm:w-64">
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[#41555f]" />
-            <input
-              type="text"
-              placeholder="Search number, name, address..."
-              value={searchQuery}
-              onChange={(e) => updateUrl({ q: e.target.value || null, page: '1' })}
-              className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white pl-8 pr-7 py-1.5 text-xs text-[#041a24] placeholder-[rgba(4,26,36,0.4)] focus:border-[#041a24] focus:outline-none"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => updateUrl({ q: null, page: '1' })}
-                className="absolute right-2 top-2 text-[#41555f] hover:text-[#041a24]"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            )}
-          </div>
-
-          {/* Order Status Select */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs text-[#41555f] whitespace-nowrap">Order status:</span>
-            <select
-              value={statusFilter}
-              onChange={(e) => updateUrl({ status: e.target.value === 'all' ? null : e.target.value, page: '1' })}
-              className="rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-2 py-1.5 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none"
-            >
-              <option value="all">All</option>
-              <option value="unpaid">Has unpaid orders</option>
-              <option value="none">No orders yet</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Unknown code warning */}
-      {hasUnknownCode && (
-        <div className="rounded-[4px] border border-[rgba(134,37,37,0.3)] bg-[#FCECEC] p-3 text-xs text-[#862525] flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            <span>That customer was not found ({selectedCode}).</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => updateUrl({ code: null })}
-            className="underline font-semibold hover:text-black"
-          >
-            Show all customers
-          </button>
-        </div>
-      )}
-
-      {/* Main Content Layout: Table & Detail Panel */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-        {/* Table Column */}
-        <div
-          className={`${
-            selectedCustomerDetail && isDesktop ? 'xl:col-span-7 2xl:col-span-8' : 'xl:col-span-12'
-          }`}
-        >
-          <div className="rounded-[4px] border border-[rgba(4,26,36,0.16)] bg-white overflow-hidden shadow-none">
-            {activeView === 'customers' ? (
-              // 7.4 CUSTOMERS VIEW
-              paginatedCustomers.length === 0 ? (
-                <div className="p-8 text-center text-xs text-[#41555f] space-y-2">
-                  <p className="font-semibold text-[#041a24]">No customers match your filters.</p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => updateUrl({ term: null, q: null, status: null, page: '1' })}
-                  >
-                    Clear filters
-                  </Button>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead>
-                      <tr className="border-b border-[rgba(4,26,36,0.12)] bg-[#F8F8F6] text-[#041a24]">
-                        <th
-                          onClick={() => handleSort('custNo')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none whitespace-nowrap"
-                        >
-                          <div className="flex items-center gap-1">
-                            <span>Customer no.</span>
-                            {sortCol === 'custNo' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
-                          onClick={() => handleSort('custName')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none min-w-[180px]"
-                        >
-                          <div className="flex items-center gap-1">
-                            <span>Customer Name</span>
-                            {sortCol === 'custName' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
-                          onClick={() => handleSort('address')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none min-w-[200px]"
-                        >
-                          <div className="flex items-center gap-1">
-                            <span>Address</span>
-                            {sortCol === 'address' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
-                          onClick={() => handleSort('payTerms')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none whitespace-nowrap"
-                        >
-                          <div className="flex items-center gap-1">
-                            <span>Payment terms</span>
-                            {sortCol === 'payTerms' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[rgba(4,26,36,0.08)]">
-                      {paginatedCustomers.map((c) => {
-                        const isSelected = selectedCode === String(c.custNo);
-
-                        return (
-                          <tr
-                            key={c.custNo}
-                            onClick={() => updateUrl({ code: String(c.custNo) })}
-                            className={`cursor-pointer transition-colors ${
-                              isSelected ? 'bg-[#EAEAE4] font-medium' : 'hover:bg-[#F8F8F6]'
-                            }`}
-                          >
-                            <td className="py-2.5 px-3 font-mono font-medium text-[#041a24] whitespace-nowrap">
-                              {c.custNo}
-                            </td>
-                            <td className="py-2.5 px-3 font-semibold text-[#041a24]">
-                              {c.custName}
-                            </td>
-                            <td className="py-2.5 px-3 text-[#41555f] leading-snug">
-                              {c.address}
-                            </td>
-                            <td className="py-2.5 px-3 whitespace-nowrap">
-                              <Badge variant="outline" className="font-mono text-[10px]">
-                                {c.payTerms}
-                              </Badge>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )
-            ) : (
-              // 7.4 PAYMENTS VIEW
-              paginatedPayments.length === 0 ? (
-                <div className="p-8 text-center text-xs text-[#41555f] space-y-2">
-                  <p className="font-semibold text-[#041a24]">No payments match your filters.</p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => updateUrl({ term: null, q: null, status: null, page: '1' })}
-                  >
-                    Clear filters
-                  </Button>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead>
-                      <tr className="border-b border-[rgba(4,26,36,0.12)] bg-[#F8F8F6] text-[#041a24]">
-                        <th
-                          onClick={() => handleSort('payDate')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none whitespace-nowrap"
-                        >
-                          <div className="flex items-center gap-1">
-                            <span>Date</span>
-                            {sortCol === 'payDate' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
-                          onClick={() => handleSort('orNo')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none whitespace-nowrap"
-                        >
-                          <div className="flex items-center gap-1">
-                            <span>OR No.</span>
-                            {sortCol === 'orNo' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
-                          onClick={() => handleSort('custName')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none min-w-[200px]"
-                        >
-                          <div className="flex items-center gap-1">
-                            <span>Customer Name</span>
-                            {sortCol === 'custName' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
-                          onClick={() => handleSort('transNo')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none whitespace-nowrap"
-                        >
-                          <div className="flex items-center gap-1">
-                            <span>Transaction no.</span>
-                            {sortCol === 'transNo' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
-                          onClick={() => handleSort('amount')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none text-right whitespace-nowrap"
-                        >
-                          <div className="flex items-center justify-end gap-1">
-                            <span>Amount</span>
-                            {sortCol === 'amount' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[rgba(4,26,36,0.08)]">
-                      {paginatedPayments.map((p) => {
-                        const isSelected = selectedCode === String(p.custNo);
-
-                        return (
-                          <tr
-                            key={p.orNo}
-                            onClick={() => {
-                              if (p.custNo) updateUrl({ code: String(p.custNo) });
-                            }}
-                            className={`cursor-pointer transition-colors ${
-                              isSelected ? 'bg-[#EAEAE4] font-medium' : 'hover:bg-[#F8F8F6]'
-                            }`}
-                          >
-                            <td className="py-2.5 px-3 text-[#041a24] whitespace-nowrap">
-                              {formatDate(p.payDate)}
-                            </td>
-                            <td className="py-2.5 px-3 font-mono font-medium text-[#041a24] whitespace-nowrap">
-                              #{p.orNo}
-                            </td>
-                            <td className="py-2.5 px-3 font-semibold text-[#041a24]">
-                              {p.custName ? (
-                                <span>{p.custName}</span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[2px] text-[10px] bg-[#FCECEC] text-[#862525]">
-                                  <AlertCircle className="h-3 w-3" />
-                                  Unlinked
-                                </span>
-                              )}
-                            </td>
-                            <td className="py-2.5 px-3 font-mono text-[#41555f] whitespace-nowrap">
-                              #{p.transNo}
-                            </td>
-                            <td className="py-2.5 px-3 font-mono font-semibold text-right tabular-nums text-[#041a24] whitespace-nowrap">
-                              {formatPHP(p.amount)}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )
-            )}
-
-            {/* Pagination Controls */}
-            {totalCount > 0 && (
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-3 py-2.5 border-t border-[rgba(4,26,36,0.1)] bg-[#FAF8F5] gap-2">
-                <span className="text-[11px] text-[#41555f]">
-                  Showing {startIdx + 1}-{endIdx} of {totalCount}
-                </span>
-
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] text-[#41555f]">Rows per page:</span>
-                    <select
-                      value={pageSize}
-                      onChange={(e) => updateUrl({ size: e.target.value, page: '1' })}
-                      className="rounded-[2px] border border-[rgba(4,26,36,0.2)] bg-white px-1.5 py-0.5 text-[11px] text-[#041a24] focus:outline-none"
-                    >
-                      <option value="10">10</option>
-                      <option value="25">25</option>
-                      <option value="50">50</option>
-                    </select>
-                  </div>
-
-                  <span className="text-[11px] text-[#41555f]">
-                    {safePage} / {totalPages}
-                  </span>
-
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => updateUrl({ page: String(safePage - 1) })}
-                      disabled={safePage <= 1}
-                      className="h-7 w-7 p-0 flex items-center justify-center rounded-[2px]"
-                      aria-label="Previous page"
-                    >
-                      <ChevronLeft className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => updateUrl({ page: String(safePage + 1) })}
-                      disabled={safePage >= totalPages}
-                      className="h-7 w-7 p-0 flex items-center justify-center rounded-[2px]"
-                      aria-label="Next page"
-                    >
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 7.5 Detail Panel Column (Desktop >= 1280px) */}
-        {selectedCustomerDetail && isDesktop && (
-          <div className="xl:col-span-5 2xl:col-span-4">
-            <CustomerDetailPanel
-              customerData={selectedCustomerDetail}
-              onClose={() => updateUrl({ code: null })}
-              userRole={userRole}
-              isDrawer={false}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* 7.5 Detail Panel Drawer (Mobile / Tablet < 1280px) */}
-      {selectedCustomerDetail && !isDesktop && (
-        <CustomerDetailPanel
-          customerData={selectedCustomerDetail}
-          onClose={() => updateUrl({ code: null })}
-          userRole={userRole}
-          isDrawer={true}
-        />
-      )}
-
-      {/* Slim Bottom Summary KPI Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-[rgba(4,26,36,0.1)]">
-        <div className="rounded-[4px] border border-[rgba(4,26,36,0.12)] bg-white p-3.5 shadow-[0_1px_2px_rgba(4,26,36,0.03)]">
-          <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#41555f]">
-            Customers
-          </div>
-          <div className="mt-1 text-2xl font-bold font-mono tabular-nums text-[#041a24]">
-            {metrics.totalCustomers}
-          </div>
-          <div className="mt-0.5 text-xs text-[#41555f]">
-            across {metrics.totalTermsCount} payment terms
-          </div>
-        </div>
-
-        <div className="rounded-[4px] border border-[rgba(4,26,36,0.12)] bg-white p-3.5 shadow-[0_1px_2px_rgba(4,26,36,0.03)]">
-          <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#41555f]">
-            Payments
-          </div>
-          <div className="mt-1 text-2xl font-bold font-mono tabular-nums text-[#041a24]">
-            {metrics.totalPayments}
-          </div>
-          <div className="mt-0.5 text-xs text-[#41555f]">
-            totaling the amount below
-          </div>
-        </div>
-
-        <div className="rounded-[4px] border border-[rgba(4,26,36,0.12)] bg-white p-3.5 shadow-[0_1px_2px_rgba(4,26,36,0.03)]">
-          <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#41555f]">
-            Total collected
-          </div>
-          <div className="mt-1 text-2xl font-bold font-mono tabular-nums text-[#041a24]">
-            {formatPHP(metrics.totalCollected)}
-          </div>
-          <div className="mt-0.5 text-xs text-[#41555f]">
-            from every recorded payment
-          </div>
-        </div>
-
-        <div className="rounded-[4px] border border-[rgba(4,26,36,0.12)] bg-white p-3.5 shadow-[0_1px_2px_rgba(4,26,36,0.03)]">
-          <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#41555f]">
-            Unpaid orders
-          </div>
-          <div className="mt-1 text-2xl font-bold font-mono tabular-nums text-[#824f11]">
-            {metrics.unpaidOrdersCount}
-          </div>
-          <div className="mt-0.5 text-xs text-[#41555f]">
-            awaiting payment
-          </div>
-        </div>
-      </div>
-
-      {/* Add Customer Modal (Admin & Sales) */}
-      {isSales && (
-        <AddCustomerModal
-          isOpen={isAddCustomerOpen}
-          onClose={() => setIsAddCustomerOpen(false)}
-          nextSuggestedCustNo={nextCustNo}
+      {/* Shared Record Payment Dialog */}
+      {isRecordPaymentOpen && selectedCustomer && (
+        <RecordPaymentDialog
+          isOpen={isRecordPaymentOpen}
+          onClose={() => setIsRecordPaymentOpen(false)}
+          fixedCustNo={selectedCustomer.custNo}
         />
       )}
     </div>

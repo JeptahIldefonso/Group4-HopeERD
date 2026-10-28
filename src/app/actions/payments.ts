@@ -6,6 +6,7 @@ import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from './auth';
+import { getSalesForPayment, getNextORNumberPreview } from '@/lib/data/payments';
 
 const recordPaymentSchema = z.object({
   transNo: z.number().int().positive('Transaction number is required'),
@@ -14,6 +15,23 @@ const recordPaymentSchema = z.object({
 });
 
 export type RecordPaymentInput = z.infer<typeof recordPaymentSchema>;
+
+export async function getPaymentFormDataAction(filter?: { transNo?: number; custNo?: number }) {
+  try {
+    const nextOrPreview = await getNextORNumberPreview();
+    const rawSales = await getSalesForPayment();
+    let sales = rawSales;
+    if (filter?.custNo) {
+      sales = sales.filter((s) => s.custNo === filter.custNo);
+    }
+    if (filter?.transNo) {
+      sales = sales.filter((s) => s.transNo === filter.transNo);
+    }
+    return { sales, nextOrPreview };
+  } catch (err: any) {
+    return { error: err?.message || 'Failed to load sales for payment' };
+  }
+}
 
 export async function recordPaymentAction(input: RecordPaymentInput) {
   try {
@@ -47,7 +65,7 @@ export async function recordPaymentAction(input: RecordPaymentInput) {
           return { error: error.message };
         }
 
-        revalidatePath('/payments');
+        revalidatePath('/customers');
         revalidatePath('/sales');
         revalidatePath('/dashboard');
         revalidatePath('/reports');
@@ -72,7 +90,7 @@ export async function recordPaymentAction(input: RecordPaymentInput) {
       }
 
       // 2. Date checks
-      const todayStr = '2026-10-27'; // Asia/Manila current date
+      const todayStr = '2026-10-28'; // Asia/Manila current date
       if (validated.payDate < sale.salesDate) {
         db.exec('ROLLBACK');
         return { error: `Payment date cannot be before the sale date (${sale.salesDate}).` };
@@ -127,7 +145,7 @@ export async function recordPaymentAction(input: RecordPaymentInput) {
 
       db.exec('COMMIT');
 
-      revalidatePath('/payments');
+      revalidatePath('/customers');
       revalidatePath('/sales');
       revalidatePath('/dashboard');
       revalidatePath('/reports');
