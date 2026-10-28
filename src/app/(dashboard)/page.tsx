@@ -58,7 +58,7 @@ export default async function HomePage({ searchParams }: PageProps) {
                 </span>
               </h2>
               <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                Canonical ERD schema mapping departments, jobs, employees, customers, products, sales, and payments.
+                Hope ERD, visualization
               </p>
             </div>
           </div>
