@@ -27,7 +27,7 @@ export interface Job {
 }
 
 export interface Employee {
-  empNo: number;
+  empNo: string | number;
   lastName: string;
   firstName: string;
   gender: 'M' | 'F' | 'm' | 'f';
@@ -37,7 +37,7 @@ export interface Employee {
 }
 
 export interface JobHistory {
-  empNo: number;
+  empNo: string | number;
   jobCode: string;
   effDate: string;
   salary: number;
@@ -45,7 +45,7 @@ export interface JobHistory {
 }
 
 export interface Customer {
-  custNo: number;
+  custNo: string | number;
   custName: string;
   address: string;
   payTerms: string;
@@ -64,23 +64,23 @@ export interface PriceHist {
 }
 
 export interface Sale {
-  transNo: number;
+  transNo: string | number;
   salesDate: string;
-  custNo: number;
-  empNo: number;
+  custNo: string | number;
+  empNo: string | number;
 }
 
 export interface SaleDetail {
-  transNo: number;
+  transNo: string | number;
   prodCode: string;
   quantity: number;
 }
 
 export interface Payment {
-  orNo: number;
+  orNo: string | number;
   payDate: string;
   amount: number;
-  transNo: number;
+  transNo: string | number;
 }
 
 // ------------------------------------------------------------------------
@@ -88,7 +88,7 @@ export interface Payment {
 // ------------------------------------------------------------------------
 
 export interface SaleDetailPriced {
-  transNo: number;
+  transNo: string | number;
   salesDate: string;
   prodCode: string;
   productDescription: string;
@@ -100,10 +100,10 @@ export interface SaleDetailPriced {
 }
 
 export interface SaleWithDept {
-  transNo: number;
+  transNo: string | number;
   salesDate: string;
-  custNo: number;
-  empNo: number;
+  custNo: string | number;
+  empNo: string | number;
   empName: string;
   jobEffDate: string;
   deptCode: string;
@@ -113,12 +113,12 @@ export interface SaleWithDept {
 }
 
 export interface SaleSummary {
-  transNo: number;
+  transNo: string | number;
   salesDate: string;
-  custNo: number;
+  custNo: string | number;
   custName: string;
   custAddress: string;
-  empNo: number;
+  empNo: string | number;
   empName: string;
   deptCode: string;
   deptName: string;
@@ -135,7 +135,7 @@ export interface DepartmentPerformance {
 }
 
 export interface EmployeeCurrentStatus {
-  empNo: number;
+  empNo: string | number;
   fullName: string;
   gender: string;
   hireDate: string;

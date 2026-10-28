@@ -10,10 +10,10 @@ import { X, Receipt, AlertCircle, Calendar } from 'lucide-react';
 interface RecordCustomerPaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  custNo: number;
+  custNo: string | number;
   custName: string;
   eligibleTransactions: {
-    transNo: number;
+    transNo: string | number;
     salesDate: string;
   }[];
 }
@@ -31,8 +31,8 @@ export function RecordCustomerPaymentModal({
     return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
   };
 
-  const [selectedTransNo, setSelectedTransNo] = useState<number>(
-    eligibleTransactions[0]?.transNo || 0
+  const [selectedTransNo, setSelectedTransNo] = useState<string | number>(
+    eligibleTransactions[0]?.transNo || ''
   );
   const [orNo, setOrNo] = useState('');
   const [amount, setAmount] = useState('');
@@ -56,16 +56,15 @@ export function RecordCustomerPaymentModal({
   if (!isOpen) return null;
 
   const currentSelectedSale = eligibleTransactions.find(
-    (t) => t.transNo === Number(selectedTransNo)
+    (t) => String(t.transNo) === String(selectedTransNo)
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
 
-    const parsedOrNo = parseInt(orNo, 10);
-    if (isNaN(parsedOrNo) || parsedOrNo <= 0) {
-      setErrorMsg('OR number must be a positive integer (R-08).');
+    if (!orNo || !orNo.trim()) {
+      setErrorMsg('OR number is required (R-08).');
       return;
     }
 
@@ -75,7 +74,7 @@ export function RecordCustomerPaymentModal({
       return;
     }
 
-    if (!selectedTransNo || selectedTransNo <= 0) {
+    if (!selectedTransNo) {
       setErrorMsg('Please select a valid sales transaction (R-05).');
       return;
     }
@@ -98,10 +97,10 @@ export function RecordCustomerPaymentModal({
     setIsSubmitting(true);
     try {
       const result = await recordCustomerPaymentAction({
-        orNo: parsedOrNo,
+        orNo: orNo.trim(),
         payDate,
         amount: parsedAmount,
-        transNo: Number(selectedTransNo),
+        transNo: selectedTransNo,
         custNo,
       });
 

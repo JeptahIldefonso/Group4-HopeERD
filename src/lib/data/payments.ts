@@ -2,38 +2,38 @@ import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
 
 export interface PaymentLedgerItem {
-  orNo: number;
+  orNo: string | number;
   payDate: string;
   amount: number;
-  transNo: number;
+  transNo: string | number;
   salesDate: string;
-  custNo: number;
+  custNo: string | number;
   custName: string;
 }
 
 export interface SaleForPaymentOption {
-  transNo: number;
+  transNo: string | number;
   salesDate: string;
-  custNo: number;
+  custNo: string | number;
   custName: string;
   totalAmount: number;
 }
 
 export interface OfficialReceiptData {
-  orNo: number;
+  orNo: string | number;
   payDate: string;
   amount: number;
-  transNo: number;
+  transNo: string | number;
   salesDate: string;
   totalAmount: number;
   customer: {
-    custNo: number;
+    custNo: string | number;
     custName: string;
     address: string;
     payTerms: string;
   };
   salesRep: {
-    empNo: number;
+    empNo: string | number;
     empName: string;
     deptName: string;
   };
@@ -73,12 +73,12 @@ export async function getPaymentsLedger(filter?: {
   `).all() as any[];
 
   let items: PaymentLedgerItem[] = rawPayments.map((r) => ({
-    orNo: Number(r.orNo),
+    orNo: r.orNo,
     payDate: String(r.payDate),
     amount: Number(r.amount),
-    transNo: Number(r.transNo),
+    transNo: r.transNo,
     salesDate: String(r.salesDate),
-    custNo: Number(r.custNo),
+    custNo: r.custNo,
     custName: String(r.custName),
   }));
 
@@ -123,7 +123,7 @@ export async function getPaymentsLedger(filter?: {
 /**
  * Fetch sales list for the Record Payment modal dropdown
  */
-export async function getSalesForPayment(preselectedTransNo?: number): Promise<SaleForPaymentOption[]> {
+export async function getSalesForPayment(preselectedTransNo?: string | number): Promise<SaleForPaymentOption[]> {
   const dbPath = path.join(process.cwd(), 'hope.db');
   const db = new DatabaseSync(dbPath);
 
@@ -147,9 +147,9 @@ export async function getSalesForPayment(preselectedTransNo?: number): Promise<S
   `).all() as any[];
 
   return rawRows.map((r) => ({
-    transNo: Number(r.transNo),
+    transNo: r.transNo,
     salesDate: String(r.salesDate),
-    custNo: Number(r.custNo),
+    custNo: r.custNo,
     custName: String(r.custName),
     totalAmount: Number(r.totalAmount || 0),
   }));
@@ -158,17 +158,22 @@ export async function getSalesForPayment(preselectedTransNo?: number): Promise<S
 /**
  * Get next OR number preview
  */
-export async function getNextORNumberPreview(): Promise<number> {
+export async function getNextORNumberPreview(): Promise<string> {
   const dbPath = path.join(process.cwd(), 'hope.db');
   const db = new DatabaseSync(dbPath);
-  const row = db.prepare('SELECT COALESCE(MAX(ORNo), 9000) + 1 AS nextOR FROM PAYMENT').get() as any;
-  return Number(row?.nextOR || 9001);
+  const row = db.prepare('SELECT ORNo FROM PAYMENT ORDER BY length(ORNo) DESC, ORNo DESC LIMIT 1').get() as any;
+  let nextNum = 1;
+  if (row?.ORNo) {
+    const match = String(row.ORNo).match(/\d+/);
+    if (match) nextNum = parseInt(match[0], 10) + 1;
+  }
+  return `OR${String(nextNum).padStart(6, '0')}`;
 }
 
 /**
  * Retrieve single official receipt document
  */
-export async function getOfficialReceipt(orNo: number): Promise<OfficialReceiptData | null> {
+export async function getOfficialReceipt(orNo: string | number): Promise<OfficialReceiptData | null> {
   const dbPath = path.join(process.cwd(), 'hope.db');
   const db = new DatabaseSync(dbPath);
 
@@ -212,20 +217,20 @@ export async function getOfficialReceipt(orNo: number): Promise<OfficialReceiptD
   const totalAmount = details.reduce((sum, d) => sum + (Number(d.quantity) * Number(d.unitPrice)), 0);
 
   return {
-    orNo: Number(payment.orNo),
+    orNo: payment.orNo,
     payDate: String(payment.payDate),
     amount: Number(payment.amount),
-    transNo: Number(payment.transNo),
+    transNo: payment.transNo,
     salesDate: String(sale.salesDate),
     totalAmount,
     customer: {
-      custNo: Number(sale.custNo),
+      custNo: sale.custNo,
       custName: String(sale.custName),
       address: String(sale.address),
       payTerms: String(sale.payTerms),
     },
     salesRep: {
-      empNo: Number(sale.empNo),
+      empNo: sale.empNo,
       empName: String(sale.empName),
       deptName: String(sale.deptName),
     },

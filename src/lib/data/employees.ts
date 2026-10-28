@@ -3,7 +3,7 @@ import path from 'node:path';
 import { createClient } from '@/lib/supabase/server';
 
 export interface EmployeeDirectoryItem {
-  empNo: number;
+  empNo: string | number;
   lastName: string;
   firstName: string;
   fullName: string;
@@ -32,7 +32,7 @@ export interface DepartmentStat {
 }
 
 export interface JobHistoryItem {
-  empNo: number;
+  empNo: string | number;
   jobCode: string;
   jobDesc: string;
   effDate: string;
@@ -118,7 +118,7 @@ export async function getEmployeesDirectory(
     const sepDate = r.sepDate ? String(r.sepDate) : null;
 
     return {
-      empNo: Number(r.empNo),
+      empNo: r.empNo,
       lastName: String(r.lastName || ''),
       firstName: String(r.firstName || ''),
       fullName: String(r.fullName || `${r.firstName} ${r.lastName}`),
@@ -174,13 +174,15 @@ export async function getEmployeesDirectory(
  * Fetch complete profile and job history for a single employee
  */
 export async function getEmployeeDetailPageData(
-  empNo: number,
+  empNo: number | string,
   userRole: string = 'admin'
 ): Promise<EmployeeDetailPageData | null> {
   const isAdmin = userRole.toLowerCase() === 'admin';
   const db = getSqliteDb();
+  const empStr = String(empNo);
+  const empPadded = empStr.padStart(5, '0');
 
-  const empRow = db.prepare('SELECT * FROM v_employee_current_status WHERE empNo = ?').get(empNo) as any;
+  const empRow = db.prepare('SELECT * FROM v_employee_current_status WHERE empNo = ? OR empNo = ?').get(empStr, empPadded) as any;
   if (!empRow) return null;
 
   const hireDate = String(empRow.hireDate || '');
@@ -201,9 +203,9 @@ export async function getEmployeeDetailPageData(
     FROM JOBHISTORY jh
     JOIN JOB j ON j.jobCode = jh.jobCode
     JOIN DEPARTMENT d ON d.deptCode = jh.deptCode
-    WHERE jh.empNo = ?
+    WHERE jh.empNo = ? OR jh.empNo = ?
     ORDER BY jh.effDate DESC
-  `).all(empNo) as any[];
+  `).all(empStr, empPadded) as any[];
 
   // Current assignment is the row with latest effDate on or before today
   // Since ordered by effDate DESC, the first row with effDate <= today is current
@@ -215,7 +217,7 @@ export async function getEmployeeDetailPageData(
     if (isCurrent) currentFound = true;
 
     return {
-      empNo: Number(row.empNo),
+      empNo: row.empNo,
       jobCode: String(row.jobCode),
       jobDesc: String(row.jobDesc),
       effDate: String(row.effDate),

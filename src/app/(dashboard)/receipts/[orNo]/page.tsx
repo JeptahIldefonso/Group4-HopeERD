@@ -11,21 +11,18 @@ import { Button } from '@/components/ui/Button';
 
 export const dynamic = 'force-dynamic';
 
-const orNoSchema = z.coerce.number().int().positive();
-
 interface PageProps {
   params: Promise<{ orNo: string }>;
 }
 
 export default async function ReceiptDetailPage({ params }: PageProps) {
   const { orNo: rawOrNo } = await params;
-  const parseResult = orNoSchema.safeParse(rawOrNo);
+  const orNo = rawOrNo?.trim();
 
-  if (!parseResult.success) {
+  if (!orNo) {
     notFound();
   }
 
-  const orNo = parseResult.data;
   const receipt = await getOfficialReceipt(orNo);
 
   if (!receipt) {

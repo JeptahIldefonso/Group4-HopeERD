@@ -23,20 +23,11 @@ export default async function EmployeeDetailPage({ params }: EmployeeDetailPageP
   }
 
   const resolvedParams = await params;
+  const empNo = resolvedParams.empNo?.trim();
 
-  // Validate empNo with Zod as a positive integer (Section 6, T-18)
-  const empNoParsed = z
-    .string()
-    .regex(/^\d+$/)
-    .transform(Number)
-    .pipe(z.number().int().positive())
-    .safeParse(resolvedParams.empNo);
-
-  if (!empNoParsed.success) {
+  if (!empNo) {
     notFound();
   }
-
-  const empNo = empNoParsed.data;
 
   const [data, lookups] = await Promise.all([
     getEmployeeDetailPageData(empNo, 'admin'),

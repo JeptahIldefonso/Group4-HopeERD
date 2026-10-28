@@ -9,13 +9,13 @@ import { X, UserPlus, AlertCircle } from 'lucide-react';
 interface AddCustomerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  nextSuggestedCustNo?: number;
+  nextSuggestedCustNo?: string | number;
 }
 
 export function AddCustomerModal({
   isOpen,
   onClose,
-  nextSuggestedCustNo = 1007,
+  nextSuggestedCustNo = 'C0083',
 }: AddCustomerModalProps) {
   const router = useRouter();
 
@@ -43,9 +43,9 @@ export function AddCustomerModal({
     e.preventDefault();
     setErrorMsg(null);
 
-    const parsedCustNo = parseInt(custNo, 10);
-    if (isNaN(parsedCustNo) || parsedCustNo <= 0) {
-      setErrorMsg('Customer number must be a positive integer.');
+    const cleanCustNo = custNo.trim();
+    if (!cleanCustNo) {
+      setErrorMsg('Customer number is required.');
       return;
     }
 
@@ -62,7 +62,7 @@ export function AddCustomerModal({
     setIsSubmitting(true);
     try {
       const result = await addCustomerAction({
-        custNo: parsedCustNo,
+        custNo: cleanCustNo as any,
         custName: custName.trim(),
         address: address.trim(),
         payTerms,

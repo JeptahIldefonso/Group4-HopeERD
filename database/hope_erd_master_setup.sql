@@ -1,29 +1,23 @@
 -- ========================================================================
--- HOPE Group4: MASTER DATABASE SETUP SCRIPT (PostgreSQL / Supabase)
--- System: HOPE Group4 - Sales and Collections Monitoring System
--- Schema: 100% Strict 10-Table Hope ERD (Zero new tables, zero new columns)
--- ========================================================================
--- Instructions:
--- 1. Open Supabase SQL Editor (https://supabase.com)
--- 2. Click "New query"
--- 3. Paste this entire file and click "Run" (or Ctrl + Enter)
+-- HOPE Group4: MASTER POSTGRESQL / SUPABASE SETUP SCRIPT
+-- Strict 10-Table Schema + Official PartialHOPEDB Coursework Dataset
 -- ========================================================================
 
--- ========================================================================
--- SECTION 1: CLEANUP EXISTING OBJECTS
--- ========================================================================
-DROP VIEW IF EXISTS v_product_sales_analytics CASCADE;
-DROP VIEW IF EXISTS v_employee_current_status CASCADE;
-DROP VIEW IF EXISTS v_department_sales_performance CASCADE;
-DROP VIEW IF EXISTS v_customer_receivables CASCADE;
-DROP VIEW IF EXISTS v_sales_summary CASCADE;
-DROP VIEW IF EXISTS v_sales_with_dept CASCADE;
+-- Cleanup
+DROP VIEW IF EXISTS personnel CASCADE;
+DROP VIEW IF EXISTS receiptDetail CASCADE;
+DROP VIEW IF EXISTS priceHist CASCADE;
 DROP VIEW IF EXISTS v_sales_details_priced CASCADE;
-
-DROP FUNCTION IF EXISTS create_sale(INT, DATE, INT, INT, JSONB) CASCADE;
-DROP FUNCTION IF EXISTS fn_prevent_backdated_price() CASCADE;
-DROP FUNCTION IF EXISTS fn_prevent_backdated_jobhistory() CASCADE;
-DROP FUNCTION IF EXISTS fn_check_payment_amount() CASCADE;
+DROP VIEW IF EXISTS v_sales_with_dept CASCADE;
+DROP VIEW IF EXISTS v_sales_summary CASCADE;
+DROP VIEW IF EXISTS v_product_sales_analytics CASCADE;
+DROP VIEW IF EXISTS v_customer_receivables CASCADE;
+DROP VIEW IF EXISTS v_employee_current_status CASCADE;
+DROP VIEW IF EXISTS v_price_history CASCADE;
+DROP VIEW IF EXISTS v_product_overview CASCADE;
+DROP VIEW IF EXISTS v_customer_overview CASCADE;
+DROP VIEW IF EXISTS v_customer_payments CASCADE;
+DROP VIEW IF EXISTS v_sale_lines CASCADE;
 
 DROP TABLE IF EXISTS PAYMENT CASCADE;
 DROP TABLE IF EXISTS SALESDETAIL CASCADE;
@@ -36,695 +30,1041 @@ DROP TABLE IF EXISTS DEPARTMENT CASCADE;
 DROP TABLE IF EXISTS JOB CASCADE;
 DROP TABLE IF EXISTS EMPLOYEE CASCADE;
 
--- ========================================================================
--- SECTION 2: CREATE STRICT 10-TABLE DDL
--- ========================================================================
-
 -- 1. DEPARTMENT
 CREATE TABLE DEPARTMENT (
-    deptCode VARCHAR(10) NOT NULL,
-    deptName VARCHAR(100) NOT NULL,
-    CONSTRAINT pk_department PRIMARY KEY (deptCode),
-    CONSTRAINT uq_department_name UNIQUE (deptName)
+    deptCode VARCHAR(10) NOT NULL PRIMARY KEY,
+    deptName VARCHAR(100) NOT NULL UNIQUE
 );
 
 -- 2. JOB
 CREATE TABLE JOB (
-    jobCode VARCHAR(10) NOT NULL,
-    jobDesc VARCHAR(100) NOT NULL,
-    CONSTRAINT pk_job PRIMARY KEY (jobCode)
+    jobCode VARCHAR(10) NOT NULL PRIMARY KEY,
+    jobDesc VARCHAR(100) NOT NULL
 );
 
 -- 3. EMPLOYEE
 CREATE TABLE EMPLOYEE (
-    empNo INT NOT NULL,
+    empNo VARCHAR(10) NOT NULL PRIMARY KEY,
     lastName VARCHAR(50) NOT NULL,
     firstName VARCHAR(50) NOT NULL,
-    gender CHAR(1) NOT NULL,
+    gender CHAR(1) NOT NULL CHECK (gender IN ('M', 'F', 'm', 'f')),
     birthDate DATE NOT NULL,
     hireDate DATE NOT NULL,
-    sepDate DATE NULL,
-    CONSTRAINT pk_employee PRIMARY KEY (empNo),
-    CONSTRAINT chk_employee_gender CHECK (gender IN ('M', 'F', 'm', 'f')),
-    CONSTRAINT chk_employee_dates CHECK (hireDate >= birthDate),
-    CONSTRAINT chk_employee_sepdate CHECK (sepDate IS NULL OR sepDate >= hireDate)
+    sepDate DATE
 );
 
--- 4. JOBHISTORY (Composite PK: empNo + jobCode + effDate)
+-- 4. JOBHISTORY
 CREATE TABLE JOBHISTORY (
-    empNo INT NOT NULL,
-    jobCode VARCHAR(10) NOT NULL,
+    empNo VARCHAR(10) NOT NULL REFERENCES EMPLOYEE(empNo) ON UPDATE CASCADE ON DELETE RESTRICT,
+    jobCode VARCHAR(10) NOT NULL REFERENCES JOB(jobCode) ON UPDATE CASCADE ON DELETE RESTRICT,
     effDate DATE NOT NULL,
-    salary NUMERIC(12, 2) NOT NULL,
-    deptCode VARCHAR(10) NOT NULL,
-    CONSTRAINT pk_jobhistory PRIMARY KEY (empNo, jobCode, effDate),
-    CONSTRAINT uq_jobhistory_emp_eff UNIQUE (empNo, effDate),
-    CONSTRAINT fk_jobhistory_employee FOREIGN KEY (empNo) 
-        REFERENCES EMPLOYEE(empNo) ON UPDATE CASCADE ON DELETE RESTRICT,
-    CONSTRAINT fk_jobhistory_job FOREIGN KEY (jobCode) 
-        REFERENCES JOB(jobCode) ON UPDATE CASCADE ON DELETE RESTRICT,
-    CONSTRAINT fk_jobhistory_department FOREIGN KEY (deptCode) 
-        REFERENCES DEPARTMENT(deptCode) ON UPDATE CASCADE ON DELETE RESTRICT,
-    CONSTRAINT chk_jobhistory_salary CHECK (salary >= 0)
+    salary NUMERIC(12, 2) NOT NULL CHECK (salary >= 0),
+    deptCode VARCHAR(10) NOT NULL REFERENCES DEPARTMENT(deptCode) ON UPDATE CASCADE ON DELETE RESTRICT,
+    PRIMARY KEY (empNo, jobCode, effDate)
 );
 
 -- 5. CUSTOMER
 CREATE TABLE CUSTOMER (
-    custNo INT NOT NULL,
+    custNo VARCHAR(10) NOT NULL PRIMARY KEY,
     custName VARCHAR(120) NOT NULL,
     address VARCHAR(255) NOT NULL,
-    payTerms VARCHAR(50) NOT NULL,
-    CONSTRAINT pk_customer PRIMARY KEY (custNo),
-    CONSTRAINT chk_customer_payterms CHECK (payTerms IN ('COD', 'NET 15', 'NET 30', 'NET 60'))
+    payTerms VARCHAR(50) NOT NULL
 );
 
 -- 6. PRODUCT
 CREATE TABLE PRODUCT (
-    prodCode VARCHAR(20) NOT NULL,
+    prodCode VARCHAR(20) NOT NULL PRIMARY KEY,
     description VARCHAR(255) NOT NULL,
-    unit VARCHAR(30) NOT NULL,
-    CONSTRAINT pk_product PRIMARY KEY (prodCode)
+    unit VARCHAR(30) NOT NULL
 );
 
--- 7. PRICEHIST (Composite PK: prodCode + effDate)
+-- 7. PRICEHIST
 CREATE TABLE PRICEHIST (
     effDate DATE NOT NULL,
-    prodCode VARCHAR(20) NOT NULL,
-    unitPrice NUMERIC(12, 2) NOT NULL,
-    CONSTRAINT pk_pricehist PRIMARY KEY (prodCode, effDate),
-    CONSTRAINT fk_pricehist_product FOREIGN KEY (prodCode) 
-        REFERENCES PRODUCT(prodCode) ON UPDATE CASCADE ON DELETE CASCADE,
-    CONSTRAINT chk_pricehist_unitprice CHECK (unitPrice >= 0)
+    prodCode VARCHAR(20) NOT NULL REFERENCES PRODUCT(prodCode) ON UPDATE CASCADE ON DELETE CASCADE,
+    unitPrice NUMERIC(12, 2) NOT NULL CHECK (unitPrice >= 0),
+    PRIMARY KEY (effDate, prodCode)
 );
 
 -- 8. SALES
 CREATE TABLE SALES (
-    transNo INT NOT NULL,
+    transNo VARCHAR(20) NOT NULL PRIMARY KEY,
     salesDate DATE NOT NULL,
-    custNo INT NOT NULL,
-    empNo INT NOT NULL,
-    CONSTRAINT pk_sales PRIMARY KEY (transNo),
-    CONSTRAINT fk_sales_customer FOREIGN KEY (custNo) 
-        REFERENCES CUSTOMER(custNo) ON UPDATE CASCADE ON DELETE RESTRICT,
-    CONSTRAINT fk_sales_employee FOREIGN KEY (empNo) 
-        REFERENCES EMPLOYEE(empNo) ON UPDATE CASCADE ON DELETE RESTRICT
+    custNo VARCHAR(10) NOT NULL REFERENCES CUSTOMER(custNo) ON UPDATE CASCADE ON DELETE RESTRICT,
+    empNo VARCHAR(10) NOT NULL REFERENCES EMPLOYEE(empNo) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
--- 9. SALESDETAIL (Composite PK: transNo + prodCode)
+-- 9. SALESDETAIL
 CREATE TABLE SALESDETAIL (
-    transNo INT NOT NULL,
-    prodCode VARCHAR(20) NOT NULL,
-    quantity INT NOT NULL,
-    CONSTRAINT pk_salesdetail PRIMARY KEY (transNo, prodCode),
-    CONSTRAINT fk_salesdetail_sales FOREIGN KEY (transNo) 
-        REFERENCES SALES(transNo) ON UPDATE CASCADE ON DELETE CASCADE,
-    CONSTRAINT fk_salesdetail_product FOREIGN KEY (prodCode) 
-        REFERENCES PRODUCT(prodCode) ON UPDATE CASCADE ON DELETE RESTRICT,
-    CONSTRAINT chk_salesdetail_qty CHECK (quantity > 0)
+    transNo VARCHAR(20) NOT NULL REFERENCES SALES(transNo) ON UPDATE CASCADE ON DELETE CASCADE,
+    prodCode VARCHAR(20) NOT NULL REFERENCES PRODUCT(prodCode) ON UPDATE CASCADE ON DELETE RESTRICT,
+    quantity NUMERIC(10, 2) NOT NULL CHECK (quantity >= 0),
+    PRIMARY KEY (transNo, prodCode)
 );
 
 -- 10. PAYMENT
 CREATE TABLE PAYMENT (
-    ORNo INT NOT NULL,
+    ORNo VARCHAR(20) NOT NULL PRIMARY KEY,
     payDate DATE NOT NULL,
-    amount NUMERIC(12, 2) NOT NULL,
-    transNo INT NOT NULL,
-    CONSTRAINT pk_payment PRIMARY KEY (ORNo),
-    CONSTRAINT fk_payment_sales FOREIGN KEY (transNo) 
-        REFERENCES SALES(transNo) ON UPDATE CASCADE ON DELETE RESTRICT,
-    CONSTRAINT chk_payment_amount CHECK (amount > 0)
+    amount NUMERIC(12, 2) NOT NULL CHECK (amount >= 0),
+    transNo VARCHAR(20) NOT NULL REFERENCES SALES(transNo) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
--- Indexes
-CREATE INDEX idx_jobhistory_lookup ON JOBHISTORY (empNo, effDate DESC);
-CREATE INDEX idx_pricehist_lookup ON PRICEHIST (prodCode, effDate DESC);
-CREATE INDEX idx_sales_date ON SALES (salesDate);
-CREATE INDEX idx_sales_customer ON SALES (custNo);
-CREATE INDEX idx_sales_employee ON SALES (empNo);
-CREATE INDEX idx_payment_trans ON PAYMENT (transNo);
+-- Views for Assignment Compatibility
+CREATE VIEW personnel AS 
+  SELECT empNo AS empno, lastName AS lastname, firstName AS firstname, gender, birthDate AS birthdate, hireDate AS hiredate, sepDate AS sepdate 
+  FROM EMPLOYEE;
 
+CREATE VIEW receiptDetail AS 
+  SELECT transNo, prodCode, quantity 
+  FROM SALESDETAIL;
+
+CREATE VIEW priceHist AS 
+  SELECT effDate, prodCode, unitPrice 
+  FROM PRICEHIST;
+
+-- Data Insert
 -- ========================================================================
--- SECTION 3: TRIGGERS & ATOMIC RPC FUNCTION
--- ========================================================================
-
--- Trigger 1: Prevent Backdated Prices
-CREATE OR REPLACE FUNCTION fn_prevent_backdated_price()
-RETURNS TRIGGER AS $$
-DECLARE
-    v_latest_sale DATE;
-BEGIN
-    SELECT MAX(s.salesDate) INTO v_latest_sale
-    FROM SALES s
-    JOIN SALESDETAIL sd ON s.transNo = sd.transNo
-    WHERE sd.prodCode = NEW.prodCode;
-
-    IF v_latest_sale IS NOT NULL AND NEW.effDate <= v_latest_sale THEN
-        RAISE EXCEPTION 'Cannot insert or alter price on %: sales already exist on % for product %',
-            NEW.effDate, v_latest_sale, NEW.prodCode;
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_check_pricehist_backdate
-BEFORE INSERT OR UPDATE ON PRICEHIST
-FOR EACH ROW EXECUTE FUNCTION fn_prevent_backdated_price();
-
--- Trigger 2: Prevent Backdated Job History
-CREATE OR REPLACE FUNCTION fn_prevent_backdated_jobhistory()
-RETURNS TRIGGER AS $$
-DECLARE
-    v_latest_sale DATE;
-BEGIN
-    SELECT MAX(salesDate) INTO v_latest_sale
-    FROM SALES
-    WHERE empNo = NEW.empNo;
-
-    IF v_latest_sale IS NOT NULL AND NEW.effDate <= v_latest_sale THEN
-        RAISE EXCEPTION 'Cannot insert or alter job assignment on %: employee has recorded sales through %',
-            NEW.effDate, v_latest_sale;
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_check_jobhistory_backdate
-BEFORE INSERT OR UPDATE ON JOBHISTORY
-FOR EACH ROW EXECUTE FUNCTION fn_prevent_backdated_jobhistory();
-
--- Trigger 3: Prevent Overpayment with Row Locking
-CREATE OR REPLACE FUNCTION fn_check_payment_amount()
-RETURNS TRIGGER AS $$
-DECLARE
-    v_total_due NUMERIC(12, 2);
-    v_total_paid NUMERIC(12, 2);
-    v_balance NUMERIC(12, 2);
-BEGIN
-    PERFORM transNo FROM SALES WHERE transNo = NEW.transNo FOR UPDATE;
-
-    SELECT COALESCE(SUM(sd.quantity * ph.unitPrice), 0.00) INTO v_total_due
-    FROM SALESDETAIL sd
-    JOIN SALES s ON s.transNo = sd.transNo
-    CROSS JOIN LATERAL (
-        SELECT unitPrice FROM PRICEHIST
-        WHERE prodCode = sd.prodCode AND effDate <= s.salesDate
-        ORDER BY effDate DESC LIMIT 1
-    ) ph
-    WHERE sd.transNo = NEW.transNo;
-
-    SELECT COALESCE(SUM(amount), 0.00) INTO v_total_paid
-    FROM PAYMENT
-    WHERE transNo = NEW.transNo;
-
-    v_balance := v_total_due - v_total_paid;
-
-    IF NEW.amount > v_balance THEN
-        RAISE EXCEPTION 'Payment of % exceeds remaining balance of % on transaction %', 
-            NEW.amount, v_balance, NEW.transNo;
-    END IF;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_validate_payment
-BEFORE INSERT ON PAYMENT
-FOR EACH ROW EXECUTE FUNCTION fn_check_payment_amount();
-
--- Atomic Sale Creation Function
-CREATE OR REPLACE FUNCTION create_sale(
-    p_trans_no INT,
-    p_sales_date DATE,
-    p_cust_no INT,
-    p_emp_no INT,
-    p_items JSONB
-) RETURNS JSONB AS $$
-DECLARE
-    v_item RECORD;
-    v_emp_hire DATE;
-    v_emp_sep DATE;
-    v_price_exists BOOLEAN;
-BEGIN
-    SELECT hireDate, sepDate INTO v_emp_hire, v_emp_sep
-    FROM EMPLOYEE WHERE empNo = p_emp_no;
-
-    IF v_emp_hire IS NULL THEN
-        RAISE EXCEPTION 'Employee % does not exist', p_emp_no;
-    END IF;
-
-    IF v_emp_hire > p_sales_date OR (v_emp_sep IS NOT NULL AND v_emp_sep < p_sales_date) THEN
-        RAISE EXCEPTION 'Employee % was not active on transaction date %', p_emp_no, p_sales_date;
-    END IF;
-
-    IF p_items IS NULL OR jsonb_array_length(p_items) = 0 THEN
-        RAISE EXCEPTION 'A sale must contain at least one line item';
-    END IF;
-
-    INSERT INTO SALES (transNo, salesDate, custNo, empNo)
-    VALUES (p_trans_no, p_sales_date, p_cust_no, p_emp_no);
-
-    FOR v_item IN SELECT * FROM jsonb_to_recordset(p_items) AS x(prodCode VARCHAR(20), quantity INT)
-    LOOP
-        SELECT EXISTS (
-            SELECT 1 FROM PRICEHIST 
-            WHERE prodCode = v_item.prodCode AND effDate <= p_sales_date
-        ) INTO v_price_exists;
-
-        IF NOT v_price_exists THEN
-            RAISE EXCEPTION 'No effective price found for product % on date %', v_item.prodCode, p_sales_date;
-        END IF;
-
-        INSERT INTO SALESDETAIL (transNo, prodCode, quantity)
-        VALUES (p_trans_no, v_item.prodCode, v_item.quantity);
-    END LOOP;
-
-    RETURN jsonb_build_object('success', true, 'transNo', p_trans_no);
-END;
-$$ LANGUAGE plpgsql;
-
--- ========================================================================
--- SECTION 4: SQL VIEWS (WITH security_invoker = true)
+-- HOPE GROUP4: OFFICIAL COURSE DATASET (from PartialHOPEDB.sql)
+-- 100% Faithful to College Information Management Coursework & Assignments
+-- Tables: DEPARTMENT, JOB, EMPLOYEE, JOBHISTORY, CUSTOMER, PRODUCT, PRICEHIST, SALES, SALESDETAIL, PAYMENT
 -- ========================================================================
 
-CREATE OR REPLACE VIEW v_sales_details_priced 
-WITH (security_invoker = true) AS
-SELECT 
-    sd.transNo,
-    s.salesDate,
-    sd.prodCode,
-    p.description AS productDescription,
-    p.unit,
-    sd.quantity,
-    ph.effDate AS priceEffDate,
-    ph.unitPrice,
-    (sd.quantity * ph.unitPrice) AS lineTotal
-FROM SALESDETAIL sd
-JOIN SALES s ON s.transNo = sd.transNo
-JOIN PRODUCT p ON p.prodCode = sd.prodCode
-CROSS JOIN LATERAL (
-    SELECT effDate, unitPrice
-    FROM PRICEHIST
-    WHERE prodCode = sd.prodCode AND effDate <= s.salesDate
-    ORDER BY effDate DESC LIMIT 1
-) ph;
+-- Clear existing data in reverse foreign key order
+TRUNCATE TABLE PAYMENT CASCADE;
+TRUNCATE TABLE SALESDETAIL CASCADE;
+TRUNCATE TABLE SALES CASCADE;
+TRUNCATE TABLE PRICEHIST CASCADE;
+TRUNCATE TABLE PRODUCT CASCADE;
+TRUNCATE TABLE CUSTOMER CASCADE;
+TRUNCATE TABLE JOBHISTORY CASCADE;
+TRUNCATE TABLE DEPARTMENT CASCADE;
+TRUNCATE TABLE JOB CASCADE;
+TRUNCATE TABLE EMPLOYEE CASCADE;
 
-CREATE OR REPLACE VIEW v_sales_with_dept 
-WITH (security_invoker = true) AS
-SELECT 
-    s.transNo,
-    s.salesDate,
-    s.custNo,
-    s.empNo,
-    e.firstName || ' ' || e.lastName AS empName,
-    jh.effDate AS jobEffDate,
-    jh.deptCode,
-    d.deptName,
-    jh.jobCode,
-    j.jobDesc
-FROM SALES s
-JOIN EMPLOYEE e ON e.empNo = s.empNo
-CROSS JOIN LATERAL (
-    SELECT effDate, deptCode, jobCode
-    FROM JOBHISTORY
-    WHERE empNo = s.empNo AND effDate <= s.salesDate
-    ORDER BY effDate DESC LIMIT 1
-) jh
-JOIN DEPARTMENT d ON d.deptCode = jh.deptCode
-JOIN JOB j ON j.jobCode = jh.jobCode;
-
-CREATE OR REPLACE VIEW v_sales_summary 
-WITH (security_invoker = true) AS
-SELECT 
-    s.transNo,
-    s.salesDate,
-    c.custNo,
-    c.custName,
-    c.address AS custAddress,
-    c.payTerms,
-    CASE 
-        WHEN c.payTerms = 'NET 15' THEN 15
-        WHEN c.payTerms = 'NET 30' THEN 30
-        WHEN c.payTerms = 'NET 60' THEN 60
-        ELSE 0
-    END AS termDays,
-    (s.salesDate + (CASE 
-        WHEN c.payTerms = 'NET 15' THEN 15
-        WHEN c.payTerms = 'NET 30' THEN 30
-        WHEN c.payTerms = 'NET 60' THEN 60
-        ELSE 0 
-    END)) AS dueDate,
-    vd.empNo,
-    vd.empName,
-    vd.deptCode,
-    vd.deptName,
-    vd.jobDesc,
-    COALESCE(SUM(vsd.lineTotal), 0.00) AS totalAmount,
-    COALESCE(pay.totalPaid, 0.00) AS totalPaid,
-    (COALESCE(SUM(vsd.lineTotal), 0.00) - COALESCE(pay.totalPaid, 0.00)) AS balance,
-    CASE 
-        WHEN COALESCE(SUM(vsd.lineTotal), 0.00) = 0 THEN 'NO_ITEMS'
-        WHEN COALESCE(pay.totalPaid, 0.00) >= COALESCE(SUM(vsd.lineTotal), 0.00) THEN 'PAID'
-        WHEN (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila')::DATE > (s.salesDate + (CASE 
-            WHEN c.payTerms = 'NET 15' THEN 15
-            WHEN c.payTerms = 'NET 30' THEN 30
-            WHEN c.payTerms = 'NET 60' THEN 60
-            ELSE 0 
-        END)) THEN 'OVERDUE'
-        WHEN COALESCE(pay.totalPaid, 0.00) > 0 THEN 'PARTIAL'
-        ELSE 'UNPAID'
-    END AS paymentStatus,
-    CASE 
-        WHEN (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila')::DATE > (s.salesDate + (CASE 
-            WHEN c.payTerms = 'NET 15' THEN 15
-            WHEN c.payTerms = 'NET 30' THEN 30
-            WHEN c.payTerms = 'NET 60' THEN 60
-            ELSE 0 
-        END)) AND (COALESCE(SUM(vsd.lineTotal), 0.00) - COALESCE(pay.totalPaid, 0.00)) > 0
-        THEN ((CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila')::DATE - (s.salesDate + (CASE 
-            WHEN c.payTerms = 'NET 15' THEN 15
-            WHEN c.payTerms = 'NET 30' THEN 30
-            WHEN c.payTerms = 'NET 60' THEN 60
-            ELSE 0 
-        END)))
-        ELSE 0
-    END AS daysOverdue
-FROM SALES s
-JOIN CUSTOMER c ON c.custNo = s.custNo
-JOIN v_sales_with_dept vd ON vd.transNo = s.transNo
-LEFT JOIN v_sales_details_priced vsd ON vsd.transNo = s.transNo
-LEFT JOIN (
-    SELECT transNo, SUM(amount) AS totalPaid
-    FROM PAYMENT
-    GROUP BY transNo
-) pay ON pay.transNo = s.transNo
-GROUP BY 
-    s.transNo, s.salesDate, c.custNo, c.custName, c.address, c.payTerms,
-    vd.empNo, vd.empName, vd.deptCode, vd.deptName, vd.jobDesc, pay.totalPaid;
-
-CREATE OR REPLACE VIEW v_customer_receivables 
-WITH (security_invoker = true) AS
-SELECT 
-    c.custNo,
-    c.custName,
-    c.address,
-    c.payTerms,
-    COUNT(DISTINCT s.transNo) AS totalTransactions,
-    COALESCE(SUM(ss.totalAmount), 0.00) AS totalBilled,
-    COALESCE(SUM(ss.totalPaid), 0.00) AS totalCollected,
-    COALESCE(SUM(ss.balance), 0.00) AS outstandingBalance,
-    COUNT(CASE WHEN ss.paymentStatus = 'OVERDUE' THEN 1 END) AS overdueCount
-FROM CUSTOMER c
-LEFT JOIN v_sales_summary ss ON ss.custNo = c.custNo
-LEFT JOIN SALES s ON s.transNo = ss.transNo
-GROUP BY c.custNo, c.custName, c.address, c.payTerms;
-
-CREATE OR REPLACE VIEW v_department_sales_performance 
-WITH (security_invoker = true) AS
-SELECT 
-    d.deptCode,
-    d.deptName,
-    COUNT(DISTINCT ss.transNo) AS transactionCount,
-    COALESCE(SUM(ss.totalAmount), 0.00) AS totalRevenueGenerated,
-    COALESCE(SUM(ss.totalPaid), 0.00) AS totalCollected
-FROM DEPARTMENT d
-LEFT JOIN v_sales_summary ss ON ss.deptCode = d.deptCode
-GROUP BY d.deptCode, d.deptName;
-
-CREATE OR REPLACE VIEW v_employee_current_status 
-WITH (security_invoker = true) AS
-SELECT 
-    e.empNo,
-    e.firstName || ' ' || e.lastName AS fullName,
-    e.gender,
-    e.hireDate,
-    e.sepDate,
-    CASE 
-        WHEN e.sepDate IS NOT NULL AND e.sepDate <= (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila')::DATE THEN 'Separated'
-        ELSE 'Active'
-    END AS employmentStatus,
-    CASE 
-        WHEN e.sepDate IS NOT NULL THEN (e.sepDate - e.hireDate)
-        ELSE ((CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila')::DATE - e.hireDate)
-    END AS tenureDays,
-    jh.jobCode,
-    j.jobDesc,
-    jh.deptCode,
-    d.deptName,
-    jh.salary,
-    jh.effDate AS currentJobEffDate
-FROM EMPLOYEE e
-LEFT JOIN LATERAL (
-    SELECT jobCode, deptCode, salary, effDate
-    FROM JOBHISTORY
-    WHERE empNo = e.empNo 
-      AND effDate <= (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila')::DATE
-    ORDER BY effDate DESC 
-    LIMIT 1
-) jh ON true
-LEFT JOIN JOB j ON j.jobCode = jh.jobCode
-LEFT JOIN DEPARTMENT d ON d.deptCode = jh.deptCode;
-
-CREATE OR REPLACE VIEW v_product_sales_analytics
-WITH (security_invoker = true) AS
-SELECT 
-    p.prodCode,
-    p.description,
-    p.unit,
-    curr_ph.unitPrice AS currentPrice,
-    curr_ph.effDate AS currentPriceEffDate,
-    prev_ph.unitPrice AS previousPrice,
-    CASE 
-        WHEN prev_ph.unitPrice IS NULL THEN 'STABLE'
-        WHEN curr_ph.unitPrice > prev_ph.unitPrice THEN 'UP'
-        WHEN curr_ph.unitPrice < prev_ph.unitPrice THEN 'DOWN'
-        ELSE 'STABLE'
-    END AS priceTrend,
-    COALESCE(sales_agg.totalUnitsSold, 0) AS totalUnitsSold,
-    COALESCE(sales_agg.totalRevenue, 0.00) AS totalRevenue
-FROM PRODUCT p
-CROSS JOIN LATERAL (
-    SELECT unitPrice, effDate
-    FROM PRICEHIST 
-    WHERE prodCode = p.prodCode 
-      AND effDate <= (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Manila')::DATE
-    ORDER BY effDate DESC 
-    LIMIT 1
-) curr_ph
-LEFT JOIN LATERAL (
-    SELECT unitPrice
-    FROM PRICEHIST 
-    WHERE prodCode = p.prodCode 
-      AND effDate < curr_ph.effDate
-    ORDER BY effDate DESC 
-    LIMIT 1
-) prev_ph ON true
-LEFT JOIN (
-    SELECT 
-        vsd.prodCode,
-        SUM(vsd.quantity) AS totalUnitsSold,
-        SUM(vsd.lineTotal) AS totalRevenue
-    FROM v_sales_details_priced vsd
-    GROUP BY vsd.prodCode
-) sales_agg ON sales_agg.prodCode = p.prodCode;
-
--- ========================================================================
--- SECTION 5: ROW LEVEL SECURITY POLICIES
--- ========================================================================
-
-ALTER TABLE DEPARTMENT ENABLE ROW LEVEL SECURITY;
-ALTER TABLE JOB ENABLE ROW LEVEL SECURITY;
-ALTER TABLE EMPLOYEE ENABLE ROW LEVEL SECURITY;
-ALTER TABLE JOBHISTORY ENABLE ROW LEVEL SECURITY;
-ALTER TABLE CUSTOMER ENABLE ROW LEVEL SECURITY;
-ALTER TABLE PRODUCT ENABLE ROW LEVEL SECURITY;
-ALTER TABLE PRICEHIST ENABLE ROW LEVEL SECURITY;
-ALTER TABLE SALES ENABLE ROW LEVEL SECURITY;
-ALTER TABLE SALESDETAIL ENABLE ROW LEVEL SECURITY;
-ALTER TABLE PAYMENT ENABLE ROW LEVEL SECURITY;
-
-REVOKE ALL ON ALL TABLES IN SCHEMA public FROM anon;
-
-CREATE POLICY "authenticated_read_department" ON DEPARTMENT FOR SELECT TO authenticated USING (true);
-CREATE POLICY "authenticated_read_job" ON JOB FOR SELECT TO authenticated USING (true);
-CREATE POLICY "authenticated_read_employee" ON EMPLOYEE FOR SELECT TO authenticated USING (true);
-CREATE POLICY "authenticated_read_customer" ON CUSTOMER FOR SELECT TO authenticated USING (true);
-CREATE POLICY "authenticated_read_product" ON PRODUCT FOR SELECT TO authenticated USING (true);
-CREATE POLICY "authenticated_read_pricehist" ON PRICEHIST FOR SELECT TO authenticated USING (true);
-CREATE POLICY "authenticated_read_sales" ON SALES FOR SELECT TO authenticated USING (true);
-CREATE POLICY "authenticated_read_salesdetail" ON SALESDETAIL FOR SELECT TO authenticated USING (true);
-CREATE POLICY "authenticated_read_payment" ON PAYMENT FOR SELECT TO authenticated USING (true);
-
-CREATE POLICY "admin_only_jobhistory" ON JOBHISTORY 
-FOR SELECT TO authenticated 
-USING ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
-
-CREATE POLICY "sales_and_admin_insert_sales" ON SALES 
-FOR INSERT TO authenticated 
-WITH CHECK ((auth.jwt() -> 'app_metadata' ->> 'role') IN ('admin', 'sales'));
-
-CREATE POLICY "sales_and_admin_insert_salesdetail" ON SALESDETAIL 
-FOR INSERT TO authenticated 
-WITH CHECK ((auth.jwt() -> 'app_metadata' ->> 'role') IN ('admin', 'sales'));
-
-CREATE POLICY "cashier_and_admin_insert_payment" ON PAYMENT 
-FOR INSERT TO authenticated 
-WITH CHECK ((auth.jwt() -> 'app_metadata' ->> 'role') IN ('admin', 'cashier'));
-
-CREATE POLICY "admin_only_pricehist_insert" ON PRICEHIST 
-FOR INSERT TO authenticated 
-WITH CHECK ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
-
-CREATE POLICY "admin_only_employee_insert" ON EMPLOYEE 
-FOR ALL TO authenticated 
-USING ((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
-
-CREATE POLICY "admin_only_customer_write" ON CUSTOMER 
-FOR ALL TO authenticated 
-USING ((auth.jwt() -> 'app_metadata' ->> 'role') IN ('admin', 'sales'));
-
--- ========================================================================
--- SECTION 6: PC HARDWARE SEED DATA
--- ========================================================================
-
+-- 1. DEPARTMENT (5 rows)
 INSERT INTO DEPARTMENT (deptCode, deptName) VALUES
-('DEP-SLS', 'Retail & B2B Sales'),
-('DEP-CRP', 'Corporate & Enterprise Solutions'),
-('DEP-LOG', 'Logistics & Warehousing'),
-('DEP-FIN', 'Finance & Accounting'),
-('DEP-TEC', 'Technical Support & Assembly');
+('DEP-SLS', 'Commercial & Wholesale Sales'),
+('DEP-CRP', 'Corporate & Government Accounts'),
+('DEP-LOG', 'Logistics & Supply Fulfillment'),
+('DEP-FIN', 'Finance, Credit & Billing'),
+('DEP-EXE', 'Executive & Strategic Planning');
 
+-- 2. JOB (5 rows)
 INSERT INTO JOB (jobCode, jobDesc) VALUES
-('JOB-REP',  'Sales Representative'),
-('JOB-AMGR', 'Account Manager'),
-('JOB-SUPV', 'Sales Supervisor'),
-('JOB-CLRK', 'Billing & Cashier Clerk'),
-('JOB-TECH', 'PC Hardware Specialist');
+('JOB-SREP', 'Field Sales Representative'),
+('JOB-AMGR', 'Senior Account Manager'),
+('JOB-SUPV', 'Regional Sales Supervisor'),
+('JOB-CLRK', 'Credit & Collections Specialist'),
+('JOB-DIR', 'Commercial Operations Director');
 
+-- 3. EMPLOYEE (32 rows from PartialHOPEDB personnel)
 INSERT INTO EMPLOYEE (empNo, lastName, firstName, gender, birthDate, hireDate, sepDate) VALUES
-(101, 'Santos', 'Maria',  'F', '1990-05-14', CURRENT_DATE - INTERVAL '4 years', NULL),
-(102, 'Reyes',  'Juan',   'M', '1988-11-23', CURRENT_DATE - INTERVAL '3 years', NULL),
-(103, 'Cruz',   'Ana',    'F', '1995-03-30', CURRENT_DATE - INTERVAL '2 years', NULL),
-(104, 'Dizon',  'Carlos', 'M', '1992-08-19', CURRENT_DATE - INTERVAL '3 years', NULL),
-(105, 'Lim',    'Elena',  'F', '1985-12-05', CURRENT_DATE - INTERVAL '5 years', CURRENT_DATE - INTERVAL '6 months');
+('00001', 'Smith', 'John', 'M', '1985-02-20', '2010-05-11', NULL),
+('00003', 'Smith', 'Jane', 'F', '1990-05-16', '2010-05-11', NULL),
+('00005', 'King', 'Don', 'M', '1986-02-14', '2010-06-23', NULL),
+('00007', 'Jenskin', 'Floyd', 'M', '1990-02-20', '2010-05-30', NULL),
+('00009', 'Cerudo', 'Bambie', 'F', '1983-06-23', '2010-05-30', NULL),
+('00011', 'Davis', 'Tom', 'M', '1989-12-16', '2010-06-30', NULL),
+('00013', 'Morris', 'Olive', 'F', '1991-07-21', '2010-06-30', NULL),
+('00015', 'Zulueta', 'Maggie', 'F', '1990-08-03', '2010-07-05', '2011-03-30'),
+('00017', 'Celestino', 'Nelia', 'F', '1984-10-24', '2010-07-05', NULL),
+('00019', 'Esperanza', 'Nehemiah', 'M', '1982-02-21', '2010-07-05', '2014-04-28'),
+('00021', 'Manchester', 'Chelie', 'F', '1988-12-07', '2010-07-05', NULL),
+('00023', 'Kline', 'Nicholas', 'M', '1992-01-21', '2010-07-05', '2010-12-23'),
+('00025', 'Macapagal', 'Ivy', 'F', '1992-04-30', '2010-07-05', NULL),
+('00027', 'Blanche', 'Ernest', 'M', '1986-12-21', '2010-07-05', NULL),
+('00029', 'Chua', 'Evangeline', 'F', '1989-03-10', '2010-07-05', NULL),
+('00031', 'Lancaster', 'Greta', 'F', '1987-08-17', '2010-07-05', NULL),
+('00033', 'Parks', 'Nigel', 'M', '1993-06-23', '2010-07-05', NULL),
+('00035', 'Carlston', 'Voltaire', 'F', '1985-06-12', '2010-07-21', NULL),
+('00037', 'Silva', 'Yves', 'M', '1988-09-21', '2010-07-21', NULL),
+('00039', 'Geisert', 'William', 'M', '1980-03-03', '2010-07-21', NULL),
+('00041', 'Darwin', 'Helena', 'F', '1978-11-08', '2010-09-01', NULL),
+('00043', 'Love', 'Queen', 'F', '1983-11-29', '2010-09-01', NULL),
+('00045', 'Raven', 'Danny', 'M', '1984-02-15', '2010-12-03', NULL),
+('00047', 'Devito', 'Clint', 'M', '1981-06-07', '2010-12-03', NULL),
+('00049', 'Irving', 'Nancy', 'F', '1987-09-19', '2010-12-03', NULL),
+('00051', 'Baltimore', 'Fergie', 'F', '1986-10-10', '2011-01-05', NULL),
+('00053', 'Jones', 'Veronica', 'F', '1983-05-01', '2011-01-05', '2011-03-30'),
+('00055', 'Travis', 'Ursula', 'F', '1987-06-07', '2011-01-05', NULL),
+('00057', 'Orleans', 'Sylvia', 'F', '1987-01-28', '2011-01-05', NULL),
+('00059', 'Sy', 'Alice', 'F', '1984-08-13', '2011-01-05', '2011-04-20'),
+('00061', 'De Leon', 'Girlie', 'F', '1983-07-27', '2011-01-05', NULL),
+('00063', 'Grant', 'Albert', 'M', '1979-05-05', '2011-01-05', NULL);
 
+-- 4. JOBHISTORY (34 rows)
 INSERT INTO JOBHISTORY (empNo, jobCode, effDate, salary, deptCode) VALUES
-(101, 'JOB-REP',  CURRENT_DATE - INTERVAL '4 years', 26000.00, 'DEP-SLS'),
-(101, 'JOB-AMGR', CURRENT_DATE - INTERVAL '1 year',  42000.00, 'DEP-CRP'),
-(102, 'JOB-REP',  CURRENT_DATE - INTERVAL '3 years', 26000.00, 'DEP-SLS'),
-(102, 'JOB-SUPV', CURRENT_DATE - INTERVAL '1 year',  38000.00, 'DEP-SLS'),
-(103, 'JOB-REP',  CURRENT_DATE - INTERVAL '2 years', 25000.00, 'DEP-SLS'),
-(104, 'JOB-CLRK', CURRENT_DATE - INTERVAL '3 years', 24000.00, 'DEP-FIN'),
-(105, 'JOB-TECH', CURRENT_DATE - INTERVAL '5 years', 28000.00, 'DEP-TEC');
+('00001', 'JOB-DIR', '2010-05-11', 75000, 'DEP-EXE'),
+('00003', 'JOB-SUPV', '2010-05-11', 52000, 'DEP-CRP'),
+('00005', 'JOB-SUPV', '2010-06-23', 52000, 'DEP-CRP'),
+('00007', 'JOB-SREP', '2010-05-30', 38500, 'DEP-SLS'),
+('00007', 'JOB-SUPV', '2011-01-15', 48000, 'DEP-SLS'),
+('00009', 'JOB-SREP', '2010-05-30', 42000, 'DEP-SLS'),
+('00009', 'JOB-AMGR', '2011-02-01', 45000, 'DEP-CRP'),
+('00011', 'JOB-AMGR', '2010-06-30', 42000, 'DEP-CRP'),
+('00013', 'JOB-CLRK', '2010-06-30', 32000, 'DEP-FIN'),
+('00015', 'JOB-SREP', '2010-07-05', 35000, 'DEP-SLS'),
+('00017', 'JOB-SREP', '2010-07-05', 38500, 'DEP-SLS'),
+('00019', 'JOB-AMGR', '2010-07-05', 42000, 'DEP-CRP'),
+('00021', 'JOB-CLRK', '2010-07-05', 32000, 'DEP-FIN'),
+('00023', 'JOB-SREP', '2010-07-05', 31500, 'DEP-SLS'),
+('00025', 'JOB-SREP', '2010-07-05', 35000, 'DEP-SLS'),
+('00027', 'JOB-AMGR', '2010-07-05', 42000, 'DEP-CRP'),
+('00029', 'JOB-CLRK', '2010-07-05', 32000, 'DEP-FIN'),
+('00031', 'JOB-SREP', '2010-07-05', 28000, 'DEP-SLS'),
+('00033', 'JOB-SREP', '2010-07-05', 31500, 'DEP-SLS'),
+('00035', 'JOB-AMGR', '2010-07-21', 42000, 'DEP-CRP'),
+('00037', 'JOB-CLRK', '2010-07-21', 32000, 'DEP-FIN'),
+('00039', 'JOB-SREP', '2010-07-21', 42000, 'DEP-SLS'),
+('00041', 'JOB-SREP', '2010-09-01', 28000, 'DEP-SLS'),
+('00043', 'JOB-AMGR', '2010-09-01', 42000, 'DEP-CRP'),
+('00045', 'JOB-CLRK', '2010-12-03', 32000, 'DEP-FIN'),
+('00047', 'JOB-SREP', '2010-12-03', 38500, 'DEP-SLS'),
+('00049', 'JOB-SREP', '2010-12-03', 42000, 'DEP-SLS'),
+('00051', 'JOB-AMGR', '2011-01-05', 42000, 'DEP-CRP'),
+('00053', 'JOB-CLRK', '2011-01-05', 32000, 'DEP-FIN'),
+('00055', 'JOB-SREP', '2011-01-05', 35000, 'DEP-SLS'),
+('00057', 'JOB-SREP', '2011-01-05', 38500, 'DEP-SLS'),
+('00059', 'JOB-AMGR', '2011-01-05', 42000, 'DEP-CRP'),
+('00061', 'JOB-CLRK', '2011-01-05', 32000, 'DEP-FIN'),
+('00063', 'JOB-SREP', '2011-01-05', 31500, 'DEP-SLS');
 
+-- 5. CUSTOMER (82 rows from PartialHOPEDB customer)
 INSERT INTO CUSTOMER (custNo, custName, address, payTerms) VALUES
-(1001, 'CyberZone Gaming & Esports Cafe',    '120 C.M. Recto Ave, Manila',             'NET 30'),
-(1002, 'Apex Global Cloud Solutions Inc.',   '32nd St, Bonifacio Global City, Taguig',  'NET 60'),
-(1003, 'Metro Polytechnic Computer Lab',      'Aurora Blvd, Quezon City',                'NET 30'),
-(1004, 'Bright Minds STEM Review Hub',       'Session Rd, Baguio City',                 'NET 15'),
-(1005, 'Summit Peak Logistics Tech Office',  'Pier 4, North Harbor, Manila',            'COD');
+('C0001', 'Globus Medical, Inc', '2560 Gen Armistead Ave Audubon CA 94031', '30D'),
+('C0002', 'RF Industries, Inc', '7610 Miramar Rd San Diego, CA 92602', '45D'),
+('C0003', 'Trisha Macdowell', '7642 Clairemont Mesa Blvd San Diego CA 90321', 'COD'),
+('C0004', 'HMS Holdings, Inc', '1000 So Fremont Ave, Suite 225 Alhambara CA 91303', '45D'),
+('C0005', 'Christian Andersen', '1120 Lincoln St Suite 809 Sacramento CA 95815', 'COD'),
+('C0006', 'Astronics, Inc', '2 Orion Aliso Viejo, CA 92656', '30D'),
+('C0007', 'Morgan Alegore', '2 Goodyear Irvine, CA 92618', 'COD'),
+('C0008', 'Abaxis, Inc', '3240 Whipple Rd, Union City, CA 94587', '30D'),
+('C0009', 'Landec Corp.', '3603 Haven Avenue Menlo Park, CA 94025', '30D'),
+('C0010', 'SMP Corp.', '3718 Northern Long Island NY 12528', '45D'),
+('C0011', 'B&G Foods', '4 Gatehall Dr., Ste. 110 Parsippany, NJ 07054', '45D'),
+('C0012', 'Dexter Santos', '2739 Rebeiro Ave, Santa Clara, CA 95051', 'COD'),
+('C0013', 'Health Stream', '209 10th Ave, South Suite 450 Nashville Tennessee', '45D'),
+('C0014', 'InSync Training LLC', 'P.O. Box 3122 Roanoke, VA 24015', '30D'),
+('C0015', 'Bespoke Education', '8205 Santa Monica Blvd, Suite 365 W HWood CA 90046', '30D'),
+('C0016', 'Peri Solutions', '2880 Zanker Road San Jose CA 95101', '30D'),
+('C0017', 'Janet Lim', '800 N. State College Blvd. Fullerton, CA 92831', 'COD'),
+('C0018', 'Nicole Hutchison', '200 Lincoln Ave, Salinas, CA 93901', 'COD'),
+('C0019', 'Brandon Drucker', '65 West Alisal St., # 101, Salinas, CA 93901', 'COD'),
+('C0020', 'Eugene Whitaker', '45 Fremont Street, Suite 2000 San Frans, CA 9410', 'COD'),
+('C0021', 'Touch Suite', '1081 Holland Dr. Boca Raton, FL 33487', '30D'),
+('C0022', 'CallFire', '1410 2nd St., Suite 200 Santa Monica, CA 90401', '45D'),
+('C0023', 'ISBX Corp', '3415 S. Sepulveda Blvd. 1250 Los Angeles, CA 90034', '30D'),
+('C0024', 'Factual', '1999 Avenue of the Stars Los Angeles, CA 90067 ', '30D'),
+('C0025', 'Predixion', '31910 Del Obispo San Juan Capistrano, CA 92675', '45D'),
+('C0026', 'Datapop', '5762 W Jefferson Blvd, Los Angeles, CA 90016', '45D'),
+('C0027', 'SA Photonics, Inc', '130 Knowles Dr, Los Gatos, CA 95032', '30D'),
+('C0028', 'Acumen Bldg Entp', '7770 Pardee Lane, Ste. 200 Oakland, CA 94621', '30D'),
+('C0029', 'IMCorp', '50 Utopia Road Manchester, CT 06042', '30D'),
+('C0030', 'Brady and Assoc.', '3710 Ruffin Rd, San Diego, CA 90401', '30D'),
+('C0031', 'Yello Hammer LLC', '111 W 28th St, New York, NY 10001', '30D'),
+('C0032', 'Conductor', '2 Park Ave, New York, NY 10016', '30D'),
+('C0033', 'Quantum Networks', '323 West 39th Street 11th Flr NY 10018', '45D'),
+('C0034', 'Refinery29', '225 Broadway NY 10007', '45D'),
+('C0035', 'Gravity Media', '104 W 27th St #11d NY 10001', '30D'),
+('C0036', 'Regal wings', '244 Fifth Avenue, Suite 200 New York, NY 10001', '45D'),
+('C0037', '33Across', '229 W 28th St, New York, NY 10001', '45D'),
+('C0038', 'RCS Capital', '405 Park Avenue New York, NY 1002', '30D'),
+('C0039', 'OnDeck', '1400 Broadway, 25th Floor, New York, NY 10001', '45D'),
+('C0040', 'Optimatic Media, Inc', '54 West 40th St., 7th Floor, New York, NY 10018', '30D'),
+('C0041', 'James Underwood', '450 West 33rd Street New York, NY 10018', 'COD'),
+('C0042', 'Charles Silverstone', '1335 Ave of the Americas, New York, NY 10019', 'COD'),
+('C0043', 'Nea Sanchez', '371 7th Ave, New York, NY 10001', 'COD'),
+('C0044', 'Tracy Lambert', '234 W 42nd St, New York, NY 10036', 'COD'),
+('C0045', 'Peter Charlestone', '342 W 40th St, New York, NY 10018', 'COD'),
+('C0046', 'Oxford Academy', '5172 Orange Ave, Cypress, CA 90630', '45D'),
+('C0047', 'Whitney High Sch', '16800 Shoemaker Ave, Cerritos, CA 90703', '30D'),
+('C0048', 'Pacfic Collegiate', '255 Swift St, Santa Cruz, CA 95060', '45D'),
+('C0049', 'KIPP San Jose', '1790 Educational Park Dr, San Jose, CA 95133', '30D'),
+('C0050', 'The Preuss School', '9500 Gilman Dr Mc 0536, La Jolla, CA 92093', '45D'),
+('C0051', 'American Indian Sch', '3637 Magee Ave, Oakland, CA 94619', '30D'),
+('C0052', 'Lowell High School', '1101 Eucalyptus Dr, San Francisco, CA 94132', '45D'),
+('C0053', 'University HSchool', '2611 East Matoian M/S Uh134, Fresno, CA 93740', '30D'),
+('C0054', 'Hawthorne Academy', '4467 West Broadway, Hawthorne, CA 90250', '30D'),
+('C0055', 'Lennox Academy', '11036 Hawthorne Blvd, Lennox, CA 90304', '45D'),
+('C0056', 'Manhasset School', '200 Memorial Place Manhasset, NY 11030', '45D'),
+('C0057', 'Pittsford High Sch', '55 Sutherland St Pittsford, NY 14534', '30D'),
+('C0058', 'Jericho High School', '99 Cedar Swamp Rd, Jericho, NY 11753', '45D'),
+('C0059', 'Stuyvesant High', '345 Chambers St, New York, NY 10282', '45D'),
+('C0060', 'Rye High School', 'Parsons St, Rye, NY 10580', '30D'),
+('C0061', 'Brooklyn High', '29 Ft Greene Place, Brooklyn, NY 11217', '45D'),
+('C0062', 'Brooklyn Latin Sch', '325 Bushwick Ave, Brooklyn, NY 11206', '30D'),
+('C0063', 'Bronx Science High', '75 West 205Th St Bronx, NY 10468', '45D'),
+('C0064', 'Staten Island High', '485 Clawson St, Staten Island, NY 10306', '30D'),
+('C0065', 'Yonkers Middle High', '150 Rockland Ave, Yonkers, NY 10705', '45D'),
+('C0066', 'Helen Strong', '800 S Main StTulelake, CA 96134', 'COD'),
+('C0067', 'Gay Rose Silva', '575 3rd St Napa, CA 94559', 'COD'),
+('C0068', 'William Pichler', '1121 L St #407 Sacramento, CA 95814', 'COD'),
+('C0069', 'Terrance Nitz', '23200 Pacific Coast Hwy Malibu, CA 90265', 'COD'),
+('C0070', 'Errol Atanacio', '300 Capitol Mall #555 Sacramento, CA 95814', 'COD'),
+('C0071', 'Chuck Jones', '163 W 125th St New York, NY 10027', 'COD'),
+('C0072', 'Menchu Palmores', '600 College Ave Montour Falls, NY 14865', 'COD'),
+('C0073', 'Princess Ann White', '109 S Union St #411 Rochester, NY 14607', 'COD'),
+('C0074', 'Florence Black', '450 S Salina St Syracuse, NY 13202', 'COD'),
+('C0075', 'Jeremy Irons', '3357 US Highway 9w Highland, NY 12528', 'COD'),
+('C0076', 'Braddy Banks', '1424 Fulton St Brooklyn, NY 11216', 'COD'),
+('C0077', 'Office NY Tech Serv', 'State Capitol Empire State Plaza NY 10027', '45D'),
+('C0078', 'FDA New York', '158-15 Liberty Ave., Jamaica, NY 12528', '45D'),
+('C0079', 'Social Sec Admn NY', '123 William St, New York, NY 10038', '45D'),
+('C0080', 'Social Sec Admn CA', '3836 Wilshire Blvd, Los Angeles, CA 90010', '45D'),
+('C0081', 'Dept Food and Agri', '220 N Street Sacramento, CA 95814', '45D'),
+('C0082', 'California Dept Tech', '1325 J St Suite 1600 Sacramento CA 95814', '45D');
 
+-- 6. PRODUCT (57 rows)
 INSERT INTO PRODUCT (prodCode, description, unit) VALUES
-('CPU-R5-5600',    'AMD Ryzen 5 5600 | 6 Cores 12 Threads | 3.5GHz | AM4',               'pc'),
-('CPU-I5-12400F',  'Intel Core i5-12400F | 6 Cores 12 Threads | up to 4.4GHz | LGA1700', 'pc'),
-('GPU-RTX4060-8G', 'NVIDIA GeForce RTX 4060 | 8GB GDDR6 | Dual Fan',                    'pc'),
-('GPU-RX7600-8G',  'AMD Radeon RX 7600 | 8GB GDDR6 | Dual Fan',                         'pc'),
-('MB-B550M-DS3H',  'Gigabyte B550M DS3H | AM4 | Micro-ATX | DDR4',                       'pc'),
-('MB-B660M-PRO',   'ASRock B660M Pro RS | LGA1700 | Micro-ATX | DDR4',                   'pc'),
-('RAM-D4-16G',     'Kingston Fury Beast | 16GB (2x8GB) | DDR4 | 3200MHz',                'set'),
-('RAM-D5-32G',     'Corsair Vengeance | 32GB (2x16GB) | DDR5 | 5600MHz',                 'set'),
-('SSD-NVME-1T',    'Samsung 980 | 1TB | NVMe PCIe 3.0',                                  'pc'),
-('SSD-SATA-500',   'Crucial MX500 | 500GB | SATA 2.5"',                                  'pc'),
-('PSU-650W-BRZ',   'Corsair CV650 | 650W | 80 Plus Bronze',                              'pc'),
-('CASE-ATX-CC560', 'Deepcool CC560 | ATX Mid Tower | Tempered Glass | 4 Fans',          'pc'),
-('MON-24-165',     'ViewSonic VX2428 | 24" IPS | 165Hz | 1ms',                           'pc'),
-('KB-MECH-K552',   'Redragon Kumara K552 | TKL Mechanical | Red Switch | RGB',           'pc'),
-('MS-G102',        'Logitech G102 | 8000 DPI | RGB',                                     'pc');
+('AD0001', 'DisplayPort to HDMI 4K Gold-Plated Video Adapter', 'pc'),
+('AD0002', 'DVI-D Dual Link to VGA Active Signal Converter', 'pc'),
+('AD0003', 'USB 3.0 Gigabit Ethernet Network Adapter Dongle', 'pc'),
+('AD0004', 'High-Speed USB-C Multiport Hub with HDMI & PD', 'pc'),
+('AK0001', 'Micro Innovations Standard PS/2 Keyboard', 'pc'),
+('AK0002', 'Micro Innovations Multimedia USB Keyboard', 'pc'),
+('AK0003', 'SteelSeries APEX Mechanical Gaming Keyboard', 'pc'),
+('AM0001', 'Microsoft Wireless Optical Mobile Mouse', 'pc'),
+('AM0002', 'Logitech Performance MX Laser Wireless Mouse', 'pc'),
+('AM0003', 'Standard 3-Button USB Optical Scroll Mouse', 'pc'),
+('AM0004', 'Razer DeathAdder Ergonomic Gaming Mouse', 'pc'),
+('AM0005', 'Corsair Harpoon RGB Pro Optical Mouse', 'pc'),
+('AP0001', 'APC Back-UPS 650VA Battery Backup System', 'unit'),
+('AP0002', 'Corsair CX750 750W 80-Plus Bronze Power Supply', 'unit'),
+('AP0003', 'Seasonic Focus GX-850 850W Gold Power Supply', 'unit'),
+('MD0001', 'ASUS VS228H-P 21.5-Inch Full HD LED Monitor', 'unit'),
+('MD0002', 'Acer R240HY 23.8-Inch IPS Widescreen Monitor', 'unit'),
+('MD0003', 'Dell UltraSharp U2415 24-Inch 16:10 Monitor', 'unit'),
+('MD0004', 'Samsung S24D300H 24-Inch LED HDMI Monitor', 'unit'),
+('MD0005', 'LG 34UM68-P 34-Inch UltraWide IPS Gaming Monitor', 'unit'),
+('MD0006', 'ViewSonic VA2246M-LED 22-Inch Widescreen Display', 'unit'),
+('MP0001', 'Sony ICD-PX370 Digital Voice Audio Recorder', 'unit'),
+('MP0002', 'Philips VoiceTracer Professional Memo Recorder', 'unit'),
+('MP0003', 'Blue Yeti Multi-Pattern Professional USB Microphone', 'unit'),
+('MP0004', 'Jabra Speak 510 Wireless Bluetooth Speakerphone', 'unit'),
+('NB0001', 'HP Pavilion DV6000 15.4-Inch Core 2 Duo Laptop', 'unit'),
+('NB0002', 'Lenovo ThinkPad T410 14-Inch Core i5 Notebook', 'unit'),
+('NB0003', 'Dell Inspiron 14 3000 Series Portable Notebook', 'unit'),
+('NB0004', 'Acer Aspire One 11.6-Inch Compact Netbook', 'unit'),
+('NB0005', 'Apple MacBook Pro 13-Inch Unibody Aluminum', 'unit'),
+('NH0001', 'TP-Link TL-SG108 8-Port Gigabit Desktop Switch', 'unit'),
+('NH0002', 'D-Link DGS-1016D 16-Port Gigabit Unmanaged Switch', 'unit'),
+('NH0003', 'Cisco Catalyst 2960 24-Port Fast Ethernet Switch', 'unit'),
+('NT0001', 'Cat6 UTP Solid Bare Copper Patch Cable 100m Roll', 'roll'),
+('NT0002', '10Gtek SFP+ 10Gb Fiber Optical Transceiver Module', 'unit'),
+('NT0003', 'RJ45 Modular Plug Connectors 100-Pack with Boots', 'pack'),
+('NT0004', 'Professional Ratcheting RJ45 Network Crimping Tool', 'unit'),
+('NT0005', 'TRENDnet 24-Port Cat6 Unshielded Patch Panel 1U', 'unit'),
+('NT0006', 'Digital Multi-Function Network Cable Wire Tester', 'unit'),
+('PA0001', 'HP 85A Black LaserJet Original Toner Cartridge', 'cartridge'),
+('PA0002', 'Canon PG-210 Black High-Yield Ink Tank Reservoir', 'cartridge'),
+('PC0001', 'Dell OptiPlex 780 Desktop PC Core 2 Quad 4GB', 'unit'),
+('PC0002', 'HP Slimline S5000 Small Form Factor Desktop', 'unit'),
+('PC0003', 'Lenovo ThinkCentre M90p Business Tower Core i5', 'unit'),
+('PC0004', 'ASUS ProSeries Commercial Workstation Core i7', 'unit'),
+('PF0001', 'Kingston DataTraveler 100 G2 16GB USB Drive', 'pc'),
+('PF0002', 'SanDisk Cruzer Glide 32GB High-Speed Flash Drive', 'pc'),
+('PF0003', 'Transcend JetFlash 8GB USB 2.0 Pen Drive', 'pc'),
+('PF0004', 'Corsair Flash Voyager 64GB Rugged USB 3.0', 'pc'),
+('PF0005', 'Sony MicroVault 32GB Click-Type Flash Drive', 'pc'),
+('PF0006', 'Verbatim PinStripe 4GB Retractable USB Drive', 'pc'),
+('PR0001', 'HP LaserJet Pro P1102w Wireless Monochrome Printer', 'unit'),
+('PR0002', 'Canon PIXMA MP280 All-in-One Inkjet Photo Printer', 'unit'),
+('PR0003', 'Epson WorkForce Pro WF-3620 Color Multifunction', 'unit'),
+('PS0001', 'Dell PowerEdge R710 2U Rack Server Dual Xeon', 'unit'),
+('PS0002', 'APC Smart-UPS RT 3000VA On-Line Power Backup 120V', 'unit'),
+('PS0003', 'CyberPower PR1500LCD 1500VA Sine Wave UPS Tower', 'unit');
 
-INSERT INTO PRICEHIST (prodCode, effDate, unitPrice) VALUES
-('GPU-RTX4060-8G', CURRENT_DATE - INTERVAL '10 months', 22500.00),
-('GPU-RTX4060-8G', CURRENT_DATE - INTERVAL '3 months',  20995.00),
-('GPU-RTX4060-8G', CURRENT_DATE + INTERVAL '14 days',   19995.00), -- Scheduled
-('RAM-D5-32G',     CURRENT_DATE - INTERVAL '9 months',  7995.00),
-('RAM-D5-32G',     CURRENT_DATE - INTERVAL '2 months',  6995.00),
-('CPU-R5-5600',    CURRENT_DATE - INTERVAL '8 months',  8995.00),
-('CPU-R5-5600',    CURRENT_DATE - INTERVAL '2 months',  8495.00),
-('MON-24-165',     CURRENT_DATE - INTERVAL '12 months', 8295.00),
-('CPU-I5-12400F',  CURRENT_DATE - INTERVAL '12 months', 8950.00),
-('GPU-RX7600-8G',  CURRENT_DATE - INTERVAL '12 months', 16995.00),
-('MB-B550M-DS3H',  CURRENT_DATE - INTERVAL '12 months', 5995.00),
-('MB-B660M-PRO',   CURRENT_DATE - INTERVAL '12 months', 6995.00),
-('RAM-D4-16G',     CURRENT_DATE - INTERVAL '12 months', 2495.00),
-('SSD-NVME-1T',    CURRENT_DATE - INTERVAL '12 months', 4695.00),
-('SSD-SATA-500',   CURRENT_DATE - INTERVAL '12 months', 2795.00),
-('PSU-650W-BRZ',   CURRENT_DATE - INTERVAL '12 months', 3295.00),
-('CASE-ATX-CC560', CURRENT_DATE - INTERVAL '12 months', 2895.00),
-('KB-MECH-K552',   CURRENT_DATE - INTERVAL '12 months', 1795.00),
-('MS-G102',        CURRENT_DATE - INTERVAL '12 months', 895.00);
+-- 7. PRICEHIST (79 rows from PartialHOPEDB priceHist)
+INSERT INTO PRICEHIST (effDate, prodCode, unitPrice) VALUES
+('2010-05-15', 'AK0001', 12),
+('2010-05-15', 'AK0002', 8.37),
+('2010-05-15', 'AK0003', 99.99),
+('2010-05-15', 'AM0001', 36.45),
+('2010-05-15', 'AM0002', 69.26),
+('2010-05-15', 'AM0003', 20.43),
+('2010-05-15', 'AM0004', 88.14),
+('2010-05-15', 'AM0005', 49.27),
+('2010-05-15', 'AP0001', 299.99),
+('2010-05-15', 'AP0002', 304.48),
+('2010-05-15', 'AP0003', 349.99),
+('2010-05-15', 'MD0001', 119.68),
+('2010-05-15', 'MD0002', 149.99),
+('2010-05-15', 'MD0003', 239.96),
+('2010-05-15', 'MD0004', 132.21),
+('2010-05-15', 'MD0005', 825),
+('2010-05-15', 'MD0006', 124.29),
+('2010-05-15', 'NB0001', 300),
+('2010-05-15', 'NB0002', 298),
+('2010-05-15', 'NB0003', 199),
+('2010-05-15', 'NB0004', 279),
+('2010-05-15', 'PA0001', 219),
+('2010-05-15', 'PA0002', 102.99),
+('2010-07-12', 'PC0001', 454.54),
+('2010-05-15', 'PC0001', 499.99),
+('2010-07-12', 'PC0002', 197.99),
+('2010-05-15', 'PC0002', 179.99),
+('2010-05-15', 'PC0003', 390),
+('2010-05-15', 'PC0004', 538),
+('2010-05-15', 'PF0001', 123.75),
+('2010-05-15', 'PF0002', 64.25),
+('2010-05-15', 'PF0003', 28.87),
+('2010-05-15', 'PF0004', 92.85),
+('2010-05-15', 'PF0005', 119),
+('2010-05-15', 'PF0006', 7.5),
+('2010-05-15', 'PR0001', 81.72),
+('2010-05-15', 'PR0002', 99.99),
+('2010-05-15', 'PR0003', 123),
+('2010-08-01', 'MD0001', 131.65),
+('2010-08-01', 'MD0002', 164.99),
+('2010-08-01', 'MD0003', 263.96),
+('2010-08-01', 'MD0004', 145.43),
+('2010-08-01', 'MD0005', 907.5),
+('2010-08-01', 'MD0006', 136.72),
+('2010-08-16', 'PF0001', 112.5),
+('2010-08-16', 'PF0002', 58.41),
+('2010-08-16', 'PF0003', 26.25),
+('2010-08-16', 'PF0004', 84.41),
+('2010-08-16', 'PF0005', 108.18),
+('2010-08-16', 'PF0006', 6.82),
+('2010-08-16', 'AM0001', 38.27),
+('2010-08-16', 'AM0002', 72.72),
+('2010-08-16', 'AM0003', 21.45),
+('2010-08-16', 'AM0004', 92.55),
+('2010-08-16', 'AM0005', 51.73),
+('2010-08-16', 'AP0001', 314.99),
+('2010-08-16', 'AP0002', 319.7),
+('2010-08-16', 'AP0003', 367.49),
+('2010-08-16', 'AD0001', 58),
+('2010-08-16', 'AD0002', 69.99),
+('2010-08-16', 'AD0003', 54.44),
+('2010-08-16', 'AD0004', 71.99),
+('2010-08-16', 'NH0001', 21.99),
+('2010-08-16', 'NH0002', 24.99),
+('2010-08-16', 'NH0003', 171.69),
+('2010-12-01', 'NT0001', 412.49),
+('2010-12-01', 'NT0002', 324.99),
+('2010-12-01', 'NT0003', 287),
+('2010-12-01', 'NT0004', 219.89),
+('2010-12-01', 'NT0005', 499.99),
+('2010-12-01', 'NT0006', 57.99),
+('2010-12-01', 'PS0001', 3200),
+('2010-12-01', 'PS0002', 699.99),
+('2010-12-01', 'PS0003', 599.99),
+('2010-12-01', 'MP0001', 199.95),
+('2010-12-01', 'MP0002', 126.72),
+('2010-12-01', 'MP0003', 425),
+('2010-12-01', 'MP0004', 302),
+('2011-02-01', 'NB0005', 1184.72);
 
+-- 8. SALES (124 rows)
 INSERT INTO SALES (transNo, salesDate, custNo, empNo) VALUES
-(5001, (CURRENT_DATE - INTERVAL '280 days')::DATE, 1001, 101),
-(5002, (CURRENT_DATE - INTERVAL '240 days')::DATE, 1002, 102),
-(5003, (CURRENT_DATE - INTERVAL '200 days')::DATE, 1003, 101),
-(5004, (CURRENT_DATE - INTERVAL '160 days')::DATE, 1004, 103),
-(5005, (CURRENT_DATE - INTERVAL '120 days')::DATE, 1002, 101),
-(5006, (CURRENT_DATE - INTERVAL '90 days')::DATE,  1001, 102),
-(5007, (CURRENT_DATE - INTERVAL '75 days')::DATE,  1003, 103),
-(5008, (CURRENT_DATE - INTERVAL '50 days')::DATE,  1004, 102),
-(5009, (CURRENT_DATE - INTERVAL '35 days')::DATE,  1002, 101),
-(5010, (CURRENT_DATE - INTERVAL '32 days')::DATE,  1005, 103),
-(5011, (CURRENT_DATE - INTERVAL '28 days')::DATE,  1001, 102),
-(5012, (CURRENT_DATE - INTERVAL '18 days')::DATE,  1004, 103),
-(5013, (CURRENT_DATE - INTERVAL '12 days')::DATE,  1003, 102),
-(5014, (CURRENT_DATE - INTERVAL '6 days')::DATE,   1001, 101),
-(5015, (CURRENT_DATE - INTERVAL '2 days')::DATE,   1002, 101);
+('TR000001', '2010-06-05', 'C0001', '00003'),
+('TR000002', '2010-06-10', 'C0002', '00007'),
+('TR000003', '2010-07-05', 'C0003', '00007'),
+('TR000004', '2010-06-15', 'C0004', '00003'),
+('TR000005', '2010-07-09', 'C0005', '00011'),
+('TR000006', '2010-06-30', 'C0006', '00013'),
+('TR000007', '2010-07-07', 'C0007', '00015'),
+('TR000008', '2010-07-26', 'C0008', '00017'),
+('TR000009', '2010-06-25', 'C0009', '00003'),
+('TR000010', '2010-06-25', 'C0010', '00005'),
+('TR000011', '2010-06-25', 'C0011', '00007'),
+('TR000012', '2010-07-12', 'C0012', '00025'),
+('TR000013', '2010-07-07', 'C0013', '00027'),
+('TR000014', '2010-07-17', 'C0014', '00029'),
+('TR000015', '2010-06-27', 'C0015', '00007'),
+('TR000016', '2010-07-12', 'C0016', '00033'),
+('TR000017', '2010-08-12', 'C0017', '00035'),
+('TR000018', '2010-08-01', 'C0018', '00037'),
+('TR000019', '2010-08-23', 'C0019', '00039'),
+('TR000020', '2010-08-05', 'C0020', '00003'),
+('TR000021', '2010-08-17', 'C0021', '00005'),
+('TR000022', '2010-08-05', 'C0022', '00007'),
+('TR000023', '2010-07-26', 'C0023', '00009'),
+('TR000024', '2010-07-26', 'C0024', '00011'),
+('TR000025', '2010-07-16', 'C0025', '00019'),
+('TR000026', '2010-07-26', 'C0026', '00015'),
+('TR000027', '2010-08-15', 'C0027', '00017'),
+('TR000028', '2010-08-21', 'C0028', '00019'),
+('TR000029', '2010-08-26', 'C0029', '00021'),
+('TR000030', '2010-09-15', 'C0030', '00019'),
+('TR000031', '2010-08-21', 'C0031', '00025'),
+('TR000032', '2010-09-05', 'C0032', '00023'),
+('TR000033', '2010-08-12', 'C0033', '00029'),
+('TR000034', '2010-08-12', 'C0034', '00031'),
+('TR000035', '2010-09-05', 'C0035', '00029'),
+('TR000036', '2010-09-05', 'C0036', '00031'),
+('TR000037', '2010-09-15', 'C0037', '00033'),
+('TR000038', '2010-09-15', 'C0038', '00035'),
+('TR000039', '2010-09-28', 'C0039', '00037'),
+('TR000040', '2010-10-10', 'C0040', '00039'),
+('TR000041', '2010-10-01', 'C0041', '00041'),
+('TR000042', '2010-10-30', 'C0042', '00043'),
+('TR000043', '2010-11-20', 'C0043', '00003'),
+('TR000044', '2010-12-01', 'C0044', '00005'),
+('TR000045', '2010-12-05', 'C0045', '00043'),
+('TR000046', '2010-11-15', 'C0046', '00009'),
+('TR000047', '2010-11-05', 'C0047', '00011'),
+('TR000048', '2010-12-08', 'C0048', '00049'),
+('TR000049', '2010-11-25', 'C0049', '00015'),
+('TR000050', '2010-11-15', 'C0050', '00017'),
+('TR000051', '2010-12-21', 'C0051', '00007'),
+('TR000052', '2011-01-11', 'C0052', '00047'),
+('TR000053', '2011-01-15', 'C0053', '00049'),
+('TR000054', '2011-01-17', 'C0054', '00051'),
+('TR000055', '2011-01-11', 'C0055', '00053'),
+('TR000056', '2011-01-11', 'C0056', '00055'),
+('TR000057', '2011-01-21', 'C0057', '00057'),
+('TR000058', '2011-01-07', 'C0058', '00059'),
+('TR000059', '2011-01-16', 'C0059', '00061'),
+('TR000060', '2011-01-26', 'C0060', '00063'),
+('TR000061', '2011-01-16', 'C0061', '00003'),
+('TR000062', '2011-01-15', 'C0062', '00005'),
+('TR000063', '2010-12-21', 'C0063', '00031'),
+('TR000064', '2011-01-31', 'C0064', '00009'),
+('TR000065', '2011-01-21', 'C0065', '00011'),
+('TR000066', '2011-01-30', 'C0066', '00013'),
+('TR000067', '2011-02-15', 'C0067', '00015'),
+('TR000068', '2011-01-20', 'C0068', '00017'),
+('TR000069', '2011-01-20', 'C0069', '00019'),
+('TR000070', '2011-01-25', 'C0070', '00021'),
+('TR000071', '2011-01-25', 'C0071', '00025'),
+('TR000072', '2011-01-25', 'C0072', '00027'),
+('TR000073', '2011-03-01', 'C0073', '00029'),
+('TR000074', '2011-02-25', 'C0074', '00031'),
+('TR000075', '2011-02-25', 'C0075', '00033'),
+('TR000076', '2011-02-25', 'C0076', '00035'),
+('TR000077', '2011-01-08', 'C0077', '00037'),
+('TR000078', '2011-01-31', 'C0078', '00039'),
+('TR000079', '2011-01-16', 'C0079', '00041'),
+('TR000080', '2011-01-13', 'C0080', '00043'),
+('TR000081', '2011-02-01', 'C0081', '00045'),
+('TR000082', '2011-01-21', 'C0082', '00047'),
+('TR000083', '2011-01-31', 'C0001', '00049'),
+('TR000084', '2011-02-08', 'C0002', '00051'),
+('TR000085', '2011-03-05', 'C0003', '00053'),
+('TR000086', '2011-02-18', 'C0004', '00055'),
+('TR000087', '2011-03-01', 'C0005', '00057'),
+('TR000088', '2011-02-10', 'C0006', '00059'),
+('TR000089', '2011-02-25', 'C0007', '00061'),
+('TR000090', '2011-03-15', 'C0008', '00063'),
+('TR000091', '2011-02-15', 'C0009', '00003'),
+('TR000092', '2011-02-23', 'C0010', '00005'),
+('TR000093', '2011-02-23', 'C0011', '00007'),
+('TR000094', '2011-03-02', 'C0012', '00009'),
+('TR000095', '2011-02-08', 'C0013', '00011'),
+('TR000096', '2011-02-18', 'C0014', '00013'),
+('TR000097', '2011-03-05', 'C0015', '00015'),
+('TR000098', '2011-02-28', 'C0016', '00017'),
+('TR000099', '2011-03-20', 'C0017', '00019'),
+('TR000100', '2011-03-15', 'C0018', '00021'),
+('TR000101', '2011-04-13', 'C0019', '00039'),
+('TR000102', '2011-04-05', 'C0020', '00041'),
+('TR000103', '2011-03-21', 'C0021', '00029'),
+('TR000104', '2011-04-05', 'C0022', '00045'),
+('TR000105', '2011-04-05', 'C0023', '00047'),
+('TR000106', '2011-03-21', 'C0024', '00035'),
+('TR000107', '2011-04-05', 'C0025', '00051'),
+('TR000108', '2011-03-13', 'C0026', '00039'),
+('TR000109', '2011-03-23', 'C0027', '00041'),
+('TR000110', '2011-03-23', 'C0028', '00043'),
+('TR000111', '2011-03-23', 'C0029', '00045'),
+('TR000112', '2011-03-23', 'C0030', '00047'),
+('TR000113', '2011-03-23', 'C0031', '00049'),
+('TR000114', '2011-03-23', 'C0032', '00051'),
+('TR000115', '2011-03-13', 'C0033', '00053'),
+('TR000116', '2011-03-13', 'C0034', '00055'),
+('TR000117', '2011-03-23', 'C0035', '00057'),
+('TR000118', '2011-03-13', 'C0036', '00059'),
+('TR000119', '2011-03-26', 'C0037', '00061'),
+('TR000120', '2011-04-05', 'C0038', '00019'),
+('TR000121', '2011-05-05', 'C0039', '00031'),
+('TR000122', '2011-05-15', 'C0040', '00033'),
+('TR000123', '2011-04-30', 'C0041', '00035'),
+('TR000124', '2011-05-15', 'C0042', '00037');
 
+-- 9. SALESDETAIL (313 rows from PartialHOPEDB receiptDetail)
 INSERT INTO SALESDETAIL (transNo, prodCode, quantity) VALUES
-(5001, 'GPU-RTX4060-8G', 5),
-(5001, 'RAM-D4-16G',     10),
-(5002, 'CPU-I5-12400F',  8),
-(5002, 'MB-B660M-PRO',   8),
-(5003, 'CPU-R5-5600',    15),
-(5003, 'SSD-NVME-1T',    15),
-(5004, 'MON-24-165',     6),
-(5004, 'KB-MECH-K552',   6),
-(5004, 'MS-G102',        6),
-(5005, 'GPU-RTX4060-8G', 6),
-(5005, 'RAM-D5-32G',     6),
-(5006, 'PSU-650W-BRZ',   10),
-(5006, 'CASE-ATX-CC560', 10),
-(5007, 'GPU-RX7600-8G',  8),
-(5008, 'CPU-R5-5600',    4),
-(5008, 'MB-B550M-DS3H',  4),
-(5009, 'SSD-NVME-1T',    12),
-(5009, 'RAM-D5-32G',     12),
-(5010, 'GPU-RTX4060-8G', 2),
-(5010, 'CPU-I5-12400F',  2),
-(5011, 'SSD-SATA-500',   10),
-(5012, 'MON-24-165',     3),
-(5012, 'KB-MECH-K552',   5),
-(5013, 'CPU-R5-5600',    6),
-(5013, 'MB-B550M-DS3H',  6),
-(5014, 'GPU-RTX4060-8G', 4),
-(5015, 'CPU-I5-12400F',  10),
-(5015, 'MB-B660M-PRO',   10);
+('TR000001', 'AK0002', 10),
+('TR000001', 'AM0003', 10),
+('TR000001', 'MD0001', 10),
+('TR000001', 'PC0002', 10),
+('TR000002', 'NB0001', 5),
+('TR000002', 'PR0001', 1),
+('TR000003', 'PF0006', 1),
+('TR000004', 'AK0003', 6),
+('TR000004', 'AM0004', 6),
+('TR000004', 'MD0004', 6),
+('TR000004', 'NB0002', 4),
+('TR000004', 'PC0003', 6),
+('TR000004', 'PR0003', 2),
+('TR000005', 'AK0003', 1),
+('TR000005', 'MD0005', 1),
+('TR000006', 'NB0001', 5),
+('TR000006', 'PF0005', 5),
+('TR000007', 'PF0003', 2),
+('TR000008', 'AP0002', 3),
+('TR000008', 'MD0002', 2),
+('TR000008', 'NB0004', 1),
+('TR000009', 'AM0002', 1),
+('TR000009', 'MD0003', 1),
+('TR000010', 'AP0001', 2),
+('TR000010', 'PA0001', 5),
+('TR000011', 'AK0003', 3),
+('TR000011', 'AM0004', 3),
+('TR000011', 'MD0003', 3),
+('TR000011', 'PC0004', 3),
+('TR000011', 'PR0002', 2),
+('TR000012', 'NB0003', 7),
+('TR000013', 'AM0005', 2),
+('TR000013', 'AP0002', 1),
+('TR000014', 'PF0004', 10),
+('TR000015', 'AK0003', 1),
+('TR000015', 'AM0001', 1),
+('TR000015', 'MD0002', 1),
+('TR000015', 'PC0001', 1),
+('TR000016', 'AP0002', 2),
+('TR000016', 'NB0002', 7),
+('TR000016', 'PF0006', 1),
+('TR000016', 'PR0002', 1),
+('TR000017', 'PA0001', 3),
+('TR000017', 'PA0002', 4),
+('TR000018', 'MD0001', 9),
+('TR000018', 'PC0004', 9),
+('TR000019', 'AP0002', 2),
+('TR000020', 'MD0005', 1),
+('TR000021', 'AM0002', 3),
+('TR000021', 'NB0002', 3),
+('TR000022', 'MD0006', 5),
+('TR000022', 'PA0002', 1),
+('TR000022', 'PC0002', 5),
+('TR000023', 'NB0001', 1),
+('TR000024', 'PA0002', 1),
+('TR000025', 'AP0002', 1),
+('TR000026', 'AM0005', 1),
+('TR000026', 'MD0003', 1),
+('TR000026', 'PC0001', 1),
+('TR000027', 'NB0003', 3),
+('TR000027', 'PF0003', 1),
+('TR000028', 'AM0001', 2),
+('TR000028', 'PF0004', 5),
+('TR000029', 'PF0001', 3),
+('TR000030', 'AM0001', 5),
+('TR000030', 'PA0001', 5),
+('TR000030', 'PF0006', 1),
+('TR000030', 'PR0003', 2),
+('TR000031', 'AM0003', 20),
+('TR000032', 'NB0004', 3),
+('TR000032', 'PA0002', 2),
+('TR000033', 'NB0001', 3),
+('TR000034', 'MD0003', 1),
+('TR000034', 'PC0001', 1),
+('TR000035', 'NH0003', 3),
+('TR000035', 'PC0004', 10),
+('TR000035', 'PR0002', 2),
+('TR000036', 'MD0005', 5),
+('TR000037', 'AM0002', 10),
+('TR000037', 'PC0004', 5),
+('TR000038', 'AD0003', 1),
+('TR000038', 'AK0001', 3),
+('TR000038', 'PA0001', 3),
+('TR000038', 'PC0003', 3),
+('TR000039', 'NB0004', 10),
+('TR000039', 'NH0002', 2),
+('TR000039', 'PF0001', 1),
+('TR000039', 'PF0006', 1),
+('TR000040', 'NB0002', 15),
+('TR000041', 'NB0001', 5),
+('TR000041', 'PR0002', 2),
+('TR000042', 'AM0005', 3),
+('TR000042', 'AP0003', 1),
+('TR000043', 'AD0003', 3),
+('TR000043', 'NB0004', 5),
+('TR000043', 'NH0003', 2),
+('TR000043', 'PA0001', 5),
+('TR000043', 'PF0001', 2),
+('TR000044', 'AD0002', 2),
+('TR000044', 'PC0001', 3),
+('TR000045', 'AM0004', 5),
+('TR000045', 'MD0003', 5),
+('TR000045', 'PC0004', 5),
+('TR000046', 'AP0001', 1),
+('TR000046', 'NB0002', 10),
+('TR000047', 'PA0001', 1),
+('TR000048', 'AM0005', 3),
+('TR000048', 'MD0001', 5),
+('TR000048', 'PC0003', 5),
+('TR000048', 'PF0006', 1),
+('TR000048', 'PR0003', 2),
+('TR000049', 'MP0001', 10),
+('TR000049', 'MP0003', 10),
+('TR000050', 'NT0005', 1),
+('TR000051', 'MP0001', 15),
+('TR000051', 'MP0004', 15),
+('TR000051', 'NT0001', 15),
+('TR000052', 'MP0001', 10),
+('TR000052', 'MP0003', 10),
+('TR000052', 'NT0001', 10),
+('TR000053', 'AK0002', 20),
+('TR000053', 'AM0002', 20),
+('TR000053', 'AP0002', 2),
+('TR000053', 'MD0001', 20),
+('TR000053', 'PC0004', 20),
+('TR000054', 'AP0001', 1),
+('TR000054', 'NB0001', 10),
+('TR000055', 'AD0003', 3),
+('TR000055', 'NH0003', 2),
+('TR000055', 'PF0006', 1),
+('TR000055', 'PR0003', 2),
+('TR000055', 'PS0001', 1),
+('TR000056', 'NB0004', 5),
+('TR000056', 'PA0002', 2),
+('TR000056', 'PF0005', 1),
+('TR000057', 'AD0004', 2),
+('TR000057', 'NH0002', 2),
+('TR000057', 'PF0006', 1),
+('TR000057', 'PS0003', 1),
+('TR000058', 'MD0005', 2),
+('TR000058', 'PS0001', 1),
+('TR000059', 'MP0001', 5),
+('TR000059', 'NT0002', 5),
+('TR000060', 'AD0004', 2),
+('TR000060', 'MP0001', 3),
+('TR000060', 'PS0002', 1),
+('TR000060', 'PS0003', 1),
+('TR000061', 'MP0001', 5),
+('TR000061', 'MP0003', 5),
+('TR000062', 'AD0002', 2),
+('TR000062', 'NH0003', 3),
+('TR000062', 'NT0006', 2),
+('TR000062', 'PS0003', 1),
+('TR000063', 'PS0003', 1),
+('TR000064', 'MD0002', 2),
+('TR000064', 'PC0004', 5),
+('TR000064', 'PF0001', 2),
+('TR000064', 'PF0006', 1),
+('TR000064', 'PS0001', 1),
+('TR000065', 'NB0004', 5),
+('TR000065', 'PA0002', 2),
+('TR000066', 'AM0002', 15),
+('TR000066', 'MP0003', 15),
+('TR000066', 'NB0002', 15),
+('TR000067', 'NH0002', 3),
+('TR000067', 'PS0003', 3),
+('TR000068', 'MP0001', 2),
+('TR000069', 'MP0003', 1),
+('TR000070', 'NT0001', 3),
+('TR000071', 'NT0003', 1),
+('TR000072', 'NT0005', 1),
+('TR000073', 'AP0002', 5),
+('TR000073', 'PC0004', 40),
+('TR000073', 'PR0001', 1),
+('TR000074', 'AM0002', 2),
+('TR000074', 'PC0002', 20),
+('TR000074', 'PF0001', 1),
+('TR000075', 'AM0001', 10),
+('TR000075', 'AP0003', 2),
+('TR000075', 'NB0001', 10),
+('TR000075', 'NB0005', 5),
+('TR000076', 'NB0005', 1),
+('TR000077', 'NB0005', 2),
+('TR000078', 'NB0005', 10),
+('TR000079', 'AD0004', 2),
+('TR000079', 'PS0001', 1),
+('TR000080', 'NB0005', 3),
+('TR000081', 'NB0005', 4),
+('TR000081', 'PA0002', 4),
+('TR000082', 'PC0002', 20),
+('TR000082', 'PF0005', 1),
+('TR000083', 'NB0005', 5),
+('TR000083', 'PA0002', 5),
+('TR000084', 'AM0001', 2),
+('TR000084', 'NB0005', 4),
+('TR000084', 'NH0003', 5),
+('TR000084', 'PS0002', 1),
+('TR000085', 'AP0002', 2),
+('TR000085', 'PC0002', 10),
+('TR000085', 'PF0006', 1),
+('TR000086', 'AD0003', 3),
+('TR000086', 'MD0004', 5),
+('TR000086', 'PC0003', 10),
+('TR000087', 'AM0001', 10),
+('TR000087', 'PC0001', 3),
+('TR000087', 'PC0004', 7),
+('TR000087', 'PF0004', 2),
+('TR000088', 'NH0003', 3),
+('TR000088', 'PR0001', 5),
+('TR000088', 'PS0001', 5),
+('TR000089', 'NB0005', 10),
+('TR000090', 'NB0005', 3),
+('TR000090', 'NH0001', 1),
+('TR000090', 'NH0003', 2),
+('TR000090', 'PS0003', 1),
+('TR000091', 'AD0003', 2),
+('TR000091', 'NT0001', 3),
+('TR000091', 'NT0005', 2),
+('TR000091', 'PS0002', 1),
+('TR000092', 'AD0003', 2),
+('TR000092', 'AM0001', 5),
+('TR000092', 'NB0004', 2),
+('TR000092', 'PC0001', 10),
+('TR000092', 'PF0006', 1),
+('TR000093', 'MD0002', 10),
+('TR000093', 'NH0003', 2),
+('TR000093', 'PC0002', 20),
+('TR000094', 'PC0002', 9),
+('TR000094', 'PF0006', 1),
+('TR000095', 'MD0003', 3),
+('TR000095', 'NB0003', 4),
+('TR000096', 'AP0002', 2),
+('TR000096', 'PA0001', 1),
+('TR000097', 'NB0003', 3),
+('TR000097', 'PC0004', 5),
+('TR000098', 'NB0001', 2),
+('TR000098', 'NT0001', 2),
+('TR000098', 'PC0002', 10),
+('TR000098', 'PF0004', 1),
+('TR000099', 'NB0005', 3),
+('TR000099', 'PS0002', 1),
+('TR000099', 'PS0003', 1),
+('TR000100', 'NB0005', 5),
+('TR000100', 'NT0002', 3),
+('TR000100', 'NT0004', 3),
+('TR000100', 'PA0002', 5),
+('TR000100', 'PC0002', 10),
+('TR000101', 'AD0001', 2),
+('TR000101', 'NH0003', 1),
+('TR000101', 'PC0001', 10),
+('TR000101', 'PF0006', 1),
+('TR000102', 'MD0001', 10),
+('TR000102', 'NH0002', 1),
+('TR000102', 'PC0004', 10),
+('TR000102', 'PS0003', 1),
+('TR000103', 'AK0001', 15),
+('TR000103', 'AM0004', 15),
+('TR000103', 'MD0006', 15),
+('TR000103', 'PC0004', 15),
+('TR000104', 'MP0002', 2),
+('TR000104', 'MP0003', 3),
+('TR000104', 'NB0005', 2),
+('TR000105', 'NB0005', 5),
+('TR000106', 'NB0005', 4),
+('TR000107', 'NB0005', 5),
+('TR000108', 'MP0001', 1),
+('TR000108', 'NT0005', 1),
+('TR000109', 'NB0005', 1),
+('TR000110', 'MP0003', 2),
+('TR000111', 'NB0005', 2),
+('TR000112', 'NB0001', 2),
+('TR000113', 'NB0005', 1),
+('TR000114', 'AP0003', 1),
+('TR000115', 'NB0005', 1),
+('TR000115', 'NT0001', 1),
+('TR000116', 'MP0003', 1),
+('TR000116', 'NB0005', 1),
+('TR000117', 'NT0005', 1),
+('TR000118', 'NB0005', 1),
+('TR000119', 'NB0005', 20),
+('TR000119', 'PC0004', 100),
+('TR000120', 'AD0003', 10),
+('TR000120', 'NH0003', 20),
+('TR000120', 'PC0004', 150),
+('TR000120', 'PR0003', 10),
+('TR000120', 'PS0001', 5),
+('TR000120', 'PS0003', 3),
+('TR000121', 'NB0005', 5),
+('TR000121', 'NH0003', 5),
+('TR000121', 'NT0001', 5),
+('TR000121', 'PC0002', 20),
+('TR000122', 'AP0002', 1),
+('TR000122', 'NB0005', 10),
+('TR000122', 'NH0003', 5),
+('TR000122', 'PC0003', 30),
+('TR000122', 'PF0001', 5),
+('TR000122', 'PR0002', 5),
+('TR000122', 'PS0003', 3),
+('TR000123', 'AD0001', 5),
+('TR000123', 'NH0003', 3),
+('TR000123', 'NT0001', 3),
+('TR000123', 'PC0004', 60),
+('TR000123', 'PF0005', 5),
+('TR000123', 'PF0006', 3),
+('TR000123', 'PR0003', 5),
+('TR000123', 'PS0001', 2),
+('TR000124', 'AM0002', 10),
+('TR000124', 'MD0006', 5),
+('TR000124', 'NB0005', 3),
+('TR000124', 'PC0002', 15),
+('TR000124', 'PF0005', 3),
+('TR000124', 'PF0006', 2),
+('TR000124', 'PS0001', 3);
 
+-- 10. PAYMENT (165 rows from PartialHOPEDB payment)
 INSERT INTO PAYMENT (ORNo, payDate, amount, transNo) VALUES
-(9001, (CURRENT_DATE - INTERVAL '270 days')::DATE, 100000.00, 5001),
-(9002, (CURRENT_DATE - INTERVAL '255 days')::DATE, 37450.00,  5001),
-(9003, (CURRENT_DATE - INTERVAL '230 days')::DATE, 127560.00, 5002),
-(9004, (CURRENT_DATE - INTERVAL '190 days')::DATE, 150000.00, 5003),
-(9005, (CURRENT_DATE - INTERVAL '170 days')::DATE, 55350.00,  5003),
-(9006, (CURRENT_DATE - INTERVAL '150 days')::DATE, 65910.00,  5004),
-(9007, (CURRENT_DATE - INTERVAL '100 days')::DATE, 100000.00, 5005),
-(9008, (CURRENT_DATE - INTERVAL '60 days')::DATE,  61900.00,  5006),
-(9009, (CURRENT_DATE - INTERVAL '45 days')::DATE,  135960.00, 5007),
-(9010, (CURRENT_DATE - INTERVAL '35 days')::DATE,  57960.00,  5008),
-(9011, (CURRENT_DATE - INTERVAL '20 days')::DATE,  70000.00,  5009),
-(9012, (CURRENT_DATE - INTERVAL '30 days')::DATE,  59890.00,  5010),
-(9013, (CURRENT_DATE - INTERVAL '10 days')::DATE,  27950.00,  5011),
-(9014, (CURRENT_DATE - INTERVAL '5 days')::DATE,   40000.00,  5013);
+('OR000001', '2010-06-20', 3284.7, 'TR000001'),
+('OR000002', '2010-07-05', 1581.72, 'TR000002'),
+('OR000003', '2010-07-05', 7.5, 'TR000003'),
+('OR000004', '2010-07-07', 57.74, 'TR000007'),
+('OR000005', '2010-07-09', 924.99, 'TR000005'),
+('OR000006', '2010-07-10', 3000, 'TR000004'),
+('OR000007', '2010-07-10', 309.22, 'TR000009'),
+('OR000008', '2010-07-12', 1393, 'TR000012'),
+('OR000009', '2010-07-12', 740.97, 'TR000015'),
+('OR000010', '2010-07-15', 1000, 'TR000006'),
+('OR000011', '2010-07-20', 1000, 'TR000010'),
+('OR000012', '2010-07-20', 1500, 'TR000011'),
+('OR000013', '2010-07-27', 2000, 'TR000016'),
+('OR000014', '2010-08-01', 403.02, 'TR000013'),
+('OR000015', '2010-08-01', 500, 'TR000014'),
+('OR000016', '2010-08-01', 4000, 'TR000018'),
+('OR000017', '2010-08-05', 907.5, 'TR000020'),
+('OR000018', '2010-08-07', 1095, 'TR000006'),
+('OR000019', '2010-08-10', 1000, 'TR000008'),
+('OR000020', '2010-08-10', 300, 'TR000023'),
+('OR000021', '2010-08-10', 102.99, 'TR000024'),
+('OR000022', '2010-08-10', 304.48, 'TR000025'),
+('OR000023', '2010-08-12', 1000, 'TR000017'),
+('OR000024', '2010-08-15', 1598.25, 'TR000011'),
+('OR000025', '2010-08-15', 1919.12, 'TR000018'),
+('OR000026', '2010-08-20', 767.77, 'TR000026'),
+('OR000027', '2010-08-20', 700.4, 'TR000004'),
+('OR000028', '2010-08-23', 608.96, 'TR000019'),
+('OR000029', '2010-08-30', 1000, 'TR000022'),
+('OR000030', '2010-08-30', 623.25, 'TR000027'),
+('OR000031', '2010-09-01', 500, 'TR000021'),
+('OR000032', '2010-09-05', 498.59, 'TR000028'),
+('OR000033', '2010-09-05', 429, 'TR000031'),
+('OR000034', '2010-09-06', 900, 'TR000033'),
+('OR000035', '2010-09-06', 718.5, 'TR000034'),
+('OR000036', '2010-09-10', 337.5, 'TR000029'),
+('OR000037', '2010-09-10', 601.78, 'TR000021'),
+('OR000038', '2010-09-10', 776.54, 'TR000022'),
+('OR000039', '2010-09-20', 1000, 'TR000032'),
+('OR000040', '2010-09-20', 4000, 'TR000035'),
+('OR000041', '2010-09-30', 1000, 'TR000030'),
+('OR000042', '2010-09-30', 4000, 'TR000036'),
+('OR000043', '2010-09-30', 1000, 'TR000038'),
+('OR000044', '2010-10-01', 1699.98, 'TR000041'),
+('OR000045', '2010-10-10', 539.17, 'TR000030'),
+('OR000046', '2010-10-10', 2095.05, 'TR000035'),
+('OR000047', '2010-10-10', 3417.2, 'TR000037'),
+('OR000048', '2010-10-23', 917.44, 'TR000038'),
+('OR000049', '2010-10-23', 2000, 'TR000039'),
+('OR000050', '2010-10-25', 3000, 'TR000040'),
+('OR000051', '2010-10-30', 522.68, 'TR000042'),
+('OR000052', '2010-11-10', 1470, 'TR000040'),
+('OR000053', '2010-11-20', 959.3, 'TR000039'),
+('OR000054', '2010-11-20', 2000, 'TR000043'),
+('OR000055', '2010-11-20', 219, 'TR000047'),
+('OR000056', '2010-12-01', 1503.6, 'TR000044'),
+('OR000057', '2010-12-05', 3000, 'TR000045'),
+('OR000058', '2010-12-10', 3294.99, 'TR000046'),
+('OR000059', '2010-12-10', 6249.5, 'TR000049'),
+('OR000060', '2010-12-10', 499.99, 'TR000050'),
+('OR000061', '2010-12-20', 1472.55, 'TR000045'),
+('OR000062', '2011-01-02', 1500, 'TR000048'),
+('OR000063', '2011-01-05', 5000, 'TR000051'),
+('OR000064', '2011-01-15', 1516.26, 'TR000048'),
+('OR000065', '2011-01-15', 5000, 'TR000051'),
+('OR000066', '2011-01-15', 599.99, 'TR000063'),
+('OR000067', '2011-01-20', 399.9, 'TR000068'),
+('OR000068', '2011-01-20', 425, 'TR000069'),
+('OR000069', '2011-01-25', 1237.47, 'TR000070'),
+('OR000070', '2011-01-25', 287, 'TR000071'),
+('OR000071', '2011-01-25', 499.99, 'TR000072'),
+('OR000072', '2011-01-30', 10000, 'TR000053'),
+('OR000073', '2011-01-30', 1371.02, 'TR000062'),
+('OR000074', '2011-01-30', 5000, 'TR000066'),
+('OR000075', '2011-02-01', 1000, 'TR000054'),
+('OR000076', '2011-02-01', 3000, 'TR000058'),
+('OR000077', '2011-02-02', 2369.44, 'TR000077'),
+('OR000078', '2011-02-05', 5000, 'TR000052'),
+('OR000079', '2011-02-05', 3000, 'TR000055'),
+('OR000080', '2011-02-05', 1709.16, 'TR000056'),
+('OR000081', '2011-02-05', 800.77, 'TR000057'),
+('OR000082', '2011-02-07', 1500, 'TR000080'),
+('OR000083', '2011-02-10', 5374.4, 'TR000052'),
+('OR000084', '2011-02-10', 5654.2, 'TR000053'),
+('OR000085', '2011-02-10', 2314.99, 'TR000054'),
+('OR000086', '2011-02-10', 2015, 'TR000058'),
+('OR000087', '2011-02-10', 2624.7, 'TR000059'),
+('OR000088', '2011-02-10', 2043.81, 'TR000060'),
+('OR000089', '2011-02-10', 1500, 'TR000061'),
+('OR000090', '2011-02-10', 3343.98, 'TR000079'),
+('OR000091', '2011-02-15', 1624.75, 'TR000061'),
+('OR000092', '2011-02-15', 6451.8, 'TR000064'),
+('OR000093', '2011-02-15', 1600.98, 'TR000065'),
+('OR000094', '2011-02-15', 1874.94, 'TR000067'),
+('OR000095', '2011-02-15', 4067.98, 'TR000082'),
+('OR000096', '2011-02-15', 3000, 'TR000083'),
+('OR000097', '2011-02-17', 6935.8, 'TR000066'),
+('OR000098', '2011-02-25', 4217.74, 'TR000074'),
+('OR000099', '2011-02-25', 10041.28, 'TR000075'),
+('OR000100', '2011-02-25', 1184.72, 'TR000076'),
+('OR000101', '2011-02-25', 7000, 'TR000078'),
+('OR000102', '2011-02-25', 2054.16, 'TR000080'),
+('OR000103', '2011-02-25', 7000, 'TR000088'),
+('OR000104', '2011-02-25', 5000, 'TR000089'),
+('OR000105', '2011-02-26', 3000, 'TR000081'),
+('OR000106', '2011-03-01', 10000, 'TR000073'),
+('OR000107', '2011-03-01', 4000, 'TR000087'),
+('OR000108', '2011-03-02', 3046.32, 'TR000091'),
+('OR000109', '2011-03-02', 1788.73, 'TR000094'),
+('OR000110', '2011-03-05', 2150.84, 'TR000081'),
+('OR000111', '2011-03-05', 3438.55, 'TR000083'),
+('OR000112', '2011-03-05', 3000, 'TR000084'),
+('OR000113', '2011-03-05', 2626.12, 'TR000085'),
+('OR000114', '2011-03-05', 1587.88, 'TR000095'),
+('OR000115', '2011-03-05', 858.4, 'TR000096'),
+('OR000116', '2011-03-10', 7000, 'TR000088'),
+('OR000117', '2011-03-10', 6847.2, 'TR000089'),
+('OR000118', '2011-03-11', 13200.22, 'TR000073'),
+('OR000119', '2011-03-15', 3000, 'TR000086'),
+('OR000120', '2011-03-15', 3489.29, 'TR000098'),
+('OR000121', '2011-03-15', 3000, 'TR000100'),
+('OR000122', '2011-03-20', 2923.67, 'TR000088'),
+('OR000123', '2011-03-20', 2000, 'TR000092'),
+('OR000124', '2011-03-20', 4000, 'TR000093'),
+('OR000125', '2011-03-20', 1500, 'TR000097'),
+('OR000126', '2011-03-20', 4854.14, 'TR000099'),
+('OR000127', '2011-03-30', 4519.52, 'TR000090'),
+('OR000128', '2011-03-30', 3000, 'TR000100'),
+('OR000129', '2011-04-02', 3410.45, 'TR000092'),
+('OR000130', '2011-04-02', 2953.08, 'TR000093'),
+('OR000131', '2011-04-05', 1787, 'TR000097'),
+('OR000132', '2011-04-05', 5000, 'TR000102'),
+('OR000133', '2011-04-05', 3000, 'TR000103'),
+('OR000134', '2011-04-05', 2000, 'TR000106'),
+('OR000135', '2011-04-07', 699.94, 'TR000108'),
+('OR000136', '2011-04-07', 1184.72, 'TR000109'),
+('OR000137', '2011-04-07', 850, 'TR000110'),
+('OR000138', '2011-04-07', 2369.44, 'TR000111'),
+('OR000139', '2011-04-07', 600, 'TR000112'),
+('OR000140', '2011-04-07', 1184.72, 'TR000113'),
+('OR000141', '2011-04-07', 367.49, 'TR000114'),
+('OR000142', '2011-04-07', 1597.21, 'TR000115'),
+('OR000143', '2011-04-07', 1609.72, 'TR000116'),
+('OR000144', '2011-04-07', 499.99, 'TR000117'),
+('OR000145', '2011-04-07', 1184.72, 'TR000118'),
+('OR000146', '2011-04-10', 3000, 'TR000100'),
+('OR000147', '2011-04-10', 4000, 'TR000103'),
+('OR000148', '2011-04-13', 4839.91, 'TR000101'),
+('OR000149', '2011-04-20', 2321.48, 'TR000102'),
+('OR000150', '2011-04-20', 4689.05, 'TR000103'),
+('OR000151', '2011-04-20', 5923.6, 'TR000105'),
+('OR000152', '2011-04-20', 20000, 'TR000119'),
+('OR000153', '2011-04-20', 30000, 'TR000120'),
+('OR000154', '2011-04-30', 3000, 'TR000104'),
+('OR000155', '2011-04-30', 2738.88, 'TR000106'),
+('OR000156', '2011-04-30', 5923.6, 'TR000107'),
+('OR000157', '2011-04-30', 20000, 'TR000123'),
+('OR000158', '2011-05-01', 20000, 'TR000119'),
+('OR000159', '2011-05-05', 30000, 'TR000120'),
+('OR000160', '2011-05-10', 37494.4, 'TR000119'),
+('OR000161', '2011-05-15', 17872.99, 'TR000124'),
+('OR000162', '2011-05-20', 21898.9, 'TR000123'),
+('OR000163', '2011-05-30', 43708.17, 'TR000120'),
+('OR000164', '2011-05-30', 12804.3, 'TR000121'),
+('OR000165', '2011-05-30', 27587.77, 'TR000122');
 
--- Verification Query
-SELECT transNo, salesDate, custName, empName, deptName, totalAmount, totalPaid, balance, paymentStatus, daysOverdue 
-FROM v_sales_summary 
-ORDER BY transNo;

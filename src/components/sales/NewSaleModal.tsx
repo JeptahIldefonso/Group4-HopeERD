@@ -28,7 +28,7 @@ interface NewSaleModalProps {
   isOpen: boolean;
   onClose: () => void;
   lookups: SaleLookupData;
-  preSelectedCustNo?: number | null;
+  preSelectedCustNo?: string | number | null;
 }
 
 export function NewSaleModal({
@@ -44,8 +44,8 @@ export function NewSaleModal({
   };
 
   const [salesDate, setSalesDate] = useState<string>(getTodayManila());
-  const [custNo, setCustNo] = useState<number>(
-    preSelectedCustNo || lookups.customers[0]?.custNo || 0
+  const [custNo, setCustNo] = useState<string | number>(
+    preSelectedCustNo || lookups.customers[0]?.custNo || ''
   );
 
   // Active reps on the selected saleDate (R-06)
@@ -57,19 +57,19 @@ export function NewSaleModal({
     });
   }, [lookups.employees, salesDate]);
 
-  const [empNo, setEmpNo] = useState<number>(
-    eligibleReps[0]?.empNo || lookups.employees[0]?.empNo || 0
+  const [empNo, setEmpNo] = useState<string | number>(
+    eligibleReps[0]?.empNo || lookups.employees[0]?.empNo || ''
   );
 
   // When date changes, verify selected rep is still eligible
   useEffect(() => {
-    if (eligibleReps.length > 0 && !eligibleReps.some((e) => e.empNo === empNo)) {
+    if (eligibleReps.length > 0 && !eligibleReps.some((e) => String(e.empNo) === String(empNo))) {
       setEmpNo(eligibleReps[0].empNo);
     }
   }, [eligibleReps, empNo]);
 
-  const selectedRep = lookups.employees.find((e) => e.empNo === empNo);
-  const selectedCustomer = lookups.customers.find((c) => c.custNo === custNo);
+  const selectedRep = lookups.employees.find((e) => String(e.empNo) === String(empNo));
+  const selectedCustomer = lookups.customers.find((c) => String(c.custNo) === String(custNo));
 
   const [items, setItems] = useState<LineItemState[]>([
     {
@@ -300,7 +300,7 @@ export function NewSaleModal({
               <select
                 required
                 value={custNo}
-                onChange={(e) => setCustNo(Number(e.target.value))}
+                onChange={(e) => setCustNo(e.target.value)}
                 className="w-full rounded-[4px] border border-[#CCD5CD] bg-white px-2.5 py-1.5 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-2 focus:ring-[#245B48]/20 focus:outline-none"
               >
                 {lookups.customers.map((c) => (
@@ -324,7 +324,7 @@ export function NewSaleModal({
               <select
                 required
                 value={empNo}
-                onChange={(e) => setEmpNo(Number(e.target.value))}
+                onChange={(e) => setEmpNo(e.target.value)}
                 className="w-full rounded-[4px] border border-[#CCD5CD] bg-white px-2.5 py-1.5 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-2 focus:ring-[#245B48]/20 focus:outline-none"
               >
                 {eligibleReps.map((e) => (

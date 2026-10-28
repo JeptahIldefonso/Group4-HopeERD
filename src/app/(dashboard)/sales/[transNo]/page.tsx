@@ -19,9 +19,9 @@ interface PageProps {
 
 export default async function SaleDetailPage({ params }: PageProps) {
   const { transNo: rawTransNo } = await params;
-  const transNo = parseInt(rawTransNo, 10);
+  const transNo = rawTransNo?.trim();
 
-  if (isNaN(transNo) || transNo <= 0) {
+  if (!transNo) {
     notFound();
   }
 

@@ -19,16 +19,16 @@ export interface HomeSummaryResult {
 
 // Fallback seed counts for local environment if Supabase is offline/unconfigured
 const FALLBACK_COUNTS: Record<string, number> = {
-  DEPARTMENT: 4,
-  JOB: 6,
-  EMPLOYEE: 10,
-  JOBHISTORY: 15,
-  CUSTOMER: 8,
-  PRODUCT: 15,
-  PRICEHIST: 24,
-  SALES: 142,
-  SALESDETAIL: 350,
-  PAYMENT: 126,
+  DEPARTMENT: 5,
+  JOB: 5,
+  EMPLOYEE: 32,
+  JOBHISTORY: 34,
+  CUSTOMER: 82,
+  PRODUCT: 57,
+  PRICEHIST: 79,
+  SALES: 124,
+  SALESDETAIL: 313,
+  PAYMENT: 165,
 };
 
 function getPhtFormattedTime(): string {

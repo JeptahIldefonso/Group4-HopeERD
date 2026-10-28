@@ -17,8 +17,8 @@ const saleItemSchema = z.object({
 });
 
 const createSaleSchema = z.object({
-  custNo: z.number().int().positive('Customer is required (R-01)'),
-  empNo: z.number().int().positive('Sales Representative is required (R-01)'),
+  custNo: z.union([z.number(), z.string().trim().min(1)]),
+  empNo: z.union([z.number(), z.string().trim().min(1)]),
   salesDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Valid date (YYYY-MM-DD) is required'),
   items: z
     .array(saleItemSchema)
@@ -141,8 +141,13 @@ export async function createSaleAction(input: CreateSaleInput) {
     }
 
     // Compute next transNo (R-08)
-    const nextRow = db.prepare('SELECT COALESCE(MAX(transNo), 5000) + 1 AS nextTransNo FROM SALES').get() as any;
-    const transNo = Number(nextRow.nextTransNo);
+    const lastRow = db.prepare('SELECT transNo FROM SALES ORDER BY length(transNo) DESC, transNo DESC LIMIT 1').get() as any;
+    let nextNum = 1;
+    if (lastRow?.transNo) {
+      const match = String(lastRow.transNo).match(/\d+/);
+      if (match) nextNum = parseInt(match[0], 10) + 1;
+    }
+    const transNo = `TR${String(nextNum).padStart(6, '0')}`;
 
     // Atomic transaction (R-09)
     db.exec('BEGIN IMMEDIATE');

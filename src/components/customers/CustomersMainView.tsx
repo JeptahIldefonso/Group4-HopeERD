@@ -47,9 +47,7 @@ export function CustomersMainView({
 
   // Selected customer state (URL synced ?custNo=)
   const custNoParam = searchParams.get('custNo');
-  const initialCustNo = custNoParam
-    ? parseInt(custNoParam, 10)
-    : initialCustomers[0]?.custNo || 0;
+  const initialCustNo = custNoParam || initialCustomers[0]?.custNo || '';
 
   // Modal state
   const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState(false);
@@ -85,14 +83,14 @@ export function CustomersMainView({
 
   // Selected customer object
   const selectedCustomer = useMemo(() => {
-    const found = initialCustomers.find((c) => c.custNo === initialCustNo);
+    const found = initialCustomers.find((c) => String(c.custNo) === String(initialCustNo));
     return found || initialCustomers[0] || null;
   }, [initialCustomers, initialCustNo]);
 
   // Payments for the selected customer
   const customerPayments = useMemo(() => {
     if (!selectedCustomer) return [];
-    return initialPayments.filter((p) => p.custNo === selectedCustomer.custNo);
+    return initialPayments.filter((p) => String(p.custNo) === String(selectedCustomer.custNo));
   }, [initialPayments, selectedCustomer]);
 
   // Payments total sum for selected customer

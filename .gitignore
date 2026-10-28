@@ -34,3 +34,4 @@ yarn-error.log*
 
 # scratch browser profiles
 scratch/chrome-profile/
+*.bak

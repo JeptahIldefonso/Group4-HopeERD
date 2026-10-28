@@ -205,13 +205,11 @@ export function SalesMainView({
   // 5. Selected Sale Detail Object
   const selectedSaleDetail: SaleDetailData | null = useMemo(() => {
     if (!selectedCode) return null;
-    const transNum = parseInt(selectedCode, 10);
-    if (isNaN(transNum)) return null;
 
-    const sale = initialSales.find((s) => s.transNo === transNum);
+    const sale = initialSales.find((s) => String(s.transNo) === selectedCode);
     if (!sale) return null;
 
-    const items = initialLines.filter((l) => l.transNo === transNum);
+    const items = initialLines.filter((l) => String(l.transNo) === selectedCode);
 
     // Receipts are fetched in detail page, but for the panel we construct from available data
     return {
