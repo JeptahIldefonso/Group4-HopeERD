@@ -16,11 +16,11 @@
     --border: #E5E7EB;
     --border-strong: #D1D5DB;
 
-    /* ERD Module Subtle Enterprise Tints */
-    --module-employees: #EFF6FF;
-    --module-products: #EAF5EE;
-    --module-customers: #FFFBEB;
-    --module-sales: #FDF2F8;
+    /* ERD Module Noticeable Color Coding */
+    --module-employees: #DBEAFE;
+    --module-products: #DCFCE7;
+    --module-customers: #FEF08A;
+    --module-sales: #FEE2E2;
   }
 
   body {

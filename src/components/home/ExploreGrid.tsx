@@ -12,10 +12,10 @@ interface ExploreGridProps {
 }
 
 const MODULE_TINT_STYLES: Record<string, { bg: string; border: string; text: string }> = {
-  employees: { bg: '#EFF6FF', border: '#BFDBFE', text: '#1E40AF' },
-  products: { bg: '#E8F3EE', border: '#B4DBC2', text: '#166B52' },
-  customers: { bg: '#FFFBEB', border: '#FDE68A', text: '#92400E' },
-  sales: { bg: '#FDF2F8', border: '#FBCFE8', text: '#9D174D' },
+  employees: { bg: '#DBEAFE', border: '#3B82F6', text: '#1E40AF' },
+  products: { bg: '#DCFCE7', border: '#16A34A', text: '#15803D' },
+  customers: { bg: '#FEF08A', border: '#CA8A04', text: '#854D0E' },
+  sales: { bg: '#FEE2E2', border: '#DC2626', text: '#991B1B' },
 };
 
 export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {

@@ -14,12 +14,50 @@ interface ErdDiagramProps {
   userRole?: UserRole;
 }
 
-// Module styling lookup with subtle enterprise tints
-const MODULE_COLORS: Record<string, { bg: string; border: string; text: string }> = {
-  employees: { bg: '#EFF6FF', border: '#BFDBFE', text: '#1E40AF' },
-  products: { bg: '#E8F3EE', border: '#B4DBC2', text: '#166B52' },
-  customers: { bg: '#FFFBEB', border: '#FDE68A', text: '#92400E' },
-  sales: { bg: '#FDF2F8', border: '#FBCFE8', text: '#9D174D' },
+// Module styling lookup with noticeable, vibrant color coding (Blue, Green, Yellow, Red)
+const MODULE_COLORS: Record<
+  string,
+  {
+    bg: string;
+    border: string;
+    text: string;
+    badgeBg: string;
+    badgeBorder: string;
+    badgeText: string;
+  }
+> = {
+  employees: {
+    bg: '#BFDBFE',
+    border: '#3B82F6',
+    text: '#1E3A8A',
+    badgeBg: '#FFFFFF',
+    badgeBorder: '#93C5FD',
+    badgeText: '#1E40AF',
+  },
+  products: {
+    bg: '#BBF7D0',
+    border: '#16A34A',
+    text: '#14532D',
+    badgeBg: '#FFFFFF',
+    badgeBorder: '#86EFAC',
+    badgeText: '#15803D',
+  },
+  customers: {
+    bg: '#FEF08A',
+    border: '#CA8A04',
+    text: '#713F12',
+    badgeBg: '#FFFFFF',
+    badgeBorder: '#FDE047',
+    badgeText: '#854D0E',
+  },
+  sales: {
+    bg: '#FECACA',
+    border: '#DC2626',
+    text: '#7F1D1D',
+    badgeBg: '#FFFFFF',
+    badgeBorder: '#FCA5A5',
+    badgeText: '#991B1B',
+  },
 };
 
 interface ConnectionPath {
@@ -452,8 +490,8 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
                       width={geom.width}
                       height={geom.height}
                       fill="#FFFFFF"
-                      stroke={isActive ? '#166B52' : '#E5E7EB'}
-                      strokeWidth={isActive ? '2' : '1'}
+                      stroke={isActive ? colors.border : '#E5E7EB'}
+                      strokeWidth={isActive ? '2.5' : '1'}
                       rx="6"
                       filter="url(#erd-subtle-shadow)"
                     />
@@ -463,13 +501,14 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
                       d={`M 0 6 A 6 6 0 0 1 6 0 L ${geom.width - 6} 0 A 6 6 0 0 1 ${geom.width} 6 L ${geom.width} 28 L 0 28 Z`}
                       fill={colors.bg}
                     />
-                    <line x1="0" y1="28" x2={geom.width} y2="28" stroke="#E5E7EB" strokeWidth="1" />
+                    <line x1="0" y1="28" x2={geom.width} y2="28" stroke={colors.border} strokeWidth="1.5" />
 
                     {/* Table Name */}
                     <text
-                      x="8"
+                      x="10"
                       y="18"
-                      className="font-sans font-bold text-[12px] fill-[#17231F] tracking-tight"
+                      className="font-sans font-bold text-[12px] tracking-tight"
+                      fill={colors.text}
                     >
                       {tableName}
                     </text>
@@ -481,16 +520,17 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
                         y="0"
                         width="34"
                         height="16"
-                        rx="2"
-                        fill="#FFFFFF"
-                        stroke="#CBD5CE"
+                        rx="3"
+                        fill={colors.badgeBg}
+                        stroke={colors.badgeBorder}
                         strokeWidth="1"
                       />
                       <text
                         x="17"
                         y="12"
                         textAnchor="middle"
-                        className="font-mono text-[9px] font-semibold fill-[#17231F]"
+                        className="font-mono text-[9px] font-bold"
+                        fill={colors.badgeText}
                       >
                         {rowCount}
                       </text>
@@ -587,10 +627,10 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
               return (
                 <div key={mod.id} className="flex items-center gap-1.5">
                   <span
-                    className="w-3.5 h-3.5 rounded-[2px] border border-[#CBD5CE]"
-                    style={{ backgroundColor: col.bg }}
+                    className="w-3.5 h-3.5 rounded-[3px] border shadow-2xs"
+                    style={{ backgroundColor: col.bg, borderColor: col.border }}
                   />
-                  <span className="text-xs text-[#52615B]">{mod.name}</span>
+                  <span className="text-xs font-semibold text-[#374151]">{mod.name}</span>
                 </div>
               );
             })}
