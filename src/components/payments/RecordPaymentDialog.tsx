@@ -172,18 +172,18 @@ export function RecordPaymentDialog({
     >
       {successReceiptNo ? (
         <div className="py-4 space-y-4 font-sans text-center">
-          <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-700 mx-auto flex items-center justify-center border border-emerald-200">
+          <div className="w-12 h-12 rounded-full bg-[#EAF2ED] text-[#245B48] mx-auto flex items-center justify-center border border-[#CCD5CD]">
             <CheckCircle2 className="w-6 h-6" />
           </div>
 
           <div>
-            <h3 className="text-base font-semibold text-[#041a24]">Payment Recorded Successfully</h3>
-            <p className="text-xs text-[#41555f] mt-1 font-mono">
+            <h3 className="text-base font-semibold text-[#17231F]">Payment Recorded Successfully</h3>
+            <p className="text-xs text-[#52615B] mt-1 font-mono">
               Official Receipt OR #{successReceiptNo}
             </p>
           </div>
 
-          <div className="p-3 bg-[#FAF8F5] border border-[rgba(4,26,36,0.12)] rounded-[4px] text-xs text-[#41555f] text-left">
+          <div className="p-3 bg-[#FAFBFA] border border-[#DDE3DE] rounded-md text-xs text-[#52615B] text-left">
             <span>Transaction #{selectedTransNo} payment has been committed to the ledger.</span>
           </div>
 
@@ -191,7 +191,7 @@ export function RecordPaymentDialog({
             <Link
               href={`/receipts/${successReceiptNo}`}
               onClick={onClose}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#041a24] text-white rounded-[4px] text-xs font-medium hover:bg-[#082a38] transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#245B48] text-white rounded-md text-xs font-medium hover:bg-[#1C4939] transition-colors"
             >
               <Printer className="w-3.5 h-3.5" />
               <span>Print Official Receipt</span>
@@ -205,7 +205,7 @@ export function RecordPaymentDialog({
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4 font-sans text-xs">
           {errorMessage && (
-            <div className="rounded-[4px] border border-[rgba(134,37,37,0.3)] bg-[#FCECEC] p-3 text-xs text-[#862525] flex items-center gap-2">
+            <div className="rounded-md border border-[#FDECEA] bg-[#FDECEA]/60 p-3 text-xs text-[#B42318] flex items-center gap-2">
               <AlertCircle className="h-4 w-4 shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -213,23 +213,23 @@ export function RecordPaymentDialog({
 
           {/* 1. Sale Field (Searchable, Pre-selected, Locked if fixed) */}
           <div>
-            <label className="block text-[11px] font-semibold text-[#041a24] mb-1">
+            <label className="block text-[11px] font-semibold text-[#17231F] mb-1">
               Sales Transaction <span className="text-rose-600">*</span>
             </label>
 
             {fixedTransNo ? (
               // Locked when opened from a specific sale
-              <div className="rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-[#FAF8F5] px-3 py-2 flex items-center justify-between text-xs text-[#041a24]">
+              <div className="rounded-md border border-[#DDE3DE] bg-[#FAFBFA] px-3 py-2 flex items-center justify-between text-xs text-[#17231F]">
                 <div>
                   <span className="font-mono font-bold">Sale #{fixedTransNo}</span>
                   {activeSale && (
-                    <span className="text-[#41555f] ml-2 font-sans">
+                    <span className="text-[#52615B] ml-2 font-sans">
                       &bull; {activeSale.custName} ({formatDate(activeSale.salesDate)})
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-1 text-[11px] text-[#41555f] font-mono">
-                  <Lock className="w-3 h-3 text-[#41555f]" />
+                <div className="flex items-center gap-1 text-[11px] text-[#52615B] font-mono">
+                  <Lock className="w-3 h-3 text-[#52615B]" />
                   <span>Locked</span>
                 </div>
               </div>
@@ -238,13 +238,13 @@ export function RecordPaymentDialog({
               <div className="space-y-1.5">
                 {!fixedCustNo && sales.length > 5 && (
                   <div className="relative">
-                    <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#41555f]" />
+                    <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#7A8781]" />
                     <input
                       type="text"
                       placeholder="Search sale # or customer name..."
                       value={searchSaleQuery}
                       onChange={(e) => setSearchSaleQuery(e.target.value)}
-                      className="w-full h-8 pl-8 pr-3 text-xs rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white text-[#041a24] placeholder:text-neutral-400 focus:outline-none focus:border-[#041a24]"
+                      className="w-full h-8 pl-8 pr-3 text-xs rounded-md border border-[#CCD5CD] bg-white text-[#17231F] placeholder:text-[#A0AAA4] focus:outline-none focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 transition-all"
                     />
                   </div>
                 )}
@@ -254,7 +254,7 @@ export function RecordPaymentDialog({
                   value={selectedTransNo}
                   onChange={(e) => handleSaleSelect(Number(e.target.value))}
                   disabled={loadingOptions || filteredSales.length === 0}
-                  className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-2 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none font-sans"
+                  className="w-full rounded-md border border-[#CCD5CD] bg-white px-3 py-2 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 focus:outline-none font-sans transition-all"
                 >
                   {filteredSales.length === 0 ? (
                     <option value="0">No eligible sales transactions found</option>
@@ -270,28 +270,28 @@ export function RecordPaymentDialog({
             )}
 
             {activeSale && (
-              <div className="mt-1 text-[11px] text-[#41555f] flex items-center justify-between">
+              <div className="mt-1 text-[11px] text-[#52615B] flex items-center justify-between">
                 <span>Customer: {activeSale.custName} (#{activeSale.custNo})</span>
-                <span className="font-mono font-medium">Sale Total: {formatPHP(activeSale.totalAmount)}</span>
+                <span className="font-mono font-medium text-[#17231F]">Sale Total: {formatPHP(activeSale.totalAmount)}</span>
               </div>
             )}
           </div>
 
           {/* 2. Official Receipt (OR) Number (Read-only preview) */}
           <div>
-            <label className="block text-[11px] font-semibold text-[#041a24] mb-1">
+            <label className="block text-[11px] font-semibold text-[#17231F] mb-1">
               Official Receipt (OR) Number
             </label>
-            <div className="rounded-[4px] border border-dashed border-[rgba(4,26,36,0.2)] bg-[#FAF8F5] px-3 py-2 text-xs text-[#41555f] font-mono flex items-center justify-between">
-              <span className="font-bold text-[#041a24]">OR #{nextOrPreview}</span>
-              <span className="text-[10px] text-[#41555f]">Assigned sequentially on save</span>
+            <div className="rounded-md border border-dashed border-[#CCD5CD] bg-[#FAFBFA] px-3 py-2 text-xs text-[#52615B] font-mono flex items-center justify-between">
+              <span className="font-bold text-[#17231F]">OR #{nextOrPreview}</span>
+              <span className="text-[10px] text-[#52615B]">Assigned sequentially on save</span>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* 3. Payment Date (default today) */}
             <div>
-              <label className="block text-[11px] font-semibold text-[#041a24] mb-1">
+              <label className="block text-[11px] font-semibold text-[#17231F] mb-1">
                 Payment Date <span className="text-rose-600">*</span>
               </label>
               <div className="relative">
@@ -301,17 +301,17 @@ export function RecordPaymentDialog({
                   value={payDate}
                   onChange={(e) => setPayDate(e.target.value)}
                   max="2026-10-28"
-                  className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-1.5 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none"
+                  className="w-full rounded-md border border-[#CCD5CD] bg-white px-3 py-1.5 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 focus:outline-none transition-all"
                 />
               </div>
-              <p className="text-[10px] text-[#41555f] mt-0.5">
+              <p className="text-[10px] text-[#52615B] mt-0.5">
                 Cannot precede sale date or be in the future.
               </p>
             </div>
 
             {/* 4. Payment Amount (pre-filled with sale total) */}
             <div>
-              <label className="block text-[11px] font-semibold text-[#041a24] mb-1">
+              <label className="block text-[11px] font-semibold text-[#17231F] mb-1">
                 Payment Amount (PHP) <span className="text-rose-600">*</span>
               </label>
               <div className="relative">
@@ -323,17 +323,17 @@ export function RecordPaymentDialog({
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-1.5 text-xs text-[#041a24] font-mono focus:border-[#041a24] focus:outline-none"
+                  className="w-full rounded-md border border-[#CCD5CD] bg-white px-3 py-1.5 text-xs text-[#17231F] font-mono focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 focus:outline-none transition-all"
                 />
               </div>
-              <p className="text-[10px] text-[#41555f] mt-0.5">
+              <p className="text-[10px] text-[#52615B] mt-0.5">
                 Cannot exceed total sale value.
               </p>
             </div>
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-[rgba(4,26,36,0.08)]">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#DDE3DE]">
             <Button type="button" variant="outline" size="sm" onClick={onClose} disabled={isPending}>
               Cancel
             </Button>

@@ -78,30 +78,30 @@ export function EditProductModal({
 
         {/* Product Code (Read-Only) */}
         <div>
-          <label className="block text-xs font-semibold text-[#041a24] mb-1">
+          <label className="block text-xs font-semibold text-[#17231F] mb-1">
             Product code (Permanent)
           </label>
           <input
             type="text"
             value={prodCode}
             disabled
-            className="w-full rounded-[4px] border border-[rgba(4,26,36,0.14)] bg-[#F8F8F6] px-3 py-2 text-xs font-mono uppercase text-[#41555f] cursor-not-allowed"
+            className="w-full rounded-md border border-[#DDE3DE] bg-[#F5F6F4] px-3 py-2 text-xs font-mono uppercase text-[#52615B] cursor-not-allowed"
           />
-          <p className="mt-1 text-[11px] text-[#41555f]">
+          <p className="mt-1 text-[11px] text-[#52615B]">
             Product codes cannot be modified after registration.
           </p>
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-xs font-semibold text-[#041a24] mb-1">
+          <label className="block text-xs font-semibold text-[#17231F] mb-1">
             Description
           </label>
           <input
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-2 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none focus:ring-1 focus:ring-[#041a24]"
+            className="w-full rounded-md border border-[#CCD5CD] bg-white px-3 py-2 text-xs text-[#17231F] focus:border-[#245B48] focus:outline-none focus:ring-1 focus:ring-[#245B48]/30 transition-all"
             required
             autoFocus
           />
@@ -110,11 +110,11 @@ export function EditProductModal({
         {/* Unit */}
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="block text-xs font-semibold text-[#041a24]">
+            <label className="block text-xs font-semibold text-[#17231F]">
               Unit of measurement
             </label>
             {hasSales && (
-              <span className="flex items-center gap-1 text-[11px] text-[#824f11] font-medium">
+              <span className="flex items-center gap-1 text-[11px] text-[#956316] font-medium">
                 <Lock className="h-3 w-3" />
                 Locked (has sales)
               </span>
@@ -124,10 +124,10 @@ export function EditProductModal({
             value={unit}
             onChange={(e) => setUnit(e.target.value)}
             disabled={hasSales}
-            className={`w-full rounded-[4px] border px-3 py-2 text-xs focus:outline-none ${
+            className={`w-full rounded-md border px-3 py-2 text-xs focus:outline-none transition-all ${
               hasSales
-                ? 'border-[rgba(4,26,36,0.14)] bg-[#F8F8F6] text-[#41555f] cursor-not-allowed'
-                : 'border-[rgba(4,26,36,0.2)] bg-white text-[#041a24] focus:border-[#041a24] focus:ring-1 focus:ring-[#041a24]'
+                ? 'border-[#DDE3DE] bg-[#F5F6F4] text-[#52615B] cursor-not-allowed'
+                : 'border-[#CCD5CD] bg-white text-[#17231F] focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30'
             }`}
           >
             {availableUnits.map((u) => (
@@ -137,17 +137,17 @@ export function EditProductModal({
             ))}
           </select>
           {hasSales ? (
-            <p className="mt-1 text-[11px] text-[#41555f]">
+            <p className="mt-1 text-[11px] text-[#52615B]">
               The unit cannot be changed because this product has already been sold (R-12).
             </p>
           ) : (
-            <p className="mt-1 text-[11px] text-[#41555f]">
+            <p className="mt-1 text-[11px] text-[#52615B]">
               Units can only be changed before the product is used in any sale.
             </p>
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-3 border-t border-[rgba(4,26,36,0.1)]">
+        <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#DDE3DE]">
           <Button type="button" variant="outline" size="sm" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>

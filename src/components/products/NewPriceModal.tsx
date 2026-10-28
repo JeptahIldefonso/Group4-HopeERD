@@ -100,35 +100,35 @@ export function NewPriceModal({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {errorMsg && (
-          <div className="flex items-start gap-2 rounded-[4px] border border-[rgba(134,37,37,0.3)] bg-[#FCECEC] p-3 text-xs text-[#862525]">
-            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2 rounded-md border border-[#FDECEA] bg-[#FDECEA]/60 p-3 text-xs text-[#B42318]">
+            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-[#B42318]" />
             <p className="leading-snug">{errorMsg}</p>
           </div>
         )}
 
         {/* Current Price Banner */}
-        <div className="rounded-[4px] border border-[rgba(4,26,36,0.14)] bg-[#F8F8F6] p-3 space-y-1">
-          <div className="text-[11px] text-[#41555f] uppercase tracking-wider font-semibold">
+        <div className="rounded-md border border-[#DDE3DE] bg-[#FAFBFA] p-3 space-y-1">
+          <div className="text-[11px] text-[#52615B] uppercase tracking-wider font-semibold">
             Current Price
           </div>
           <div className="flex items-baseline justify-between">
-            <span className="text-base font-bold tabular-nums text-[#041a24]">
+            <span className="text-base font-bold tabular-nums text-[#17231F] font-mono">
               {currentPrice !== null ? `${formatPHP(currentPrice)} / ${unit}` : 'No price record'}
             </span>
             {latestEffDate && (
-              <span className="text-[11px] text-[#41555f]">
+              <span className="text-[11px] text-[#52615B]">
                 Effective since {latestEffDate}
               </span>
             )}
           </div>
-          <div className="text-xs text-[#1c313b] truncate font-medium pt-1 border-t border-[rgba(4,26,36,0.08)]">
+          <div className="text-xs text-[#52615B] truncate font-medium pt-1 border-t border-[#E9EDEA]">
             {description}
           </div>
         </div>
 
         {/* New Unit Price */}
         <div>
-          <label className="block text-xs font-semibold text-[#041a24] mb-1">
+          <label className="block text-xs font-semibold text-[#17231F] mb-1">
             New unit price (₱ / {unit})
           </label>
           <input
@@ -141,7 +141,7 @@ export function NewPriceModal({
               setUnitPrice(e.target.value);
               setConfirmedLargeChange(false);
             }}
-            className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-2 text-xs tabular-nums text-[#041a24] focus:border-[#041a24] focus:outline-none focus:ring-1 focus:ring-[#041a24]"
+            className="w-full rounded-md border border-[#CCD5CD] bg-white px-3 py-2 text-xs tabular-nums text-[#17231F] focus:border-[#245B48] focus:outline-none focus:ring-1 focus:ring-[#245B48]/30 transition-all font-mono"
             required
             autoFocus
           />
@@ -149,9 +149,9 @@ export function NewPriceModal({
 
         {/* Live Change Preview */}
         {changeCalc && hasValidPrice && (
-          <div className="rounded-[4px] border border-[rgba(4,26,36,0.12)] bg-white p-2.5 flex items-center justify-between text-xs">
-            <span className="text-[#41555f]">Price change:</span>
-            <span className="font-semibold tabular-nums text-[#041a24]">
+          <div className="rounded-md border border-[#DDE3DE] bg-white p-2.5 flex items-center justify-between text-xs">
+            <span className="text-[#52615B]">Price change:</span>
+            <span className="font-semibold tabular-nums text-[#17231F] font-mono">
               {changeCalc.label}
             </span>
           </div>
@@ -159,7 +159,7 @@ export function NewPriceModal({
 
         {/* Effective Date */}
         <div>
-          <label className="block text-xs font-semibold text-[#041a24] mb-1">
+          <label className="block text-xs font-semibold text-[#17231F] mb-1">
             Effective date
           </label>
           <input
@@ -167,34 +167,34 @@ export function NewPriceModal({
             max={getTodayManila()}
             value={effDate}
             onChange={(e) => setEffDate(e.target.value)}
-            className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-2 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none focus:ring-1 focus:ring-[#041a24]"
+            className="w-full rounded-md border border-[#CCD5CD] bg-white px-3 py-2 text-xs text-[#17231F] focus:border-[#245B48] focus:outline-none focus:ring-1 focus:ring-[#245B48]/30 transition-all font-mono"
             required
           />
-          <p className="mt-1 text-[11px] text-[#41555f]">
+          <p className="mt-1 text-[11px] text-[#52615B]">
             Must be after the latest price record and latest sale date. Cannot be in the future.
           </p>
         </div>
 
         {/* Large Change Soft Warning */}
         {isLargeChange && (
-          <div className="rounded-[4px] border border-[rgba(130,79,17,0.3)] bg-[#FDF4E7] p-3 space-y-2">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-[#824f11]">
-              <AlertTriangle className="h-4 w-4 shrink-0" />
+          <div className="rounded-md border border-[#FBF2DD] bg-[#FBF2DD]/60 p-3 space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-[#956316]">
+              <AlertTriangle className="h-4 w-4 shrink-0 text-[#956316]" />
               <span>Large price variance detected ({changeCalc?.percent?.toFixed(1)}%)</span>
             </div>
-            <label className="flex items-center gap-2 text-xs text-[#041a24] cursor-pointer">
+            <label className="flex items-center gap-2 text-xs text-[#17231F] cursor-pointer">
               <input
                 type="checkbox"
                 checked={confirmedLargeChange}
                 onChange={(e) => setConfirmedLargeChange(e.target.checked)}
-                className="rounded-[2px] border-[rgba(4,26,36,0.3)] text-[#041a24] focus:ring-[#041a24]"
+                className="rounded border-[#CCD5CD] text-[#245B48] focus:ring-[#245B48]"
               />
               <span>I confirm this price is correct</span>
             </label>
           </div>
         )}
 
-        <div className="flex items-center justify-end gap-2 pt-3 border-t border-[rgba(4,26,36,0.1)]">
+        <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#DDE3DE]">
           <Button type="button" variant="outline" size="sm" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>

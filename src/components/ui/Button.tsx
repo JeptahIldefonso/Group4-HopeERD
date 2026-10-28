@@ -10,22 +10,22 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, disabled, children, ...props }, ref) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-medium transition-colors rounded-lg select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#041a24] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.99] gap-2';
+      'inline-flex items-center justify-center font-sans font-medium transition-all rounded-[4px] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B48]/30 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.99] gap-2';
 
     const variants = {
-      primary: 'bg-[#041a24] text-white hover:bg-[#082a38] active:bg-[#03131a] shadow-sm border border-[#041a24]',
-      default: 'bg-[#041a24] text-white hover:bg-[#082a38] active:bg-[#03131a] shadow-sm border border-[#041a24]',
-      secondary: 'bg-slate-100 text-slate-800 hover:bg-slate-200 active:bg-slate-300 border border-slate-200 shadow-sm',
-      outline: 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 hover:border-slate-400 active:bg-slate-100 shadow-sm',
-      ghost: 'bg-transparent text-slate-700 hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200',
-      destructive: 'bg-rose-700 text-white hover:bg-rose-800 active:bg-rose-900 shadow-sm border border-transparent',
+      primary: 'bg-[#245B48] text-white hover:bg-[#1C4939] active:bg-[#15392C] shadow-xs border border-[#245B48]',
+      default: 'bg-[#245B48] text-white hover:bg-[#1C4939] active:bg-[#15392C] shadow-xs border border-[#245B48]',
+      secondary: 'bg-[#F0F3F0] text-[#17231F] hover:bg-[#E9EDEA] active:bg-[#DDE3DE] border border-[#DDE3DE] shadow-xs',
+      outline: 'border border-[#DDE3DE] bg-white text-[#17231F] hover:bg-[#FAFBFA] hover:border-[#CBD5CE] active:bg-[#F0F3F0] shadow-xs',
+      ghost: 'bg-transparent text-[#52615B] hover:bg-[#F0F3F0] hover:text-[#17231F] active:bg-[#E9EDEA]',
+      destructive: 'bg-[#B42318] text-white hover:bg-[#991B1B] active:bg-[#7F1D1D] shadow-xs border border-transparent',
     };
 
     const sizes = {
-      sm: 'h-8 px-3 text-xs rounded-md',
-      md: 'h-10 px-4 text-sm rounded-lg',
-      lg: 'h-11 px-5 text-base rounded-lg',
-      icon: 'h-10 w-10 p-0 rounded-lg',
+      sm: 'h-8 px-3 text-xs',
+      md: 'h-9 px-4 text-xs sm:text-sm',
+      lg: 'h-11 px-5 text-sm sm:text-base',
+      icon: 'h-9 w-9 p-0',
     };
 
     return (
@@ -36,7 +36,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {isLoading && (
-          <svg className="animate-spin -ml-0.5 h-4 w-4" fill="none" viewBox="0 0 24 24">
+          <svg className="animate-spin -ml-0.5 h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path
               className="opacity-75"

@@ -219,33 +219,33 @@ export function NewSaleModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-[2px]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17231F]/50 p-4 backdrop-blur-[2px] font-sans">
       <div
-        className="w-full max-w-3xl rounded-[6px] border border-[rgba(4,26,36,0.18)] bg-white p-6 shadow-[0_4px_24px_rgba(4,26,36,0.12)] space-y-5 max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-3xl rounded-[6px] border border-[#DDE3DE] bg-white p-6 shadow-xl space-y-5 max-h-[90vh] overflow-y-auto"
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[rgba(4,26,36,0.1)] pb-3">
+        <div className="flex items-center justify-between border-b border-[#E9EDEA] pb-3">
           <div>
-            <h3 className="font-editorial text-xl font-normal text-[#041a24]">
+            <h3 className="font-sans text-lg font-semibold text-[#17231F]">
               New Sale
             </h3>
-            <p className="text-xs text-[#41555f] mt-0.5">
+            <p className="text-xs text-[#52615B] mt-0.5">
               Record a new sales transaction with point-in-time pricing.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-[#41555f] hover:text-[#041a24] p-1 rounded-[2px]"
+            className="text-[#52615B] hover:text-[#17231F] p-1.5 rounded-[4px] border border-[#DDE3DE] hover:bg-[#F0F3F0] transition-colors cursor-pointer"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {errorMsg && (
-          <div className="rounded-[4px] border border-[rgba(134,37,37,0.3)] bg-[#FCECEC] p-3 text-xs text-[#862525] flex items-center gap-2">
+          <div className="rounded-[4px] border border-[#F9C8C4] bg-[#FDECEA] p-3 text-xs text-[#B42318] flex items-center gap-2">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{errorMsg}</span>
           </div>
@@ -253,21 +253,21 @@ export function NewSaleModal({
 
         <form onSubmit={handleSubmit} className="space-y-5 text-xs font-sans">
           {/* Top Metadata Fields */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-[4px] border border-[rgba(4,26,36,0.12)] bg-[#FAF8F5]">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-[4px] border border-[#DDE3DE] bg-[#FAFBFA]">
             {/* Sale # (Read only) */}
             <div>
-              <label className="block text-[11px] font-semibold text-[#041a24] mb-1">
+              <label className="block text-[11px] font-semibold text-[#17231F] mb-1">
                 Sale #
               </label>
-              <div className="rounded-[4px] border border-dashed border-[rgba(4,26,36,0.2)] bg-white/60 px-3 py-1.5 text-xs text-[#41555f] font-mono">
+              <div className="rounded-[4px] border border-dashed border-[#CCD5CD] bg-white px-3 py-1.5 text-xs text-[#52615B] font-mono">
                 Assigned on save
               </div>
             </div>
 
             {/* Sale Date */}
             <div>
-              <label className="block text-[11px] font-semibold text-[#041a24] mb-1">
-                Sale date <span className="text-rose-600">*</span>
+              <label className="block text-[11px] font-semibold text-[#17231F] mb-1">
+                Sale date <span className="text-[#B42318]">*</span>
               </label>
               <input
                 type="date"
@@ -275,18 +275,18 @@ export function NewSaleModal({
                 value={salesDate}
                 max={getTodayManila()}
                 onChange={(e) => setSalesDate(e.target.value)}
-                className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-2.5 py-1.5 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none"
+                className="w-full rounded-[4px] border border-[#CCD5CD] bg-white px-2.5 py-1.5 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-2 focus:ring-[#245B48]/20 focus:outline-none"
               />
             </div>
 
             {/* Department (Read only attribution) */}
             <div>
-              <label className="block text-[11px] font-semibold text-[#041a24] mb-1">
+              <label className="block text-[11px] font-semibold text-[#17231F] mb-1">
                 Department on sale date
               </label>
-              <div className="rounded-[4px] border border-[rgba(4,26,36,0.15)] bg-white px-3 py-1.5 text-xs text-[#041a24]">
+              <div className="rounded-[4px] border border-[#DDE3DE] bg-white px-3 py-1.5 text-xs text-[#17231F]">
                 {selectedRep?.deptName || 'Retail Sales'}{' '}
-                <span className="text-[10px] text-[#41555f] font-mono">
+                <span className="text-[10px] text-[#52615B] font-mono">
                   ({selectedRep?.deptCode || 'DEPT-SLS'})
                 </span>
               </div>
@@ -294,14 +294,14 @@ export function NewSaleModal({
 
             {/* Customer Select */}
             <div className="sm:col-span-2">
-              <label className="block text-[11px] font-semibold text-[#041a24] mb-1">
-                Customer <span className="text-rose-600">*</span>
+              <label className="block text-[11px] font-semibold text-[#17231F] mb-1">
+                Customer <span className="text-[#B42318]">*</span>
               </label>
               <select
                 required
                 value={custNo}
                 onChange={(e) => setCustNo(Number(e.target.value))}
-                className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-2.5 py-1.5 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none"
+                className="w-full rounded-[4px] border border-[#CCD5CD] bg-white px-2.5 py-1.5 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-2 focus:ring-[#245B48]/20 focus:outline-none"
               >
                 {lookups.customers.map((c) => (
                   <option key={c.custNo} value={c.custNo}>
@@ -310,7 +310,7 @@ export function NewSaleModal({
                 ))}
               </select>
               {selectedCustomer && (
-                <p className="text-[10px] text-[#41555f] mt-1">
+                <p className="text-[10px] text-[#52615B] mt-1">
                   Address: {selectedCustomer.address} &bull; Terms: {selectedCustomer.payTerms}
                 </p>
               )}
@@ -318,14 +318,14 @@ export function NewSaleModal({
 
             {/* Sales Rep Select */}
             <div>
-              <label className="block text-[11px] font-semibold text-[#041a24] mb-1">
-                Sales rep <span className="text-rose-600">*</span>
+              <label className="block text-[11px] font-semibold text-[#17231F] mb-1">
+                Sales rep <span className="text-[#B42318]">*</span>
               </label>
               <select
                 required
                 value={empNo}
                 onChange={(e) => setEmpNo(Number(e.target.value))}
-                className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-2.5 py-1.5 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none"
+                className="w-full rounded-[4px] border border-[#CCD5CD] bg-white px-2.5 py-1.5 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-2 focus:ring-[#245B48]/20 focus:outline-none"
               >
                 {eligibleReps.map((e) => (
                   <option key={e.empNo} value={e.empNo}>
@@ -339,7 +339,7 @@ export function NewSaleModal({
           {/* Line Items Card */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-xs text-[#041a24]">
+              <span className="font-semibold text-xs text-[#17231F]">
                 Line Items ({items.length})
               </span>
               <Button
@@ -347,17 +347,17 @@ export function NewSaleModal({
                 variant="outline"
                 size="sm"
                 onClick={handleAddItem}
-                className="flex items-center gap-1 text-xs"
+                className="flex items-center gap-1 text-xs cursor-pointer"
               >
                 <Plus className="h-3 w-3" />
                 <span>Add product</span>
               </Button>
             </div>
 
-            <div className="overflow-x-auto rounded-[4px] border border-[rgba(4,26,36,0.15)]">
+            <div className="overflow-x-auto rounded-[4px] border border-[#DDE3DE]">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-[rgba(4,26,36,0.1)] bg-[#F8F8F6] text-[#041a24]">
+                  <tr className="border-b border-[#DDE3DE] bg-[#FAFBFA] text-[#52615B]">
                     <th className="py-2 px-3 font-semibold">Product</th>
                     <th className="py-2 px-3 font-semibold text-center w-20">Unit</th>
                     <th className="py-2 px-3 font-semibold text-center w-24">Qty</th>
@@ -366,7 +366,7 @@ export function NewSaleModal({
                     <th className="py-2 px-2 text-center w-10"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[rgba(4,26,36,0.08)] bg-white">
+                <tbody className="divide-y divide-[#E9EDEA] bg-white">
                   {items.map((item, idx) => {
                     const prodObj = lookups.products.find((p) => p.prodCode === item.prodCode);
                     const lineAmount = item.quantity * item.unitPrice;
@@ -377,7 +377,7 @@ export function NewSaleModal({
                           <select
                             value={item.prodCode}
                             onChange={(e) => handleProductChange(idx, e.target.value)}
-                            className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-2 py-1 text-xs text-[#041a24] focus:outline-none"
+                            className="w-full rounded-[4px] border border-[#CCD5CD] bg-white px-2 py-1 text-xs text-[#17231F] focus:border-[#245B48] focus:outline-none"
                           >
                             {lookups.products.map((p) => {
                               const isAlreadyUsed =
@@ -397,7 +397,7 @@ export function NewSaleModal({
                             })}
                           </select>
                         </td>
-                        <td className="py-2 px-3 text-center font-mono text-[11px] text-[#41555f]">
+                        <td className="py-2 px-3 text-center font-mono text-[11px] text-[#52615B]">
                           {prodObj?.unit || 'pc'}
                         </td>
                         <td className="py-2 px-3 text-center">
@@ -408,13 +408,13 @@ export function NewSaleModal({
                             step="1"
                             value={item.quantity}
                             onChange={(e) => handleQtyChange(idx, parseInt(e.target.value, 10))}
-                            className="w-16 rounded-[4px] border border-[rgba(4,26,36,0.2)] px-2 py-1 text-center font-mono text-xs text-[#041a24] focus:outline-none"
+                            className="w-16 rounded-[4px] border border-[#CCD5CD] px-2 py-1 text-center font-mono text-xs text-[#17231F] focus:border-[#245B48] focus:outline-none"
                           />
                         </td>
-                        <td className="py-2 px-3 text-right font-mono tabular-nums text-[#41555f]">
+                        <td className="py-2 px-3 text-right font-mono tabular-nums text-[#52615B]">
                           {item.loadingPrice ? '...' : formatPHP(item.unitPrice)}
                         </td>
-                        <td className="py-2 px-3 text-right font-mono tabular-nums font-semibold text-[#041a24]">
+                        <td className="py-2 px-3 text-right font-mono tabular-nums font-semibold text-[#17231F]">
                           {formatPHP(lineAmount)}
                         </td>
                         <td className="py-2 px-2 text-center">
@@ -422,7 +422,7 @@ export function NewSaleModal({
                             <button
                               type="button"
                               onClick={() => handleRemoveItem(idx)}
-                              className="text-neutral-400 hover:text-rose-600 p-1"
+                              className="text-[#7A8781] hover:text-[#B42318] p-1 cursor-pointer"
                               aria-label="Remove item"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
@@ -434,11 +434,11 @@ export function NewSaleModal({
                   })}
                 </tbody>
                 <tfoot>
-                  <tr className="border-t-2 border-[rgba(4,26,36,0.15)] bg-[#FAF8F5]">
-                    <td colSpan={4} className="py-2.5 px-3 font-semibold text-right text-[#041a24]">
+                  <tr className="border-t-2 border-[#DDE3DE] bg-[#FAFBFA]">
+                    <td colSpan={4} className="py-2.5 px-3 font-semibold text-right text-[#17231F]">
                       Total:
                     </td>
-                    <td className="py-2.5 px-3 font-mono font-bold text-sm text-right tabular-nums text-[#041a24]">
+                    <td className="py-2.5 px-3 font-mono font-bold text-sm text-right tabular-nums text-[#17231F]">
                       {formatPHP(grandTotal)}
                     </td>
                     <td></td>
@@ -449,7 +449,7 @@ export function NewSaleModal({
           </div>
 
           {/* Footer actions */}
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-[rgba(4,26,36,0.1)]">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#E9EDEA]">
             <Button type="button" variant="outline" size="sm" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>

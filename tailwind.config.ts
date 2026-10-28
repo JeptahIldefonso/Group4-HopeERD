@@ -11,32 +11,46 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        forest: {
+          50: '#EAF2ED',
+          100: '#D2E4D8',
+          200: '#A8C6B2',
+          500: '#477763',
+          600: '#245B48',
+          700: '#1C4939',
+          800: '#15392C',
+        },
+        charcoal: {
+          900: '#17231F',
+          700: '#52615B',
+          500: '#7A8781',
+          400: '#A0AAA4',
+        },
+        border: {
+          standard: '#DDE3DE',
+          strong: '#CBD5CE',
+          divider: '#E9EDEA',
+        },
+        // Backward-compatible semantic aliases
         paper: {
-          DEFAULT: '#F4F4F0',
+          DEFAULT: '#F5F6F4',
           raised: '#FFFFFF',
-          hover: '#EAEAE4',
-          subtle: '#DFDFD7',
+          hover: '#FAFBFA',
+          subtle: '#F0F3F0',
         },
         ink: {
-          DEFAULT: '#041a24',
-          muted: '#1c313b',
-          subtle: '#41555f',
-          faint: '#728590',
+          DEFAULT: '#17231F',
+          muted: '#52615B',
+          subtle: '#7A8781',
+          faint: '#A0AAA4',
         },
-        midnight: {
-          900: '#041a24',
-          800: '#072432',
-          700: '#0d3244',
-          600: '#144158',
-        },
-        parchment: '#F4F4F0',
-        hairline: 'rgba(4, 26, 36, 0.14)',
-        'hairline-strong': '#041a24',
+        hairline: '#DDE3DE',
+        'hairline-strong': '#CBD5CE',
       },
       fontFamily: {
-        editorial: ['var(--font-editorial)', 'Newsreader', 'Georgia', 'Cambria', 'serif'],
         sans: ['var(--font-sans)', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
         mono: ['var(--font-mono)', 'JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'Courier New', 'monospace'],
+        editorial: ['var(--font-editorial)', 'Newsreader', 'Georgia', 'serif'],
       },
       borderRadius: {
         DEFAULT: '4px',
@@ -46,8 +60,8 @@ const config: Config = {
         xl: '8px',
       },
       boxShadow: {
-        paper: '0 1px 3px rgba(4, 26, 36, 0.05), 0 1px 2px rgba(4, 26, 36, 0.03)',
-        'paper-raised': '0 4px 6px -1px rgba(4, 26, 36, 0.07), 0 2px 4px -1px rgba(4, 26, 36, 0.04)',
+        paper: '0 1px 3px rgba(23, 35, 31, 0.05), 0 1px 2px rgba(23, 35, 31, 0.03)',
+        'paper-raised': '0 4px 6px -1px rgba(23, 35, 31, 0.07), 0 2px 4px -1px rgba(23, 35, 31, 0.04)',
       },
     },
   },

@@ -129,15 +129,15 @@ export function CustomersMainView({
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[rgba(4,26,36,0.14)] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[#DDE3DE] pb-4">
         <div>
-          <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-[#41555f] block">
-            HOPE Group4 / Customers &amp; Payments
+          <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-[#52615B] block">
+            Group 4 HopeERD · Customers &amp; Payments
           </span>
-          <h1 className="font-editorial text-2xl sm:text-3xl font-normal tracking-tight text-[#041a24] mt-1">
+          <h1 className="text-2xl sm:text-[28px] font-semibold tracking-tight text-[#17231F] mt-1">
             Customers &amp; Payments
           </h1>
-          <p className="text-xs sm:text-sm text-[#41555f] mt-1">
+          <p className="text-xs sm:text-sm text-[#52615B] mt-1">
             Customer directory, payment terms, and official receipts ledger.
           </p>
         </div>
@@ -147,35 +147,35 @@ export function CustomersMainView({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start font-sans">
         {/* Left Column (Master): Searchable Customer List */}
         <div className="lg:col-span-4 xl:col-span-4 space-y-3">
-          <Card className="border border-[rgba(4,26,36,0.12)] bg-white rounded-[4px] shadow-none overflow-hidden">
+          <Card className="border border-[#DDE3DE] bg-white rounded-lg shadow-sm overflow-hidden">
             {/* List Header with Count & Search */}
-            <div className="p-3.5 border-b border-[rgba(4,26,36,0.08)] bg-neutral-50/50 space-y-2.5">
+            <div className="p-3.5 border-b border-[#DDE3DE] bg-[#FAFBFA] space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-[#041a24]">
+                <span className="text-xs font-semibold text-[#17231F]">
                   Customers ({filteredCustomers.length})
                 </span>
-                <span className="text-[10px] font-mono text-[#41555f]">
+                <span className="text-[10px] font-mono text-[#52615B]">
                   Total: {initialCustomers.length}
                 </span>
               </div>
 
               {/* Search Box */}
               <div className="relative">
-                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#41555f]" />
+                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#7A8781]" />
                 <input
                   type="text"
                   placeholder="Search customer name, no..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-8 pl-8 pr-3 text-xs rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white text-[#041a24] placeholder:text-neutral-400 focus:outline-none focus:border-[#041a24]"
+                  className="w-full h-8 pl-8 pr-3 text-xs rounded-md border border-[#CCD5CD] bg-white text-[#17231F] placeholder:text-[#A0AAA4] focus:outline-none focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 transition-all"
                 />
               </div>
             </div>
 
             {/* Customer List Stream */}
-            <div className="divide-y divide-[rgba(4,26,36,0.06)] max-h-[600px] overflow-y-auto">
+            <div className="divide-y divide-[#E9EDEA] max-h-[600px] overflow-y-auto">
               {filteredCustomers.length === 0 ? (
-                <div className="p-6 text-center text-xs text-[#41555f]">
+                <div className="p-6 text-center text-xs text-[#52615B]">
                   No customers found.
                 </div>
               ) : (
@@ -188,20 +188,20 @@ export function CustomersMainView({
                       onClick={() => updateUrl({ custNo: String(c.custNo) })}
                       className={`w-full text-left px-3.5 py-3 transition-colors flex items-center justify-between cursor-pointer ${
                         isSelected
-                          ? 'bg-neutral-100/90 text-[#041a24] font-semibold border-l-4 border-[#041a24]'
-                          : 'hover:bg-neutral-50 text-[#041a24]'
+                          ? 'bg-[#EAF2ED] text-[#245B48] font-semibold border-l-4 border-[#245B48]'
+                          : 'hover:bg-[#F5F6F4] text-[#17231F]'
                       }`}
                     >
                       <div className="min-w-0 pr-2">
-                        <p className="text-xs font-semibold leading-snug truncate">
+                        <p className={`text-xs leading-snug truncate ${isSelected ? 'font-semibold text-[#245B48]' : 'font-medium text-[#17231F]'}`}>
                           {c.custName}
                         </p>
-                        <p className="text-[11px] font-mono text-[#41555f] mt-0.5">
+                        <p className="text-[11px] font-mono text-[#52615B] mt-0.5">
                           Customer #{c.custNo}
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="text-[10px] font-mono text-[#41555f] px-1.5 py-0.5 rounded bg-neutral-100 border border-[rgba(4,26,36,0.08)]">
+                        <span className="text-[10px] font-mono text-[#52615B] px-1.5 py-0.5 rounded bg-[#F0F3F0] border border-[#DDE3DE]">
                           {c.payTerms}
                         </span>
                       </div>
@@ -216,32 +216,32 @@ export function CustomersMainView({
         {/* Right Column (Detail): Selected Customer Overview & Payments Table */}
         <div className="lg:col-span-8 xl:col-span-8 space-y-4">
           {selectedCustomer ? (
-            <Card className="border border-[rgba(4,26,36,0.12)] bg-white rounded-[4px] shadow-none overflow-hidden">
+            <Card className="border border-[#DDE3DE] bg-white rounded-lg shadow-sm overflow-hidden">
               {/* Customer Detail Header */}
-              <div className="p-5 border-b border-[rgba(4,26,36,0.08)] bg-neutral-50/30 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div className="p-5 border-b border-[#DDE3DE] bg-[#FAFBFA] flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div>
-                  <h2 className="font-editorial text-2xl font-normal text-[#041a24] leading-tight">
+                  <h2 className="text-xl sm:text-2xl font-semibold text-[#17231F] leading-tight">
                     {selectedCustomer.custName}
                   </h2>
 
-                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-y-1 sm:gap-x-4 text-xs text-[#41555f]">
+                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-y-1 sm:gap-x-4 text-xs text-[#52615B]">
                     <div>
-                      <span className="text-[#41555f]">Customer no.: </span>
-                      <span className="font-mono font-semibold text-[#041a24]">
+                      <span className="text-[#52615B]">Customer no.: </span>
+                      <span className="font-mono font-semibold text-[#17231F]">
                         #{selectedCustomer.custNo}
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-[#41555f]">Payment terms: </span>
-                      <span className="font-medium text-[#041a24]">
+                      <span className="text-[#52615B]">Payment terms: </span>
+                      <span className="font-medium text-[#17231F]">
                         {selectedCustomer.payTerms}
                       </span>
                     </div>
 
                     <div className="sm:col-span-3 mt-1">
-                      <span className="text-[#41555f]">Address: </span>
-                      <span className="text-[#041a24] font-normal leading-relaxed">
+                      <span className="text-[#52615B]">Address: </span>
+                      <span className="text-[#17231F] font-normal leading-relaxed">
                         {selectedCustomer.address}
                       </span>
                     </div>
@@ -271,7 +271,7 @@ export function CustomersMainView({
                       onClick={handleExportPaymentsCSV}
                       className="flex items-center gap-1.5 text-xs font-sans"
                     >
-                      <Download className="h-3.5 w-3.5 text-[#41555f]" />
+                      <Download className="h-3.5 w-3.5 text-[#52615B]" />
                       <span>Export CSV</span>
                     </Button>
                   )}
@@ -281,13 +281,13 @@ export function CustomersMainView({
               {/* Direct Payments Section (No Sub-Tabs) */}
               <div className="p-5 space-y-4">
                 {/* Summary Line */}
-                <div className="flex items-center justify-between text-xs text-[#41555f] border-b border-[rgba(4,26,36,0.06)] pb-2.5">
+                <div className="flex items-center justify-between text-xs text-[#52615B] border-b border-[#E9EDEA] pb-2.5">
                   <div>
-                    <span className="font-semibold text-[#041a24] font-mono tabular-nums">
+                    <span className="font-semibold text-[#17231F] font-mono tabular-nums">
                       {customerPayments.length}
                     </span>{' '}
                     receipts &bull; Total{' '}
-                    <span className="font-semibold text-[#041a24] font-mono tabular-nums">
+                    <span className="font-semibold text-[#17231F] font-mono tabular-nums">
                       {formatPHP(customerTotalPaid)}
                     </span>
                   </div>
@@ -295,17 +295,17 @@ export function CustomersMainView({
 
                 {/* Payments Table */}
                 {customerPayments.length === 0 ? (
-                  <div className="py-12 text-center text-xs text-[#41555f] space-y-1">
-                    <p className="font-semibold text-[#041a24]">No payments recorded for this customer.</p>
-                    <p className="text-[11px] text-[#41555f]">
+                  <div className="py-12 text-center text-xs text-[#52615B] space-y-1">
+                    <p className="font-semibold text-[#17231F]">No payments recorded for this customer.</p>
+                    <p className="text-[11px] text-[#52615B]">
                       Use the &ldquo;Record Payment&rdquo; button above to record an official receipt.
                     </p>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto rounded-[4px] border border-[rgba(4,26,36,0.12)]">
+                  <div className="overflow-x-auto rounded-md border border-[#DDE3DE]">
                     <table className="w-full text-left text-xs font-sans">
                       <thead>
-                        <tr className="border-b border-[rgba(4,26,36,0.1)] bg-[#F8F8F6] text-[#041a24]">
+                        <tr className="border-b border-[#DDE3DE] bg-[#FAFBFA] text-[#17231F]">
                           <th className="py-2.5 px-3 font-semibold whitespace-nowrap">OR #</th>
                           <th className="py-2.5 px-3 font-semibold whitespace-nowrap">Date</th>
                           <th className="py-2.5 px-3 font-semibold whitespace-nowrap">Sale #</th>
@@ -313,33 +313,33 @@ export function CustomersMainView({
                           <th className="py-2.5 px-3 font-semibold text-center whitespace-nowrap">Action</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[rgba(4,26,36,0.06)]">
+                      <tbody className="divide-y divide-[#E9EDEA]">
                         {customerPayments.map((p) => (
-                          <tr key={p.orNo} className="hover:bg-[#FAF8F5] transition-colors">
-                            <td className="py-2.5 px-3 font-mono font-medium text-[#041a24] whitespace-nowrap">
+                          <tr key={p.orNo} className="hover:bg-[#F5F6F4] transition-colors">
+                            <td className="py-2.5 px-3 font-mono font-medium text-[#17231F] whitespace-nowrap">
                               OR #{p.orNo}
                             </td>
-                            <td className="py-2.5 px-3 whitespace-nowrap text-[#041a24] tabular-nums">
+                            <td className="py-2.5 px-3 whitespace-nowrap text-[#17231F] tabular-nums">
                               {formatDate(p.payDate)}
                             </td>
-                            <td className="py-2.5 px-3 font-mono text-[#041a24] whitespace-nowrap">
+                            <td className="py-2.5 px-3 font-mono text-[#245B48] whitespace-nowrap">
                               <Link
                                 href={`/sales/${p.transNo}`}
-                                className="underline hover:text-black"
+                                className="underline hover:text-[#1C4939] font-medium"
                               >
                                 #{p.transNo}
                               </Link>
                             </td>
-                            <td className="py-2.5 px-3 text-right font-mono tabular-nums font-semibold text-[#041a24] whitespace-nowrap">
+                            <td className="py-2.5 px-3 text-right font-mono tabular-nums font-semibold text-[#17231F] whitespace-nowrap">
                               {formatPHP(p.amount)}
                             </td>
                             <td className="py-2.5 px-3 text-center whitespace-nowrap">
                               <Link
                                 href={`/receipts/${p.orNo}`}
-                                className="inline-flex items-center gap-1 text-[11px] font-medium text-[#041a24] hover:underline"
+                                className="inline-flex items-center gap-1 text-[11px] font-medium text-[#245B48] hover:underline"
                               >
                                 <span>Receipt</span>
-                                <ExternalLink className="w-3 h-3 text-[#41555f]" />
+                                <ExternalLink className="w-3 h-3 text-[#245B48]" />
                               </Link>
                             </td>
                           </tr>
@@ -351,7 +351,7 @@ export function CustomersMainView({
               </div>
             </Card>
           ) : (
-            <Card className="p-8 text-center text-xs text-[#41555f] border border-[rgba(4,26,36,0.12)] bg-white rounded-[4px]">
+            <Card className="p-8 text-center text-xs text-[#52615B] border border-[#DDE3DE] bg-white rounded-lg">
               Select a customer from the left to view payment records.
             </Card>
           )}

@@ -89,39 +89,39 @@ export function NewJobRecordModal({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {errorMsg && (
-          <div className="flex items-start gap-2.5 rounded-[4px] border border-red-200 bg-red-50 p-3 text-xs text-red-800">
-            <AlertCircle className="h-4 w-4 shrink-0 text-red-600 mt-0.5" />
+          <div className="flex items-start gap-2.5 rounded-md border border-[#FDECEA] bg-[#FDECEA]/60 p-3 text-xs text-[#B42318]">
+            <AlertCircle className="h-4 w-4 shrink-0 text-[#B42318] mt-0.5" />
             <p className="leading-relaxed">{errorMsg}</p>
           </div>
         )}
 
         {/* Current Assignment Reference Block */}
-        <div className="bg-neutral-50 border border-[rgba(4,26,36,0.1)] rounded-[4px] p-3 text-xs space-y-1">
-          <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block mb-1">
+        <div className="bg-[#FAFBFA] border border-[#DDE3DE] rounded-md p-3 text-xs space-y-1">
+          <span className="text-[11px] font-semibold text-[#52615B] uppercase tracking-wider block mb-1">
             Current Assignment Reference
           </span>
-          <div className="grid grid-cols-2 gap-2 text-neutral-700">
+          <div className="grid grid-cols-2 gap-2 text-[#52615B]">
             <div>
-              <span className="text-neutral-400">Position:</span>{' '}
-              <span className="font-medium text-[#041a24]">{currentAssignment.jobDesc}</span>
+              <span className="text-[#7A8781]">Position:</span>{' '}
+              <span className="font-medium text-[#17231F]">{currentAssignment.jobDesc}</span>
             </div>
             <div>
-              <span className="text-neutral-400">Department:</span>{' '}
-              <span className="font-medium text-[#041a24]">{currentAssignment.deptName}</span>
+              <span className="text-[#7A8781]">Department:</span>{' '}
+              <span className="font-medium text-[#17231F]">{currentAssignment.deptName}</span>
             </div>
             <div>
-              <span className="text-neutral-400">Current Salary:</span>{' '}
-              <span className="font-mono font-medium text-[#041a24]">
+              <span className="text-[#7A8781]">Current Salary:</span>{' '}
+              <span className="font-mono font-medium text-[#17231F]">
                 {currentAssignment.salary != null ? formatPHP(currentAssignment.salary) : '—'}
               </span>
             </div>
             <div>
-              <span className="text-neutral-400">Effective Date:</span>{' '}
-              <span className="font-mono text-[#041a24]">{formatDate(currentAssignment.effDate)}</span>
+              <span className="text-[#7A8781]">Effective Date:</span>{' '}
+              <span className="font-mono text-[#17231F]">{formatDate(currentAssignment.effDate)}</span>
             </div>
           </div>
           {latestSaleDate && (
-            <p className="text-[11px] text-amber-800 mt-1 pt-1 border-t border-neutral-200">
+            <p className="text-[11px] text-[#956316] mt-1 pt-1 border-t border-[#DDE3DE]">
               * Employee has sales dated up to {formatDate(latestSaleDate)}. The effective date must be after this date to preserve historic departmental revenue attribution.
             </p>
           )}
@@ -130,13 +130,13 @@ export function NewJobRecordModal({
         {/* Form Fields */}
         <div className="space-y-3">
           <div>
-            <label className="block text-xs font-medium text-[#041a24] mb-1">
+            <label className="block text-xs font-medium text-[#17231F] mb-1">
               New Job Position <span className="text-red-500">*</span>
             </label>
             <select
               value={jobCode}
               onChange={(e) => setJobCode(e.target.value)}
-              className="w-full h-9 rounded-[4px] border border-[rgba(4,26,36,0.2)] px-3 text-xs text-[#041a24] bg-white focus:outline-none focus:border-[#041a24]"
+              className="w-full h-9 rounded-md border border-[#CCD5CD] px-3 text-xs text-[#17231F] bg-white focus:outline-none focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 transition-all"
             >
               {jobs.map((j) => (
                 <option key={j.jobCode} value={j.jobCode}>
@@ -147,13 +147,13 @@ export function NewJobRecordModal({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#041a24] mb-1">
+            <label className="block text-xs font-medium text-[#17231F] mb-1">
               New Department <span className="text-red-500">*</span>
             </label>
             <select
               value={deptCode}
               onChange={(e) => setDeptCode(e.target.value)}
-              className="w-full h-9 rounded-[4px] border border-[rgba(4,26,36,0.2)] px-3 text-xs text-[#041a24] bg-white focus:outline-none focus:border-[#041a24]"
+              className="w-full h-9 rounded-md border border-[#CCD5CD] px-3 text-xs text-[#17231F] bg-white focus:outline-none focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 transition-all"
             >
               {departments.map((d) => (
                 <option key={d.deptCode} value={d.deptCode}>
@@ -165,7 +165,7 @@ export function NewJobRecordModal({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-[#041a24] mb-1">
+              <label className="block text-xs font-medium text-[#17231F] mb-1">
                 Effective Date <span className="text-red-500">*</span>
               </label>
               <input
@@ -173,11 +173,11 @@ export function NewJobRecordModal({
                 required
                 value={effDate}
                 onChange={(e) => setEffDate(e.target.value)}
-                className="w-full h-9 rounded-[4px] border border-[rgba(4,26,36,0.2)] px-3 text-xs text-[#041a24] focus:outline-none focus:border-[#041a24]"
+                className="w-full h-9 rounded-md border border-[#CCD5CD] px-3 text-xs text-[#17231F] focus:outline-none focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 transition-all"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[#041a24] mb-1">
+              <label className="block text-xs font-medium text-[#17231F] mb-1">
                 Salary (PHP) <span className="text-red-500">*</span>
               </label>
               <input
@@ -188,14 +188,14 @@ export function NewJobRecordModal({
                 value={salary}
                 onChange={(e) => setSalary(e.target.value)}
                 placeholder="30000.00"
-                className="w-full h-9 rounded-[4px] border border-[rgba(4,26,36,0.2)] px-3 text-xs font-mono text-[#041a24] focus:outline-none focus:border-[#041a24]"
+                className="w-full h-9 rounded-md border border-[#CCD5CD] px-3 text-xs font-mono text-[#17231F] focus:outline-none focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 transition-all"
               />
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-2 pt-3 border-t border-[rgba(4,26,36,0.12)]">
+        <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#DDE3DE]">
           <Button type="button" variant="outline" size="sm" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>

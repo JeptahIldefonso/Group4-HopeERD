@@ -55,10 +55,10 @@ export function ProductPriceTrend({ records, unit }: ProductPriceTrendProps) {
   const lastDate = sorted[sorted.length - 1].effDate;
 
   return (
-    <div className="rounded-[4px] border border-[rgba(4,26,36,0.14)] bg-white p-3.5 space-y-2">
+    <div className="rounded-[4px] border border-[#DDE3DE] bg-white p-3.5 space-y-2 shadow-2xs font-sans">
       <div className="flex items-center justify-between text-xs">
-        <span className="font-semibold text-[#041a24]">Price trend</span>
-        <span className="text-[11px] text-[#41555f] tabular-nums">
+        <span className="font-semibold text-[#17231F]">Price trend</span>
+        <span className="text-[11px] text-[#52615B] tabular-nums">
           {sorted.length} price records ({unit})
         </span>
       </div>
@@ -66,7 +66,7 @@ export function ProductPriceTrend({ records, unit }: ProductPriceTrendProps) {
       <div className="w-full overflow-hidden">
         <svg
           viewBox={`0 0 ${width} ${height}`}
-          className="w-full h-auto text-[#041a24]"
+          className="w-full h-auto text-[#17231F]"
           role="img"
           aria-label={`Price trend from ${formatPHP(sorted[0].unitPrice)} on ${firstDate} to ${formatPHP(sorted[sorted.length - 1].unitPrice)} on ${lastDate}`}
         >
@@ -76,7 +76,7 @@ export function ProductPriceTrend({ records, unit }: ProductPriceTrendProps) {
             y1={padTop}
             x2={width - padRight}
             y2={padTop}
-            stroke="rgba(4,26,36,0.08)"
+            stroke="#E9EDEA"
             strokeDasharray="2,2"
           />
           <line
@@ -84,7 +84,7 @@ export function ProductPriceTrend({ records, unit }: ProductPriceTrendProps) {
             y1={padTop + chartH / 2}
             x2={width - padRight}
             y2={padTop + chartH / 2}
-            stroke="rgba(4,26,36,0.08)"
+            stroke="#E9EDEA"
             strokeDasharray="2,2"
           />
           <line
@@ -92,7 +92,7 @@ export function ProductPriceTrend({ records, unit }: ProductPriceTrendProps) {
             y1={padTop + chartH}
             x2={width - padRight}
             y2={padTop + chartH}
-            stroke="rgba(4,26,36,0.12)"
+            stroke="#DDE3DE"
           />
 
           {/* Y Axis min & max labels */}
@@ -101,7 +101,7 @@ export function ProductPriceTrend({ records, unit }: ProductPriceTrendProps) {
             y={padTop + 3}
             textAnchor="end"
             fontSize="9"
-            fill="#41555f"
+            fill="#52615B"
             fontFamily="monospace"
           >
             {minPrice === maxPrice ? '' : `₱${Math.round(maxPrice)}`}
@@ -111,17 +111,17 @@ export function ProductPriceTrend({ records, unit }: ProductPriceTrendProps) {
             y={padTop + chartH + 3}
             textAnchor="end"
             fontSize="9"
-            fill="#41555f"
+            fill="#52615B"
             fontFamily="monospace"
           >
-            ₱{Math.round(minPrice)}
+            ₱${Math.round(minPrice)}
           </text>
 
           {/* Step line */}
           <path
             d={pathD}
             fill="none"
-            stroke="#041a24"
+            stroke="#245B48"
             strokeWidth="1.75"
             strokeLinejoin="round"
           />
@@ -133,8 +133,8 @@ export function ProductPriceTrend({ records, unit }: ProductPriceTrendProps) {
                 cx={p.x}
                 cy={p.y}
                 r={idx === points.length - 1 ? 4 : 3}
-                fill={idx === points.length - 1 ? '#041a24' : '#FFFFFF'}
-                stroke="#041a24"
+                fill={idx === points.length - 1 ? '#245B48' : '#FFFFFF'}
+                stroke="#245B48"
                 strokeWidth="1.5"
               />
             </g>
@@ -146,7 +146,7 @@ export function ProductPriceTrend({ records, unit }: ProductPriceTrendProps) {
             y={height - 6}
             textAnchor="start"
             fontSize="9"
-            fill="#41555f"
+            fill="#52615B"
             fontFamily="monospace"
           >
             {formatDate(firstDate)}
@@ -156,7 +156,7 @@ export function ProductPriceTrend({ records, unit }: ProductPriceTrendProps) {
             y={height - 6}
             textAnchor="end"
             fontSize="9"
-            fill="#41555f"
+            fill="#52615B"
             fontFamily="monospace"
           >
             {formatDate(lastDate)}

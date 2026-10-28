@@ -25,14 +25,14 @@ export function WelcomeCard({ fullName, userRole }: WelcomeCardProps) {
   const canRecordPayment = userRole === 'admin' || userRole === 'cashier';
 
   return (
-    <div className="bg-white rounded-[4px] border border-[rgba(4,26,36,0.16)] p-6">
+    <div className="bg-white rounded-[4px] border border-[#DDE3DE] p-6 shadow-xs font-sans">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         {/* Left Copy Block */}
-        <div className="space-y-2 max-w-2xl">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#041a24]">
+        <div className="space-y-1.5 max-w-2xl">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#17231F]">
             Welcome back, {firstName}.
           </h1>
-          <p className="text-xs sm:text-sm text-[#41555f] leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#52615B] leading-relaxed">
             {BRAND.homeIntro}
           </p>
         </div>
@@ -44,7 +44,7 @@ export function WelcomeCard({ fullName, userRole }: WelcomeCardProps) {
               <Button
                 type="button"
                 variant="primary"
-                className="gap-2 h-10 px-4 text-xs font-medium cursor-pointer"
+                className="gap-2 h-9 px-4 text-xs font-medium cursor-pointer"
               >
                 <ShoppingCart className="w-4 h-4 stroke-[2]" />
                 <span>New Sale</span>
@@ -57,7 +57,7 @@ export function WelcomeCard({ fullName, userRole }: WelcomeCardProps) {
               type="button"
               variant="outline"
               onClick={() => setIsPaymentDialogOpen(true)}
-              className="gap-2 h-10 px-4 text-xs font-medium cursor-pointer bg-white"
+              className="gap-2 h-9 px-4 text-xs font-medium cursor-pointer"
             >
               <Receipt className="w-4 h-4 stroke-[2]" />
               <span>Record Payment</span>

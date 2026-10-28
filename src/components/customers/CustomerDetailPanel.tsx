@@ -55,7 +55,7 @@ export function CustomerDetailPanel({
 
   if (!customerData) {
     return (
-      <div className="rounded-[4px] border border-[rgba(4,26,36,0.16)] bg-white p-8 text-center text-xs text-[#41555f]">
+      <div className="rounded-lg border border-[#DDE3DE] bg-white p-8 text-center text-xs text-[#52615B]">
         Select a customer to see their payment history.
       </div>
     );
@@ -66,17 +66,17 @@ export function CustomerDetailPanel({
   const content = (
     <div className="space-y-5">
       {/* 1. Header */}
-      <div className="flex items-start justify-between border-b border-[rgba(4,26,36,0.12)] pb-4">
+      <div className="flex items-start justify-between border-b border-[#DDE3DE] pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs text-[#41555f]">
+            <span className="font-mono text-xs text-[#52615B]">
               Customer #{customer.custNo}
             </span>
-            <Badge variant="outline" className="font-mono text-[10px]">
+            <Badge variant="outline" className="font-mono text-[10px] border-[#DDE3DE] text-[#52615B]">
               {customer.payTerms}
             </Badge>
           </div>
-          <h2 className="font-editorial text-xl sm:text-2xl font-normal text-[#041a24] mt-1 leading-snug">
+          <h2 className="text-xl sm:text-2xl font-semibold text-[#17231F] mt-1 leading-snug">
             {customer.custName}
           </h2>
         </div>
@@ -86,7 +86,7 @@ export function CustomerDetailPanel({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-[#41555f] hover:text-[#041a24] hover:bg-[#EAEAE4] rounded-[4px] transition-colors"
+            className="p-1.5 text-[#52615B] hover:text-[#17231F] hover:bg-[#F0F3F0] rounded-md transition-colors"
             aria-label="Close panel"
           >
             <X className="h-4 w-4" />
@@ -104,7 +104,7 @@ export function CustomerDetailPanel({
             onClick={() => setIsEditOpen(true)}
             className="flex items-center gap-1.5 text-xs font-sans"
           >
-            <Edit2 className="h-3.5 w-3.5 text-[#41555f]" />
+            <Edit2 className="h-3.5 w-3.5 text-[#52615B]" />
             <span>Edit customer</span>
           </Button>
         )}
@@ -125,36 +125,36 @@ export function CustomerDetailPanel({
       </div>
 
       {/* 2. Card: Customer Information */}
-      <div className="rounded-[4px] border border-[rgba(4,26,36,0.12)] bg-[#FAF8F5] p-4 space-y-3">
-        <span className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#41555f] block">
+      <div className="rounded-lg border border-[#DDE3DE] bg-[#FAFBFA] p-4 space-y-3">
+        <span className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#52615B] block">
           Customer information
         </span>
 
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div>
-            <dt className="text-[#41555f] text-[11px]">Customer no.</dt>
-            <dd className="font-mono font-medium text-[#041a24] mt-0.5">
+            <dt className="text-[#52615B] text-[11px]">Customer no.</dt>
+            <dd className="font-mono font-medium text-[#17231F] mt-0.5">
               {customer.custNo}
             </dd>
           </div>
 
           <div>
-            <dt className="text-[#41555f] text-[11px]">Payment term</dt>
-            <dd className="font-mono font-medium text-[#041a24] mt-0.5">
+            <dt className="text-[#52615B] text-[11px]">Payment term</dt>
+            <dd className="font-mono font-medium text-[#17231F] mt-0.5">
               {customer.payTerms}
             </dd>
           </div>
 
           <div className="sm:col-span-2">
-            <dt className="text-[#41555f] text-[11px]">Customer Name</dt>
-            <dd className="font-medium text-[#041a24] mt-0.5">
+            <dt className="text-[#52615B] text-[11px]">Customer Name</dt>
+            <dd className="font-medium text-[#17231F] mt-0.5">
               {customer.custName}
             </dd>
           </div>
 
           <div className="sm:col-span-2">
-            <dt className="text-[#41555f] text-[11px]">Address</dt>
-            <dd className="text-[#041a24] mt-0.5 leading-relaxed">
+            <dt className="text-[#52615B] text-[11px]">Address</dt>
+            <dd className="text-[#17231F] mt-0.5 leading-relaxed">
               {customer.address}
             </dd>
           </div>
@@ -162,55 +162,55 @@ export function CustomerDetailPanel({
       </div>
 
       {/* 3. Card: Payment Summary */}
-      <div className="rounded-[4px] border border-[rgba(4,26,36,0.12)] bg-white p-4 space-y-3 shadow-[0_1px_2px_rgba(4,26,36,0.03)]">
+      <div className="rounded-lg border border-[#DDE3DE] bg-white p-4 space-y-3 shadow-sm">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#41555f]">
+          <span className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#52615B]">
             Payment summary
           </span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs pt-1">
           <div>
-            <span className="text-[11px] text-[#41555f] block">Orders placed</span>
-            <span className="text-base font-semibold font-mono text-[#041a24] mt-0.5 block">
+            <span className="text-[11px] text-[#52615B] block">Orders placed</span>
+            <span className="text-base font-semibold font-mono text-[#17231F] mt-0.5 block">
               {summary.ordersPlaced}
             </span>
           </div>
 
           <div>
-            <span className="text-[11px] text-[#41555f] block">Total paid</span>
-            <span className="text-base font-semibold font-mono text-[#041a24] mt-0.5 block">
+            <span className="text-[11px] text-[#52615B] block">Total paid</span>
+            <span className="text-base font-semibold font-mono text-[#17231F] mt-0.5 block">
               {formatPHP(summary.totalPaid)}
             </span>
           </div>
 
           <div>
-            <span className="text-[11px] text-[#41555f] block">Payment count</span>
-            <span className="text-base font-semibold font-mono text-[#041a24] mt-0.5 block">
+            <span className="text-[11px] text-[#52615B] block">Payment count</span>
+            <span className="text-base font-semibold font-mono text-[#17231F] mt-0.5 block">
               {summary.paymentCount}
             </span>
           </div>
 
           <div>
-            <span className="text-[11px] text-[#41555f] block">Unpaid orders</span>
+            <span className="text-[11px] text-[#52615B] block">Unpaid orders</span>
             <span className="mt-0.5 block">
               {summary.unpaidOrders > 0 ? (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-[2px] text-xs font-mono font-bold bg-[#FDF4E7] text-[#824f11] border border-[rgba(130,79,17,0.2)]">
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium bg-[#FBF2DD] text-[#956316] border border-[#F0E4C3]">
                   {summary.unpaidOrders} awaiting
                 </span>
               ) : (
-                <span className="text-xs font-mono text-[#41555f]">0</span>
+                <span className="text-xs font-mono text-[#52615B]">0</span>
               )}
             </span>
           </div>
 
           <div>
-            <span className="text-[11px] text-[#41555f] block">Last payment</span>
-            <span className="text-xs font-medium text-[#041a24] mt-0.5 block">
+            <span className="text-[11px] text-[#52615B] block">Last payment</span>
+            <span className="text-xs font-medium text-[#17231F] mt-0.5 block">
               {summary.lastPaymentDate ? (
                 <>
                   {formatDate(summary.lastPaymentDate)}{' '}
-                  <span className="text-[10px] font-mono text-[#41555f]">
+                  <span className="text-[10px] font-mono text-[#52615B]">
                     (OR #{summary.lastPaymentOrNo})
                   </span>
                 </>
@@ -221,58 +221,58 @@ export function CustomerDetailPanel({
           </div>
 
           <div>
-            <span className="text-[11px] text-[#41555f] block">Customer since</span>
-            <span className="text-xs font-medium text-[#041a24] mt-0.5 block">
+            <span className="text-[11px] text-[#52615B] block">Customer since</span>
+            <span className="text-xs font-medium text-[#17231F] mt-0.5 block">
               {summary.customerSince ? formatDate(summary.customerSince) : '-'}
             </span>
           </div>
         </div>
 
-        <p className="text-[10px] text-[#41555f] border-t border-[rgba(4,26,36,0.08)] pt-2 mt-2 leading-relaxed">
+        <p className="text-[10px] text-[#52615B] border-t border-[#E9EDEA] pt-2 mt-2 leading-relaxed">
           Orders and dates come from this customer&apos;s sales. Only PAYMENT columns are entered here.
         </p>
       </div>
 
       {/* 4. Table: Payment History */}
-      <div className="rounded-[4px] border border-[rgba(4,26,36,0.12)] bg-white overflow-hidden shadow-[0_1px_2px_rgba(4,26,36,0.03)]">
-        <div className="px-4 py-3 border-b border-[rgba(4,26,36,0.1)] bg-[#FAF8F5] flex items-center justify-between">
+      <div className="rounded-lg border border-[#DDE3DE] bg-white overflow-hidden shadow-sm">
+        <div className="px-4 py-3 border-b border-[#DDE3DE] bg-[#FAFBFA] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Receipt className="h-3.5 w-3.5 text-[#41555f]" />
-            <span className="text-xs font-semibold text-[#041a24]">
+            <Receipt className="h-3.5 w-3.5 text-[#52615B]" />
+            <span className="text-xs font-semibold text-[#17231F]">
               Payment history ({paymentHistory.length})
             </span>
           </div>
-          <span className="text-[10px] text-[#41555f]">Read-only records</span>
+          <span className="text-[10px] text-[#52615B]">Read-only records</span>
         </div>
 
         {paymentHistory.length === 0 ? (
-          <div className="p-6 text-center text-xs text-[#41555f]">
+          <div className="p-6 text-center text-xs text-[#52615B]">
             No payments recorded yet.
           </div>
         ) : (
           <div className="overflow-x-auto max-h-[360px] overflow-y-auto">
             <table className="w-full text-left text-xs">
-              <thead className="sticky top-0 bg-[#F8F8F6] border-b border-[rgba(4,26,36,0.1)] text-[#041a24] z-10">
+              <thead className="sticky top-0 bg-[#FAFBFA] border-b border-[#DDE3DE] text-[#17231F] z-10 font-semibold">
                 <tr>
-                  <th className="py-2 px-3 font-semibold">Date</th>
-                  <th className="py-2 px-3 font-semibold">OR No.</th>
-                  <th className="py-2 px-3 font-semibold text-right">Amount</th>
-                  <th className="py-2 px-3 font-semibold text-right">Transaction no.</th>
+                  <th className="py-2.5 px-3">Date</th>
+                  <th className="py-2.5 px-3">OR No.</th>
+                  <th className="py-2.5 px-3 text-right">Amount</th>
+                  <th className="py-2.5 px-3 text-right">Transaction no.</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[rgba(4,26,36,0.08)]">
+              <tbody className="divide-y divide-[#E9EDEA]">
                 {paymentHistory.map((p) => (
-                  <tr key={p.orNo} className="hover:bg-[#FAF8F5] transition-colors">
-                    <td className="py-2 px-3 text-[#041a24] whitespace-nowrap">
+                  <tr key={p.orNo} className="hover:bg-[#F5F6F4] transition-colors">
+                    <td className="py-2.5 px-3 text-[#17231F] whitespace-nowrap">
                       {formatDate(p.payDate)}
                     </td>
-                    <td className="py-2 px-3 font-mono font-medium text-[#041a24] whitespace-nowrap">
+                    <td className="py-2.5 px-3 font-mono font-medium text-[#17231F] whitespace-nowrap">
                       #{p.orNo}
                     </td>
-                    <td className="py-2 px-3 font-mono font-semibold text-[#041a24] text-right whitespace-nowrap">
+                    <td className="py-2.5 px-3 font-mono font-semibold text-[#17231F] text-right whitespace-nowrap">
                       {formatPHP(p.amount)}
                     </td>
-                    <td className="py-2 px-3 font-mono text-[#41555f] text-right whitespace-nowrap">
+                    <td className="py-2.5 px-3 font-mono text-[#245B48] text-right whitespace-nowrap">
                       #{p.transNo}
                     </td>
                   </tr>
@@ -320,7 +320,7 @@ export function CustomerDetailPanel({
 
   // Desktop inline column
   return (
-    <div className="rounded-[4px] border border-[rgba(4,26,36,0.16)] bg-white p-5 shadow-none sticky top-6">
+    <div className="rounded-lg border border-[#DDE3DE] bg-white p-5 shadow-sm sticky top-6">
       {content}
     </div>
   );

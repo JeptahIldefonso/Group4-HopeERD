@@ -4,10 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ERD_TABLES,
-  ERD_RELATIONSHIPS,
   ERD_GEOMETRY,
   ERD_MODULES,
-  type ErdRelationship,
 } from '@/lib/erd';
 import type { UserRole } from '@/lib/types';
 
@@ -16,12 +14,12 @@ interface ErdDiagramProps {
   userRole?: UserRole;
 }
 
-// Module styling lookup with CSS variable references and fallbacks
+// Module styling lookup with subtle enterprise tints
 const MODULE_COLORS: Record<string, { bg: string; border: string; text: string }> = {
-  employees: { bg: 'var(--module-employees, #e6eef4)', border: '#8faac1', text: '#1e3a5f' },
-  products: { bg: 'var(--module-products, #e8f2ea)', border: '#96c29d', text: '#23532d' },
-  customers: { bg: 'var(--module-customers, #faf0e6)', border: '#d6b797', text: '#643916' },
-  sales: { bg: 'var(--module-sales, #f4e8ee)', border: '#cba0b4', text: '#59203a' },
+  employees: { bg: '#EAF0F6', border: '#B4C9DC', text: '#1E3A5F' },
+  products: { bg: '#EAF2ED', border: '#B2D0BC', text: '#245B48' },
+  customers: { bg: '#FAF4EB', border: '#DECEB8', text: '#643916' },
+  sales: { bg: '#F6EBF0', border: '#D6B4C4', text: '#59203A' },
 };
 
 interface ConnectionPath {
@@ -167,10 +165,9 @@ function renderCardinalityMark(
   type: 'one' | 'zero_many' | 'one_many'
 ) {
   if (dir === 'left') {
-    // Touching left border of target table; line comes from x - 15 to x
     if (type === 'zero_many') {
       return (
-        <g stroke="#041a24" strokeWidth="1.5" fill="none">
+        <g stroke="#17231F" strokeWidth="1.5" fill="none">
           <circle cx={x - 14} cy={y} r="3" fill="#ffffff" />
           <path d={`M ${x - 9} ${y} L ${x} ${y - 6} M ${x - 9} ${y} L ${x} ${y + 6}`} />
         </g>
@@ -178,15 +175,14 @@ function renderCardinalityMark(
     }
     if (type === 'one_many') {
       return (
-        <g stroke="#041a24" strokeWidth="1.5" fill="none">
+        <g stroke="#17231F" strokeWidth="1.5" fill="none">
           <line x1={x - 14} y1={y - 5} x2={x - 14} y2={y + 5} />
           <path d={`M ${x - 9} ${y} L ${x} ${y - 6} M ${x - 9} ${y} L ${x} ${y + 6}`} />
         </g>
       );
     }
-    // Exactly one
     return (
-      <g stroke="#041a24" strokeWidth="1.5">
+      <g stroke="#17231F" strokeWidth="1.5">
         <line x1={x + 5} y1={y - 5} x2={x + 5} y2={y + 5} />
         <line x1={x + 10} y1={y - 5} x2={x + 10} y2={y + 5} />
       </g>
@@ -194,10 +190,9 @@ function renderCardinalityMark(
   }
 
   if (dir === 'right') {
-    // Touching right border of target table; line comes from x + 15 to x
     if (type === 'zero_many') {
       return (
-        <g stroke="#041a24" strokeWidth="1.5" fill="none">
+        <g stroke="#17231F" strokeWidth="1.5" fill="none">
           <circle cx={x + 14} cy={y} r="3" fill="#ffffff" />
           <path d={`M ${x + 9} ${y} L ${x} ${y - 6} M ${x + 9} ${y} L ${x} ${y + 6}`} />
         </g>
@@ -205,15 +200,14 @@ function renderCardinalityMark(
     }
     if (type === 'one_many') {
       return (
-        <g stroke="#041a24" strokeWidth="1.5" fill="none">
+        <g stroke="#17231F" strokeWidth="1.5" fill="none">
           <line x1={x + 14} y1={y - 5} x2={x + 14} y2={y + 5} />
           <path d={`M ${x + 9} ${y} L ${x} ${y - 6} M ${x + 9} ${y} L ${x} ${y + 6}`} />
         </g>
       );
     }
-    // Exactly one
     return (
-      <g stroke="#041a24" strokeWidth="1.5">
+      <g stroke="#17231F" strokeWidth="1.5">
         <line x1={x - 5} y1={y - 5} x2={x - 5} y2={y + 5} />
         <line x1={x - 10} y1={y - 5} x2={x - 10} y2={y + 5} />
       </g>
@@ -221,10 +215,9 @@ function renderCardinalityMark(
   }
 
   if (dir === 'bottom') {
-    // Touching bottom border of target table; line comes from y + 15 to y
     if (type === 'zero_many') {
       return (
-        <g stroke="#041a24" strokeWidth="1.5" fill="none">
+        <g stroke="#17231F" strokeWidth="1.5" fill="none">
           <circle cx={x} cy={y + 14} r="3" fill="#ffffff" />
           <path d={`M ${x} ${y + 9} L ${x - 6} ${y} M ${x} ${y + 9} L ${x + 6} ${y}`} />
         </g>
@@ -232,15 +225,14 @@ function renderCardinalityMark(
     }
     if (type === 'one_many') {
       return (
-        <g stroke="#041a24" strokeWidth="1.5" fill="none">
+        <g stroke="#17231F" strokeWidth="1.5" fill="none">
           <line x1={x - 5} y1={y + 14} x2={x + 5} y2={y + 14} />
           <path d={`M ${x} ${y + 9} L ${x - 6} ${y} M ${x} ${y + 9} L ${x + 6} ${y}`} />
         </g>
       );
     }
-    // Exactly one
     return (
-      <g stroke="#041a24" strokeWidth="1.5">
+      <g stroke="#17231F" strokeWidth="1.5">
         <line x1={x - 5} y1={y - 5} x2={x + 5} y2={y - 5} />
         <line x1={x - 5} y1={y - 10} x2={x + 5} y2={y - 10} />
       </g>
@@ -250,7 +242,7 @@ function renderCardinalityMark(
   // dir === 'top'
   if (type === 'zero_many') {
     return (
-      <g stroke="#041a24" strokeWidth="1.5" fill="none">
+      <g stroke="#17231F" strokeWidth="1.5" fill="none">
         <circle cx={x} cy={y - 14} r="3" fill="#ffffff" />
         <path d={`M ${x} ${y - 9} L ${x - 6} ${y} M ${x} ${y - 9} L ${x + 6} ${y}`} />
       </g>
@@ -258,15 +250,14 @@ function renderCardinalityMark(
   }
   if (type === 'one_many') {
     return (
-      <g stroke="#041a24" strokeWidth="1.5" fill="none">
+      <g stroke="#17231F" strokeWidth="1.5" fill="none">
         <line x1={x - 5} y1={y - 14} x2={x + 5} y2={y - 14} />
         <path d={`M ${x} ${y - 9} L ${x - 6} ${y} M ${x} ${y - 9} L ${x + 6} ${y}`} />
       </g>
     );
   }
-  // Exactly one
   return (
-    <g stroke="#041a24" strokeWidth="1.5">
+    <g stroke="#17231F" strokeWidth="1.5">
       <line x1={x - 5} y1={y + 5} x2={x + 5} y2={y + 5} />
       <line x1={x - 5} y1={y + 10} x2={x + 5} y2={y + 10} />
     </g>
@@ -321,21 +312,20 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
     }
   };
 
-  // Incident relationship lookup for active highlight
   const isRelationshipActive = (rel: ConnectionPath) => {
     if (!activeTable) return false;
     return rel.fromTable === activeTable || rel.toTable === activeTable;
   };
 
   return (
-    <div className="space-y-4">
-      {/* Scrollable Container on screens < 720px with hint */}
+    <div className="space-y-4 font-sans">
+      {/* Scrollable Container on screens < 720px */}
       <div className="relative">
         <div className="overflow-x-auto pb-2 scroll-smooth">
           <div
             className="min-w-[1080px] lg:min-w-full"
             role="img"
-            aria-label="Hope ERD Entity Relationship Diagram: 10 tables including DEPARTMENT, JOB, EMPLOYEE, JOBHISTORY, CUSTOMER, PRODUCT, PRICEHIST, SALES, SALESDETAIL, PAYMENT, and 9 relationships."
+            aria-label="Group 4 HopeERD Entity Relationship Diagram: 10 tables including DEPARTMENT, JOB, EMPLOYEE, JOBHISTORY, CUSTOMER, PRODUCT, PRICEHIST, SALES, SALESDETAIL, PAYMENT, and 9 relationships."
           >
             <svg
               viewBox="0 0 1240 610"
@@ -345,11 +335,11 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
               {/* Definitions */}
               <defs>
                 <filter id="erd-subtle-shadow" x="-5%" y="-5%" width="110%" height="110%">
-                  <feDropShadow dx="0" dy="1" stdDeviation="1" floodColor="#041a24" floodOpacity="0.08" />
+                  <feDropShadow dx="0" dy="1" stdDeviation="1" floodColor="#17231F" floodOpacity="0.06" />
                 </filter>
               </defs>
 
-              {/* ---------------- 1. Relationship Lines & Labels ---------------- */}
+              {/* 1. Relationship Lines & Labels */}
               {RELATIONSHIP_PATHS.map((rel) => {
                 const isActive = isRelationshipActive(rel);
                 const isDimmed = activeTable !== null && !isActive;
@@ -367,7 +357,7 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
                     <path
                       d={rel.d}
                       fill="none"
-                      stroke={isActive ? '#041a24' : '#41555f'}
+                      stroke={isActive ? '#245B48' : '#7A8781'}
                       strokeWidth={isActive ? '2' : '1.25'}
                     />
 
@@ -395,16 +385,15 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
                         width="92"
                         height="17"
                         fill="#FFFFFF"
-                        stroke="#041a24"
-                        strokeWidth="0.75"
-                        strokeOpacity="0.2"
+                        stroke="#DDE3DE"
+                        strokeWidth="1"
                         rx="2"
                       />
                       <text
                         x="0"
                         y="2"
                         textAnchor="middle"
-                        className="font-sans italic text-[10px] fill-[#041a24] font-medium"
+                        className="font-sans text-[10px] fill-[#17231F] font-medium"
                       >
                         {rel.label}
                       </text>
@@ -413,7 +402,7 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
                 );
               })}
 
-              {/* ---------------- 2. Table Boxes ---------------- */}
+              {/* 2. Table Boxes */}
               {Object.keys(ERD_TABLES).map((tableName) => {
                 const table = ERD_TABLES[tableName];
                 const geom = ERD_GEOMETRY[tableName];
@@ -463,7 +452,7 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
                       width={geom.width}
                       height={geom.height}
                       fill="#FFFFFF"
-                      stroke={isActive ? '#041a24' : 'rgba(4, 26, 36, 0.4)'}
+                      stroke={isActive ? '#245B48' : '#DDE3DE'}
                       strokeWidth={isActive ? '2' : '1'}
                       rx="3"
                       filter="url(#erd-subtle-shadow)"
@@ -474,13 +463,13 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
                       d={`M 0 3 A 3 3 0 0 1 3 0 L ${geom.width - 3} 0 A 3 3 0 0 1 ${geom.width} 3 L ${geom.width} 28 L 0 28 Z`}
                       fill={colors.bg}
                     />
-                    <line x1="0" y1="28" x2={geom.width} y2="28" stroke="#041a24" strokeWidth="1" />
+                    <line x1="0" y1="28" x2={geom.width} y2="28" stroke="#DDE3DE" strokeWidth="1" />
 
                     {/* Table Name */}
                     <text
                       x="8"
                       y="18"
-                      className="font-sans font-bold text-[12px] fill-[#041a24] tracking-tight"
+                      className="font-sans font-bold text-[12px] fill-[#17231F] tracking-tight"
                     >
                       {tableName}
                     </text>
@@ -494,15 +483,14 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
                         height="16"
                         rx="2"
                         fill="#FFFFFF"
-                        stroke="#041a24"
-                        strokeWidth="0.75"
-                        strokeOpacity="0.4"
+                        stroke="#CBD5CE"
+                        strokeWidth="1"
                       />
                       <text
                         x="17"
                         y="12"
                         textAnchor="middle"
-                        className="font-mono text-[9px] font-semibold fill-[#041a24]"
+                        className="font-mono text-[9px] font-semibold fill-[#17231F]"
                       >
                         {rowCount}
                       </text>
@@ -525,7 +513,7 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
                           <text
                             x="10"
                             y={yPos}
-                            className={`font-sans text-[11px] fill-[#041a24] ${
+                            className={`font-sans text-[11px] fill-[#17231F] ${
                               isPk ? 'font-bold underline' : 'font-normal'
                             }`}
                           >
@@ -538,7 +526,7 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
                             y={yPos}
                             textAnchor="end"
                             className={`font-mono text-[9px] ${
-                              tag ? 'fill-[#041a24] font-semibold' : 'fill-[#64748b]'
+                              tag ? 'fill-[#245B48] font-bold' : 'fill-[#7A8781]'
                             }`}
                           >
                             {tag || col.type.toLowerCase()}
@@ -555,7 +543,7 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
 
         {/* Swipe hint for narrow viewports */}
         <div className="block lg:hidden text-center mt-1">
-          <span className="text-[11px] font-sans text-neutral-500 italic">
+          <span className="text-[11px] font-sans text-[#7A8781]">
             Swipe to see the full diagram.
           </span>
         </div>
@@ -564,45 +552,45 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
       {/* Floating Tooltip for restricted access */}
       {tooltip && (
         <div
-          className="fixed z-50 transform -translate-x-1/2 -translate-y-full px-2.5 py-1 bg-[#041a24] text-white text-[11px] font-medium rounded shadow-md pointer-events-none"
+          className="fixed z-50 transform -translate-x-1/2 -translate-y-full px-2.5 py-1 bg-[#17231F] text-white text-[11px] font-medium rounded shadow-md pointer-events-none"
           style={{ left: `${tooltip.x}px`, top: `${tooltip.y}px` }}
         >
           {tooltip.text}
         </div>
       )}
 
-      {/* ---------------- 3. Legend & Accompanying Narrative ---------------- */}
-      <div className="pt-4 border-t border-[rgba(4,26,36,0.12)] space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-y-2 gap-x-6 text-xs text-[#041a24]">
+      {/* 3. Legend & Accompanying Narrative */}
+      <div className="pt-4 border-t border-[#E9EDEA] space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-y-2 gap-x-6 text-xs text-[#17231F]">
           {/* Notation Symbols */}
           <div className="flex items-center gap-4">
-            <span className="font-semibold text-neutral-800">Notation:</span>
-            <div className="flex items-center gap-1.5 font-mono text-[11px] text-neutral-600">
-              <span className="font-bold text-[#041a24]">||</span>
+            <span className="font-semibold text-[#17231F]">Notation:</span>
+            <div className="flex items-center gap-1.5 font-mono text-[11px] text-[#52615B]">
+              <span className="font-bold text-[#17231F]">||</span>
               <span className="font-sans text-xs">Exactly one</span>
             </div>
-            <div className="flex items-center gap-1.5 font-mono text-[11px] text-neutral-600">
-              <span className="font-bold text-[#041a24]">O&lt;</span>
+            <div className="flex items-center gap-1.5 font-mono text-[11px] text-[#52615B]">
+              <span className="font-bold text-[#17231F]">O&lt;</span>
               <span className="font-sans text-xs">Zero or many</span>
             </div>
-            <div className="flex items-center gap-1.5 font-mono text-[11px] text-neutral-600">
-              <span className="font-bold text-[#041a24]">|&lt;</span>
+            <div className="flex items-center gap-1.5 font-mono text-[11px] text-[#52615B]">
+              <span className="font-bold text-[#17231F]">|&lt;</span>
               <span className="font-sans text-xs">One or many</span>
             </div>
           </div>
 
           {/* Module Color Swatches */}
           <div className="flex items-center gap-4">
-            <span className="font-semibold text-neutral-800">Sections:</span>
+            <span className="font-semibold text-[#17231F]">Sections:</span>
             {ERD_MODULES.map((mod) => {
               const col = MODULE_COLORS[mod.id];
               return (
                 <div key={mod.id} className="flex items-center gap-1.5">
                   <span
-                    className="w-3.5 h-3.5 rounded-[2px] border border-[#041a24]/40"
+                    className="w-3.5 h-3.5 rounded-[2px] border border-[#CBD5CE]"
                     style={{ backgroundColor: col.bg }}
                   />
-                  <span className="text-xs text-neutral-700">{mod.name}</span>
+                  <span className="text-xs text-[#52615B]">{mod.name}</span>
                 </div>
               );
             })}
@@ -610,7 +598,7 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
         </div>
 
         {/* Narrative Line */}
-        <p className="text-xs sm:text-[13px] text-[#41555f] leading-relaxed italic">
+        <p className="text-xs sm:text-[13px] text-[#52615B] leading-relaxed italic">
           &ldquo;A customer makes sales. Each sale has items, is handled by an employee, and can have payments. Product prices and employee jobs are kept as history by effective date.&rdquo;
         </p>
       </div>

@@ -11,11 +11,16 @@ export default async function ReportsPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="border-b border-slate-200 pb-4">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+      <div className="border-b border-[#DDE3DE] pb-4">
+        <nav className="flex items-center text-xs text-[#52615B] mb-1 font-mono uppercase tracking-[0.12em]">
+          <span>Group 4 HopeERD</span>
+          <span className="mx-1.5">·</span>
+          <span className="text-[#17231F] font-semibold">Reports &amp; Analytics</span>
+        </nav>
+        <h1 className="text-2xl sm:text-[28px] font-semibold tracking-tight text-[#17231F]">
           {LABELS.pages.reports.title}
         </h1>
-        <p className="text-sm text-slate-600 mt-1">
+        <p className="text-xs sm:text-sm text-[#52615B] mt-1">
           {LABELS.pages.reports.subtitle}
         </p>
       </div>

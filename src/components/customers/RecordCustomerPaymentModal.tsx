@@ -121,21 +121,21 @@ export function RecordCustomerPaymentModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-[2px]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17231F]/50 p-4 backdrop-blur-[2px]">
       <div
-        className="w-full max-w-md rounded-[6px] border border-[rgba(4,26,36,0.18)] bg-white p-6 shadow-[0_4px_24px_rgba(4,26,36,0.12)] space-y-5"
+        className="w-full max-w-md rounded-lg border border-[#DDE3DE] bg-white p-6 shadow-xl space-y-5"
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[rgba(4,26,36,0.1)] pb-3">
+        <div className="flex items-center justify-between border-b border-[#DDE3DE] pb-3">
           <div className="flex items-center gap-2">
-            <Receipt className="h-4 w-4 text-[#041a24]" />
+            <Receipt className="h-4 w-4 text-[#245B48]" />
             <div>
-              <h3 className="font-editorial text-lg font-normal text-[#041a24]">
+              <h3 className="text-lg font-semibold text-[#17231F]">
                 Record Payment
               </h3>
-              <p className="text-[11px] text-[#41555f]">
+              <p className="text-[11px] text-[#52615B]">
                 {custName} (Customer #{custNo})
               </p>
             </div>
@@ -143,14 +143,14 @@ export function RecordCustomerPaymentModal({
           <button
             type="button"
             onClick={onClose}
-            className="text-[#41555f] hover:text-[#041a24] p-1 rounded-[2px]"
+            className="text-[#52615B] hover:text-[#17231F] p-1 rounded-md hover:bg-[#F0F3F0] transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {errorMsg && (
-          <div className="rounded-[4px] border border-[rgba(134,37,37,0.3)] bg-[#FCECEC] p-3 text-xs text-[#862525] flex items-center gap-2">
+          <div className="rounded-md border border-[#FDECEA] bg-[#FDECEA]/60 p-3 text-xs text-[#B42318] flex items-center gap-2">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{errorMsg}</span>
           </div>
@@ -158,8 +158,8 @@ export function RecordCustomerPaymentModal({
 
         {/* Linked Transaction Notice */}
         {currentSelectedSale && (
-          <div className="rounded-[4px] border border-[rgba(4,26,36,0.1)] bg-[#FAF8F5] p-3 text-xs flex items-center gap-2 text-[#041a24]">
-            <Calendar className="h-4 w-4 text-[#41555f] shrink-0" />
+          <div className="rounded-md border border-[#DDE3DE] bg-[#FAFBFA] p-3 text-xs flex items-center gap-2 text-[#17231F]">
+            <Calendar className="h-4 w-4 text-[#52615B] shrink-0" />
             <span>
               Sale date: <strong>{formatDate(currentSelectedSale.salesDate)}</strong>. Payment date must be on or after this date.
             </span>
@@ -169,14 +169,14 @@ export function RecordCustomerPaymentModal({
         <form onSubmit={handleSubmit} className="space-y-4 text-xs font-sans">
           {/* Sales Transaction Dropdown */}
           <div className="space-y-1">
-            <label className="block font-semibold text-[#041a24]">
+            <label className="block font-semibold text-[#17231F]">
               Sales transaction <span className="text-rose-600">*</span>
             </label>
             <select
               required
               value={selectedTransNo}
               onChange={(e) => setSelectedTransNo(Number(e.target.value))}
-              className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-2 text-xs font-mono text-[#041a24] focus:border-[#041a24] focus:outline-none"
+              className="w-full rounded-md border border-[#CCD5CD] bg-white px-3 py-2 text-xs font-mono text-[#17231F] focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 focus:outline-none transition-all"
             >
               {eligibleTransactions.map((t) => (
                 <option key={t.transNo} value={t.transNo}>
@@ -184,14 +184,14 @@ export function RecordCustomerPaymentModal({
                 </option>
               ))}
             </select>
-            <p className="text-[10px] text-[#41555f]">
+            <p className="text-[10px] text-[#52615B]">
               Selects the specific sales invoice transaction being paid (R-05).
             </p>
           </div>
 
           {/* OR Number */}
           <div className="space-y-1">
-            <label className="block font-semibold text-[#041a24]">
+            <label className="block font-semibold text-[#17231F]">
               OR No. <span className="text-rose-600">*</span>
             </label>
             <input
@@ -201,17 +201,17 @@ export function RecordCustomerPaymentModal({
               required
               value={orNo}
               onChange={(e) => setOrNo(e.target.value)}
-              className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-2 text-xs font-mono text-[#041a24] focus:border-[#041a24] focus:outline-none"
+              className="w-full rounded-md border border-[#CCD5CD] bg-white px-3 py-2 text-xs font-mono text-[#17231F] focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 focus:outline-none transition-all"
               placeholder="e.g. 9127"
             />
-            <p className="text-[10px] text-[#41555f]">
+            <p className="text-[10px] text-[#52615B]">
               Official Receipt number (PAYMENT.ORNo). Unique, immutable once saved (R-08).
             </p>
           </div>
 
           {/* Amount */}
           <div className="space-y-1">
-            <label className="block font-semibold text-[#041a24]">
+            <label className="block font-semibold text-[#17231F]">
               Amount (₱) <span className="text-rose-600">*</span>
             </label>
             <input
@@ -221,14 +221,14 @@ export function RecordCustomerPaymentModal({
               required
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-2 text-xs font-mono text-[#041a24] focus:border-[#041a24] focus:outline-none"
+              className="w-full rounded-md border border-[#CCD5CD] bg-white px-3 py-2 text-xs font-mono text-[#17231F] focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 focus:outline-none transition-all"
               placeholder="0.00"
             />
           </div>
 
           {/* Payment Date */}
           <div className="space-y-1">
-            <label className="block font-semibold text-[#041a24]">
+            <label className="block font-semibold text-[#17231F]">
               Payment date <span className="text-rose-600">*</span>
             </label>
             <input
@@ -236,12 +236,12 @@ export function RecordCustomerPaymentModal({
               required
               value={payDate}
               onChange={(e) => setPayDate(e.target.value)}
-              className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-2 text-xs font-mono text-[#041a24] focus:border-[#041a24] focus:outline-none"
+              className="w-full rounded-md border border-[#CCD5CD] bg-white px-3 py-2 text-xs font-mono text-[#17231F] focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 focus:outline-none transition-all"
             />
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-2 border-t border-[rgba(4,26,36,0.1)] pt-4">
+          <div className="flex items-center justify-end gap-2 border-t border-[#DDE3DE] pt-4">
             <Button
               type="button"
               variant="outline"

@@ -327,15 +327,15 @@ export function ProductsMainView({
   return (
     <div className="space-y-6">
       {/* 9.1 Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[rgba(4,26,36,0.14)] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[#DDE3DE] pb-4">
         <div>
-          <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-[#41555f] block">
-            HOPE Group4 / Products
+          <span className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#7A8781] block">
+            Group 4 HopeERD · Products
           </span>
-          <h1 className="font-editorial text-2xl sm:text-3xl font-normal tracking-tight text-[#041a24] mt-1">
+          <h1 className="font-sans text-2xl sm:text-[28px] font-semibold tracking-tight text-[#17231F] mt-1">
             Products
           </h1>
-          <p className="text-xs sm:text-sm text-[#41555f] mt-1">
+          <p className="text-xs sm:text-sm text-[#52615B] mt-1">
             Product catalog, unit prices and price history.
           </p>
         </div>
@@ -349,7 +349,7 @@ export function ProductsMainView({
             onClick={handleExportCSV}
             className="flex items-center gap-1.5 font-sans text-xs"
           >
-            <Download className="h-3.5 w-3.5 text-[#41555f]" />
+            <Download className="h-3.5 w-3.5 text-[#52615B]" />
             <span>Export CSV</span>
           </Button>
 
@@ -359,7 +359,7 @@ export function ProductsMainView({
               variant="primary"
               size="sm"
               onClick={() => setIsAddProductOpen(true)}
-              className="flex items-center gap-1.5 font-sans text-xs"
+              className="flex items-center gap-1.5 font-sans text-xs cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Add Product</span>
@@ -370,23 +370,23 @@ export function ProductsMainView({
 
       {/* Filter and View Controls Bar */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pt-1">
-        {/* Left: View Tabs (Prominent & Bigger) */}
-        <div className="inline-flex p-1.5 bg-[#EAEAE4] rounded-[6px] border border-[rgba(4,26,36,0.16)] gap-1.5 shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)]">
+        {/* Left: View Tabs */}
+        <div className="inline-flex p-1 bg-[#F0F2EF] rounded-[4px] border border-[#DDE3DE] gap-1">
           <button
             type="button"
             onClick={() => updateUrl({ view: 'products', page: '1' })}
-            className={`inline-flex items-center gap-2.5 px-6 py-2.5 text-sm sm:text-base font-semibold rounded-[4px] transition-all ${
+            className={`inline-flex items-center gap-2 px-5 py-2 text-xs sm:text-sm font-semibold rounded-[3px] transition-all cursor-pointer ${
               activeView === 'products'
-                ? 'bg-[#041a24] text-white shadow-sm'
-                : 'text-[#041a24] hover:bg-white/70 font-medium'
+                ? 'bg-[#245B48] text-white shadow-xs'
+                : 'text-[#52615B] hover:text-[#17231F] hover:bg-white/60 font-medium'
             }`}
           >
             <span>Products</span>
             <span
-              className={`text-xs font-mono tabular-nums px-2.5 py-0.5 rounded-full ${
+              className={`text-[11px] font-mono tabular-nums px-2 py-0.2 rounded-full ${
                 activeView === 'products'
                   ? 'bg-white/20 text-white font-bold'
-                  : 'bg-black/10 text-[#041a24] font-semibold'
+                  : 'bg-[#DDE3DE] text-[#17231F] font-semibold'
               }`}
             >
               {filteredProducts.length}
@@ -395,18 +395,18 @@ export function ProductsMainView({
           <button
             type="button"
             onClick={() => updateUrl({ view: 'history', page: '1' })}
-            className={`inline-flex items-center gap-2.5 px-6 py-2.5 text-sm sm:text-base font-semibold rounded-[4px] transition-all ${
+            className={`inline-flex items-center gap-2 px-5 py-2 text-xs sm:text-sm font-semibold rounded-[3px] transition-all cursor-pointer ${
               activeView === 'history'
-                ? 'bg-[#041a24] text-white shadow-sm'
-                : 'text-[#041a24] hover:bg-white/70 font-medium'
+                ? 'bg-[#245B48] text-white shadow-xs'
+                : 'text-[#52615B] hover:text-[#17231F] hover:bg-white/60 font-medium'
             }`}
           >
             <span>Price history</span>
             <span
-              className={`text-xs font-mono tabular-nums px-2.5 py-0.5 rounded-full ${
+              className={`text-[11px] font-mono tabular-nums px-2 py-0.2 rounded-full ${
                 activeView === 'history'
                   ? 'bg-white/20 text-white font-bold'
-                  : 'bg-black/10 text-[#041a24] font-semibold'
+                  : 'bg-[#DDE3DE] text-[#17231F] font-semibold'
               }`}
             >
               {filteredPriceHistory.length}
@@ -418,19 +418,19 @@ export function ProductsMainView({
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           {/* Search Box */}
           <div className="relative min-w-[240px] sm:w-64">
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[#41555f]" />
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[#7A8781]" />
             <input
               type="text"
               placeholder="Search code or description..."
               value={searchQuery}
               onChange={(e) => updateUrl({ q: e.target.value || null, page: '1' })}
-              className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white pl-8 pr-7 py-1.5 text-xs text-[#041a24] placeholder-[rgba(4,26,36,0.4)] focus:border-[#041a24] focus:outline-none focus:ring-1 focus:ring-[#041a24]"
+              className="w-full rounded-[4px] border border-[#CCD5CD] bg-white pl-8 pr-7 py-1.5 text-xs text-[#17231F] placeholder-[#7A8781] focus:border-[#245B48] focus:ring-2 focus:ring-[#245B48]/20 focus:outline-none"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => updateUrl({ q: null, page: '1' })}
-                className="absolute right-2 top-2 text-[#41555f] hover:text-[#041a24]"
+                className="absolute right-2 top-2 text-[#7A8781] hover:text-[#17231F]"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -439,11 +439,11 @@ export function ProductsMainView({
 
           {/* Sales Activity Select */}
           <div className="flex items-center gap-1.5">
-            <span className="text-xs text-[#41555f] whitespace-nowrap">Sales:</span>
+            <span className="text-xs text-[#52615B] whitespace-nowrap">Sales:</span>
             <select
               value={soldFilter}
               onChange={(e) => updateUrl({ sold: e.target.value === 'all' ? null : e.target.value, page: '1' })}
-              className="rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-2 py-1.5 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none focus:ring-1 focus:ring-[#041a24]"
+              className="rounded-[4px] border border-[#CCD5CD] bg-white px-2 py-1.5 text-xs text-[#17231F] focus:border-[#245B48] focus:outline-none"
             >
               <option value="all">All</option>
               <option value="sold">Has sales</option>
@@ -479,12 +479,12 @@ export function ProductsMainView({
           }`}
         >
           {/* Card Container for Table */}
-          <div className="rounded-[4px] border border-[rgba(4,26,36,0.16)] bg-white overflow-hidden shadow-none">
+          <div className="rounded-[4px] border border-[#DDE3DE] bg-white overflow-hidden shadow-xs font-sans">
             {activeView === 'products' ? (
               // PRODUCTS VIEW (Section 9.4)
               paginatedProducts.length === 0 ? (
-                <div className="p-8 text-center text-xs text-[#41555f] space-y-2">
-                  <p className="font-semibold text-[#041a24]">No products match your filters.</p>
+                <div className="p-8 text-center text-xs text-[#52615B] space-y-2">
+                  <p className="font-semibold text-[#17231F]">No products match your filters.</p>
                   <Button
                     variant="outline"
                     size="sm"
@@ -497,7 +497,7 @@ export function ProductsMainView({
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-[rgba(4,26,36,0.12)] bg-[#F8F8F6] text-[#041a24]">
+                      <tr className="border-b border-[#DDE3DE] bg-[#FAFBFA] text-[#52615B]">
                         <th
                           onClick={() => handleSort('prodCode')}
                           className="py-2.5 px-3 font-semibold cursor-pointer select-none whitespace-nowrap"
@@ -552,7 +552,7 @@ export function ProductsMainView({
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[rgba(4,26,36,0.08)]">
+                    <tbody className="divide-y divide-[#E9EDEA]">
                       {paginatedProducts.map((p) => {
                         const { title, detail } = splitDescription(p.description);
                         const familyName = getFamilyLabel(p.family);
@@ -564,40 +564,40 @@ export function ProductsMainView({
                             onClick={() => updateUrl({ code: p.prodCode })}
                             className={`cursor-pointer transition-colors ${
                               isSelected
-                                ? 'bg-[#EAEAE4] font-medium'
-                                : 'hover:bg-[#F8F8F6]'
+                                ? 'bg-[#EAF2ED]/60 font-medium'
+                                : 'hover:bg-[#F5F6F4]/70'
                             }`}
                           >
-                            <td className="py-2.5 px-3 font-mono font-medium text-[#041a24] whitespace-nowrap">
+                            <td className="py-2.5 px-3 font-mono font-medium text-[#17231F] whitespace-nowrap">
                               {p.prodCode}
                             </td>
                             <td className="py-2.5 px-3">
-                              <div className="font-semibold text-[#041a24] leading-tight">
+                              <div className="font-semibold text-[#17231F] leading-tight">
                                 {title}
                               </div>
                               {detail && (
-                                <div className="text-[11px] text-[#41555f] leading-snug line-clamp-1 mt-0.5">
+                                <div className="text-[11px] text-[#52615B] leading-snug line-clamp-1 mt-0.5">
                                   {detail}
                                 </div>
                               )}
-                              <span className="inline-block text-[10px] text-[#41555f] mt-0.5">
+                              <span className="inline-block text-[10px] text-[#7A8781] mt-0.5">
                                 {p.family} · {familyName}
                               </span>
                             </td>
-                            <td className="py-2.5 px-3 text-[#41555f] whitespace-nowrap">
+                            <td className="py-2.5 px-3 text-[#52615B] whitespace-nowrap">
                               {p.unit}
                             </td>
                             <td className="py-2.5 px-3 whitespace-nowrap">
                               {p.currentUnitPrice !== null ? (
-                                <div className="font-semibold tabular-nums text-[#041a24]">
+                                <div className="font-semibold tabular-nums text-[#17231F]">
                                   {formatPHP(p.currentUnitPrice)}
-                                  <span className="font-normal text-[11px] text-[#41555f]">
+                                  <span className="font-normal text-[11px] text-[#52615B]">
                                     {' '}
                                     / {p.unit}
                                   </span>
                                 </div>
                               ) : (
-                                <span className="inline-flex items-center px-1.5 py-0.5 rounded-[2px] text-[10px] bg-[#FDF4E7] text-[#824f11]">
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded-[2px] text-[10px] bg-[#FBF2DD] text-[#956316]">
                                   No price record
                                 </span>
                               )}
@@ -612,8 +612,8 @@ export function ProductsMainView({
             ) : (
               // PRICE HISTORY VIEW (Section 9.4)
               paginatedPriceHistory.length === 0 ? (
-                <div className="p-8 text-center text-xs text-[#41555f] space-y-2">
-                  <p className="font-semibold text-[#041a24]">No price records match your filters.</p>
+                <div className="p-8 text-center text-xs text-[#52615B] space-y-2">
+                  <p className="font-semibold text-[#17231F]">No price records match your filters.</p>
                   <Button
                     variant="outline"
                     size="sm"
@@ -626,7 +626,7 @@ export function ProductsMainView({
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-[rgba(4,26,36,0.12)] bg-[#F8F8F6] text-[#041a24]">
+                      <tr className="border-b border-[#DDE3DE] bg-[#FAFBFA] text-[#52615B]">
                         <th
                           onClick={() => handleSort('effDate')}
                           className="py-2.5 px-3 font-semibold cursor-pointer select-none whitespace-nowrap"
@@ -694,7 +694,7 @@ export function ProductsMainView({
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[rgba(4,26,36,0.08)]">
+                    <tbody className="divide-y divide-[#E9EDEA]">
                       {paginatedPriceHistory.map((h, i) => {
                         const { title, detail } = splitDescription(h.description);
                         const isSelected = selectedCode?.toUpperCase() === h.prodCode.toUpperCase();
@@ -704,47 +704,47 @@ export function ProductsMainView({
                             key={`${h.prodCode}-${h.effDate}-${i}`}
                             onClick={() => updateUrl({ code: h.prodCode })}
                             className={`cursor-pointer transition-colors ${
-                              isSelected ? 'bg-[#EAEAE4] font-medium' : 'hover:bg-[#F8F8F6]'
+                              isSelected ? 'bg-[#EAF2ED]/60 font-medium' : 'hover:bg-[#F5F6F4]/70'
                             }`}
                           >
-                            <td className="py-2.5 px-3 whitespace-nowrap text-[#041a24] font-medium">
+                            <td className="py-2.5 px-3 whitespace-nowrap text-[#17231F] font-medium">
                               {formatDate(h.effDate)}
                             </td>
-                            <td className="py-2.5 px-3 font-mono font-medium text-[#041a24] whitespace-nowrap">
+                            <td className="py-2.5 px-3 font-mono font-medium text-[#17231F] whitespace-nowrap">
                               {h.prodCode}
                             </td>
                             <td className="py-2.5 px-3">
-                              <div className="font-semibold text-[#041a24] leading-tight">
+                              <div className="font-semibold text-[#17231F] leading-tight">
                                 {title}
                               </div>
                               {detail && (
-                                <div className="text-[11px] text-[#41555f] line-clamp-1 mt-0.5">
+                                <div className="text-[11px] text-[#52615B] line-clamp-1 mt-0.5">
                                   {detail}
                                 </div>
                               )}
                             </td>
-                            <td className="py-2.5 px-3 tabular-nums text-[#041a24] whitespace-nowrap font-semibold">
+                            <td className="py-2.5 px-3 tabular-nums text-[#17231F] whitespace-nowrap font-semibold">
                               {formatPHP(h.unitPrice)}
-                              <span className="font-normal text-[11px] text-[#41555f]">
+                              <span className="font-normal text-[11px] text-[#52615B]">
                                 {' '}
                                 / {h.unit}
                               </span>
                             </td>
                             <td className="py-2.5 px-3 whitespace-nowrap">
                               {h.status === 'Current' && (
-                                <span className="inline-flex items-center gap-1 rounded-[2px] bg-[#EAF3EC] px-2 py-0.5 text-[11px] font-medium text-[#1c4d29]">
+                                <span className="inline-flex items-center gap-1 rounded-[2px] bg-[#E8F4EC] px-2 py-0.5 text-[11px] font-medium text-[#24734D]">
                                   <CheckCircle2 className="h-3 w-3" />
                                   Current
                                 </span>
                               )}
                               {h.status === 'Past' && (
-                                <span className="inline-flex items-center gap-1 rounded-[2px] bg-[#F1F3F5] px-2 py-0.5 text-[11px] font-medium text-[#495057]">
+                                <span className="inline-flex items-center gap-1 rounded-[2px] bg-[#F0F3F0] px-2 py-0.5 text-[11px] font-medium text-[#52615B]">
                                   <Clock className="h-3 w-3" />
                                   Past
                                 </span>
                               )}
                               {h.status === 'Future-dated' && (
-                                <span className="inline-flex items-center gap-1 rounded-[2px] bg-[#FDF4E7] px-2 py-0.5 text-[11px] font-medium text-[#824f11]">
+                                <span className="inline-flex items-center gap-1 rounded-[2px] bg-[#FBF2DD] px-2 py-0.5 text-[11px] font-medium text-[#956316]">
                                   <AlertTriangle className="h-3 w-3" />
                                   Future-dated
                                 </span>
@@ -761,18 +761,18 @@ export function ProductsMainView({
 
             {/* Pagination Controls */}
             {totalCount > 0 && (
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-3 py-2.5 border-t border-[rgba(4,26,36,0.1)] bg-[#FAF8F5] gap-2">
-                <span className="text-[11px] text-[#41555f]">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-3.5 py-2.5 border-t border-[#DDE3DE] bg-[#FAFBFA] gap-2">
+                <span className="text-[11px] text-[#52615B]">
                   Showing {startIdx + 1}-{endIdx} of {totalCount}
                 </span>
 
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] text-[#41555f]">Rows per page:</span>
+                    <span className="text-[11px] text-[#52615B]">Rows per page:</span>
                     <select
                       value={pageSize}
                       onChange={(e) => updateUrl({ size: e.target.value, page: '1' })}
-                      className="rounded-[2px] border border-[rgba(4,26,36,0.2)] bg-white px-1.5 py-0.5 text-[11px] text-[#041a24] focus:outline-none"
+                      className="rounded-[2px] border border-[#CCD5CD] bg-white px-1.5 py-0.5 text-[11px] text-[#17231F] focus:outline-none"
                     >
                       <option value="10">10</option>
                       <option value="25">25</option>
@@ -780,7 +780,7 @@ export function ProductsMainView({
                     </select>
                   </div>
 
-                  <span className="text-[11px] text-[#41555f]">
+                  <span className="text-[11px] text-[#52615B]">
                     {safePage} / {totalPages}
                   </span>
 
@@ -838,51 +838,51 @@ export function ProductsMainView({
       )}
 
       {/* 9.7 Slim Bottom Summary KPI Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-[rgba(4,26,36,0.1)]">
-        <div className="rounded-[4px] border border-[rgba(4,26,36,0.12)] bg-white p-3.5 shadow-[0_1px_2px_rgba(4,26,36,0.03)]">
-          <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#41555f]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-[#DDE3DE] font-sans">
+        <div className="rounded-[4px] border border-[#DDE3DE] bg-white p-3.5 shadow-xs">
+          <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#7A8781]">
             Products
           </div>
-          <div className="mt-1 text-2xl font-bold font-mono tabular-nums text-[#041a24]">
+          <div className="mt-1 text-2xl font-bold font-mono tabular-nums text-[#17231F]">
             {metrics.totalProducts}
           </div>
-          <div className="mt-0.5 text-xs text-[#41555f]">
+          <div className="mt-0.5 text-xs text-[#52615B]">
             in {metrics.totalFamilies} families
           </div>
         </div>
 
-        <div className="rounded-[4px] border border-[rgba(4,26,36,0.12)] bg-white p-3.5 shadow-[0_1px_2px_rgba(4,26,36,0.03)]">
-          <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#41555f]">
+        <div className="rounded-[4px] border border-[#DDE3DE] bg-white p-3.5 shadow-xs">
+          <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#7A8781]">
             Price records
           </div>
-          <div className="mt-1 text-2xl font-bold font-mono tabular-nums text-[#041a24]">
+          <div className="mt-1 text-2xl font-bold font-mono tabular-nums text-[#17231F]">
             {metrics.totalPriceRecords}
           </div>
-          <div className="mt-0.5 text-xs text-[#41555f]">
+          <div className="mt-0.5 text-xs text-[#52615B]">
             {metrics.priceChangesRecorded} price changes recorded
           </div>
         </div>
 
-        <div className="rounded-[4px] border border-[rgba(4,26,36,0.12)] bg-white p-3.5 shadow-[0_1px_2px_rgba(4,26,36,0.03)]">
-          <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#41555f]">
+        <div className="rounded-[4px] border border-[#DDE3DE] bg-white p-3.5 shadow-xs">
+          <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#7A8781]">
             Units sold
           </div>
-          <div className="mt-1 text-2xl font-bold font-mono tabular-nums text-[#041a24]">
-            {metrics.totalUnitsSold.toLocaleString()} <span className="text-base font-normal text-[#41555f]">pc</span>
+          <div className="mt-1 text-2xl font-bold font-mono tabular-nums text-[#17231F]">
+            {metrics.totalUnitsSold.toLocaleString()} <span className="text-base font-normal text-[#52615B]">pc</span>
           </div>
-          <div className="mt-0.5 text-xs text-[#41555f]">
+          <div className="mt-0.5 text-xs text-[#52615B]">
             from sale lines
           </div>
         </div>
 
-        <div className="rounded-[4px] border border-[rgba(4,26,36,0.12)] bg-white p-3.5 shadow-[0_1px_2px_rgba(4,26,36,0.03)]">
-          <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#41555f]">
+        <div className="rounded-[4px] border border-[#DDE3DE] bg-white p-3.5 shadow-xs">
+          <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#7A8781]">
             Sales revenue
           </div>
-          <div className="mt-1 text-2xl font-bold font-mono tabular-nums text-[#041a24]">
+          <div className="mt-1 text-2xl font-bold font-mono tabular-nums text-[#17231F]">
             {formatPHP(metrics.totalSalesRevenue)}
           </div>
-          <div className="mt-0.5 text-xs text-[#41555f]">
+          <div className="mt-0.5 text-xs text-[#52615B]">
             at the price on each sale date
           </div>
         </div>

@@ -208,9 +208,9 @@ export function EmployeesListView({
       return <ArrowUpDown className="w-3 h-3 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity ml-1" />;
     }
     return sortDirection === 'asc' ? (
-      <ArrowUp className="w-3 h-3 text-[#041a24] ml-1" />
+      <ArrowUp className="w-3 h-3 text-[#17231F] ml-1" />
     ) : (
-      <ArrowDown className="w-3 h-3 text-[#041a24] ml-1" />
+      <ArrowDown className="w-3 h-3 text-[#17231F] ml-1" />
     );
   };
 
@@ -263,17 +263,17 @@ export function EmployeesListView({
   return (
     <div className="space-y-6">
       {/* 1. Header (Section 7.1) */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[rgba(4,26,36,0.12)] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#DDE3DE] pb-4">
         <div>
-          <nav className="flex items-center text-xs text-neutral-500 mb-1">
-            <span>HOPE Group4</span>
-            <span className="mx-1.5">/</span>
-            <span className="text-[#041a24] font-medium">Employees</span>
+          <nav className="flex items-center text-xs text-[#52615B] mb-1 font-mono uppercase tracking-[0.12em]">
+            <span>Group 4 HopeERD</span>
+            <span className="mx-1.5">·</span>
+            <span className="text-[#17231F] font-semibold">Employees</span>
           </nav>
-          <h1 className="font-editorial text-2xl sm:text-3xl font-normal text-[#041a24] tracking-tight">
+          <h1 className="text-2xl sm:text-[28px] font-semibold text-[#17231F] tracking-tight">
             Employees
           </h1>
-          <p className="text-[11px] text-[#41555f] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#52615B] mt-0.5">
             Employee records, job history and department assignments.
           </p>
         </div>
@@ -311,13 +311,13 @@ export function EmployeesListView({
 
       {/* Responsive Department Select (Tablet / Mobile) */}
       <div className="lg:hidden">
-        <label className="block text-xs font-semibold text-[#041a24] mb-1.5">
+        <label className="block text-xs font-semibold text-[#17231F] mb-1.5">
           Select Department
         </label>
         <select
           value={selectedDept}
           onChange={(e) => handleSelectDept(e.target.value)}
-          className="w-full h-10 rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 text-xs text-[#041a24] font-medium focus:outline-none focus:border-[#041a24]"
+          className="w-full h-10 rounded-md border border-[#CCD5CD] bg-white px-3 text-xs text-[#17231F] font-medium focus:outline-none focus:border-[#245B48]"
         >
           <option value="ALL">All departments ({totalActiveCount} active)</option>
           {departments.map((d) => (
@@ -332,12 +332,12 @@ export function EmployeesListView({
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
         {/* 2. Department Sections (Left Column, Desktop) */}
         <div className="hidden lg:block lg:col-span-1">
-          <Card className="border border-[rgba(4,26,36,0.12)] bg-white rounded-[4px] shadow-none overflow-hidden">
-            <div className="p-3.5 border-b border-[rgba(4,26,36,0.08)] bg-neutral-50/50 flex items-center justify-between">
-              <span className="text-xs font-semibold text-[#041a24] tracking-tight">
+          <Card className="border border-[#DDE3DE] bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="p-3.5 border-b border-[#DDE3DE] bg-[#FAFBFA] flex items-center justify-between">
+              <span className="text-xs font-semibold text-[#17231F] tracking-tight">
                 Departments
               </span>
-              <span className="text-[11px] font-mono text-neutral-500">
+              <span className="text-[11px] font-mono text-[#52615B]">
                 {departments.length} units
               </span>
             </div>
@@ -347,14 +347,16 @@ export function EmployeesListView({
               <button
                 type="button"
                 onClick={() => handleSelectDept('ALL')}
-                className={`w-full flex items-center justify-between py-2 px-2.5 rounded-[3px] text-xs transition-colors text-left ${
+                className={`w-full flex items-center justify-between py-2 px-2.5 rounded-md text-xs transition-colors text-left ${
                   selectedDept === 'ALL'
-                    ? 'bg-neutral-100 text-[#041a24] font-semibold border-l-2 border-[#041a24]'
-                    : 'text-neutral-600 hover:text-[#041a24] hover:bg-neutral-50'
+                    ? 'bg-[#EAF2ED] text-[#245B48] font-semibold border-l-2 border-[#245B48]'
+                    : 'text-[#52615B] hover:text-[#17231F] hover:bg-[#F5F6F4]'
                 }`}
               >
                 <span className="truncate">All departments</span>
-                <span className="text-[11px] font-mono px-1.5 py-0.2 rounded bg-neutral-200/60 text-neutral-700 ml-2">
+                <span className={`text-[11px] font-mono px-1.5 py-0.5 rounded ml-2 ${
+                  selectedDept === 'ALL' ? 'bg-[#245B48]/10 text-[#245B48]' : 'bg-[#F0F3F0] text-[#52615B]'
+                }`}>
                   {totalActiveCount}
                 </span>
               </button>
@@ -367,21 +369,23 @@ export function EmployeesListView({
                     key={dept.deptCode}
                     type="button"
                     onClick={() => handleSelectDept(dept.deptCode)}
-                    className={`w-full flex items-center justify-between py-2 px-2.5 rounded-[3px] text-xs transition-colors text-left ${
+                    className={`w-full flex items-center justify-between py-2 px-2.5 rounded-md text-xs transition-colors text-left ${
                       isSelected
-                        ? 'bg-neutral-100 text-[#041a24] font-semibold border-l-2 border-[#041a24]'
-                        : 'text-neutral-600 hover:text-[#041a24] hover:bg-neutral-50'
+                        ? 'bg-[#EAF2ED] text-[#245B48] font-semibold border-l-2 border-[#245B48]'
+                        : 'text-[#52615B] hover:text-[#17231F] hover:bg-[#F5F6F4]'
                     }`}
                   >
                     <div className="min-w-0 pr-2">
                       <p className="truncate leading-tight">{dept.deptName}</p>
-                      <p className="text-[10px] font-mono text-neutral-400 mt-0.5">{dept.deptCode}</p>
+                      <p className="text-[10px] font-mono text-[#7A8781] mt-0.5">{dept.deptCode}</p>
                     </div>
                     <span
-                      className={`text-[11px] font-mono px-1.5 py-0.2 rounded shrink-0 ${
-                        dept.activeCount > 0
-                          ? 'bg-neutral-200/60 text-neutral-700'
-                          : 'bg-neutral-100 text-neutral-400'
+                      className={`text-[11px] font-mono px-1.5 py-0.5 rounded shrink-0 ${
+                        isSelected
+                          ? 'bg-[#245B48]/10 text-[#245B48]'
+                          : dept.activeCount > 0
+                          ? 'bg-[#F0F3F0] text-[#52615B]'
+                          : 'bg-[#F5F6F4] text-[#A0AAA4]'
                       }`}
                     >
                       {dept.activeCount}
@@ -395,45 +399,45 @@ export function EmployeesListView({
 
         {/* 3. Table & Content (Right Column) */}
         <div className="lg:col-span-3 space-y-4">
-          <Card className="border border-[rgba(4,26,36,0.12)] bg-white rounded-[4px] shadow-none overflow-hidden">
+          <Card className="border border-[#DDE3DE] bg-white rounded-lg shadow-sm overflow-hidden">
             {/* Selected Department Header */}
-            <div className="p-4 border-b border-[rgba(4,26,36,0.08)] bg-neutral-50/30 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="p-4 border-b border-[#DDE3DE] bg-[#FAFBFA] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <h2 className="text-sm font-semibold text-[#041a24] tracking-tight">
+                <h2 className="text-sm font-semibold text-[#17231F] tracking-tight">
                   {currentDeptMeta.title}
                   {currentDeptMeta.code && (
-                    <span className="ml-2 font-mono text-[11px] text-neutral-400 font-normal">
+                    <span className="ml-2 font-mono text-[11px] text-[#7A8781] font-normal">
                       ({currentDeptMeta.code})
                     </span>
                   )}
                 </h2>
-                <p className="text-[11px] text-neutral-400 mt-0.5">
+                <p className="text-[11px] text-[#7A8781] mt-0.5">
                   {currentDeptMeta.activeCount} active, {currentDeptMeta.separatedCount} separated
                 </p>
               </div>
 
               {/* Search Box */}
               <div className="relative w-full sm:w-64">
-                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400" />
+                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#7A8781]" />
                 <input
                   type="text"
                   placeholder="Search name, emp no, job..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-8 pl-8 pr-3 text-xs rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white text-[#041a24] placeholder:text-neutral-400 focus:outline-none focus:border-[#041a24]"
+                  className="w-full h-8 pl-8 pr-3 text-xs rounded-md border border-[#CCD5CD] bg-white text-[#17231F] placeholder:text-[#A0AAA4] focus:outline-none focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 transition-all"
                 />
               </div>
             </div>
 
             {/* Filter Tabs */}
-            <div className="flex items-center gap-1 px-4 pt-3 border-b border-[rgba(4,26,36,0.08)] bg-white">
+            <div className="flex items-center gap-1 px-4 pt-3 border-b border-[#DDE3DE] bg-white">
               <button
                 type="button"
                 onClick={() => setStatusTab('ALL')}
                 className={`py-2 px-3 text-xs font-medium border-b-2 transition-colors ${
                   statusTab === 'ALL'
-                    ? 'border-[#041a24] text-[#041a24] font-semibold'
-                    : 'border-transparent text-neutral-500 hover:text-[#041a24]'
+                    ? 'border-[#245B48] text-[#245B48] font-semibold'
+                    : 'border-transparent text-[#52615B] hover:text-[#17231F]'
                 }`}
               >
                 All ({tabCounts.all})
@@ -443,8 +447,8 @@ export function EmployeesListView({
                 onClick={() => setStatusTab('Active')}
                 className={`py-2 px-3 text-xs font-medium border-b-2 transition-colors ${
                   statusTab === 'Active'
-                    ? 'border-[#041a24] text-[#041a24] font-semibold'
-                    : 'border-transparent text-neutral-500 hover:text-[#041a24]'
+                    ? 'border-[#245B48] text-[#245B48] font-semibold'
+                    : 'border-transparent text-[#52615B] hover:text-[#17231F]'
                 }`}
               >
                 Active ({tabCounts.active})
@@ -454,8 +458,8 @@ export function EmployeesListView({
                 onClick={() => setStatusTab('Separated')}
                 className={`py-2 px-3 text-xs font-medium border-b-2 transition-colors ${
                   statusTab === 'Separated'
-                    ? 'border-[#041a24] text-[#041a24] font-semibold'
-                    : 'border-transparent text-neutral-500 hover:text-[#041a24]'
+                    ? 'border-[#245B48] text-[#245B48] font-semibold'
+                    : 'border-transparent text-[#52615B] hover:text-[#17231F]'
                 }`}
               >
                 Separated ({tabCounts.separated})
@@ -465,7 +469,7 @@ export function EmployeesListView({
             {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-neutral-50/80 border-b border-[rgba(4,26,36,0.1)] text-neutral-600 font-medium">
+                <thead className="bg-[#FAFBFA] border-b border-[#DDE3DE] text-[#17231F] font-semibold">
                   <tr>
                     <th
                       onClick={() => handleSort('empNo')}
@@ -544,21 +548,21 @@ export function EmployeesListView({
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-[rgba(4,26,36,0.06)]">
+                <tbody className="divide-y divide-[#E9EDEA]">
                   {paginatedEmployees.length === 0 ? (
                     <tr>
                       <td
                         colSpan={selectedDept === 'ALL' ? 8 : 7}
-                        className="py-12 text-center text-neutral-500"
+                        className="py-12 text-center text-[#52615B]"
                       >
                         {searchQuery.trim() ? (
                           <div className="space-y-1">
-                            <p className="font-medium text-neutral-700">No employees match your search.</p>
-                            <p className="text-xs text-neutral-400">Try searching for a different name, job, or ID.</p>
+                            <p className="font-medium text-[#17231F]">No employees match your search.</p>
+                            <p className="text-xs text-[#7A8781]">Try searching for a different name, job, or ID.</p>
                           </div>
                         ) : (
                           <div className="space-y-3">
-                            <p className="font-medium text-neutral-700">No employees in this department yet.</p>
+                            <p className="font-medium text-[#17231F]">No employees in this department yet.</p>
                             <Button
                               variant="primary"
                               size="sm"
@@ -584,46 +588,46 @@ export function EmployeesListView({
                             router.push(`/employees/${emp.empNo}`);
                           }
                         }}
-                        className="hover:bg-neutral-50/80 cursor-pointer transition-colors focus:bg-neutral-100 focus:outline-none"
+                        className="hover:bg-[#F5F6F4] cursor-pointer transition-colors focus:bg-[#EAF2ED] focus:outline-none"
                       >
-                        <td className="py-2.5 px-3 font-mono font-medium text-[#041a24]">
+                        <td className="py-2.5 px-3 font-mono font-medium text-[#17231F]">
                           {emp.empNo}
                         </td>
-                        <td className="py-2.5 px-3 font-medium text-[#041a24]">
+                        <td className="py-2.5 px-3 font-medium text-[#17231F]">
                           {emp.lastName}
                         </td>
-                        <td className="py-2.5 px-3 text-[#041a24]">
+                        <td className="py-2.5 px-3 text-[#17231F]">
                           {emp.firstName}
                         </td>
-                        <td className="py-2.5 px-3 text-[#041a24]">
+                        <td className="py-2.5 px-3 text-[#17231F]">
                           <div>{emp.jobDesc}</div>
-                          <div className="text-[10px] font-mono text-neutral-400">
+                          <div className="text-[10px] font-mono text-[#7A8781]">
                             {emp.jobCode}
                           </div>
                         </td>
                         {selectedDept === 'ALL' && (
-                          <td className="py-2.5 px-3 text-neutral-700">
+                          <td className="py-2.5 px-3 text-[#17231F]">
                             <div>{emp.deptName}</div>
-                            <div className="text-[10px] font-mono text-neutral-400">
+                            <div className="text-[10px] font-mono text-[#7A8781]">
                               {emp.deptCode}
                             </div>
                           </td>
                         )}
-                        <td className="py-2.5 px-3 text-neutral-600 font-mono text-[11px]">
+                        <td className="py-2.5 px-3 text-[#52615B] font-mono text-[11px]">
                           {formatDate(emp.hireDate)}
                         </td>
                         <td className="py-2.5 px-3 text-center">
                           <span
-                            className={`inline-block px-2 py-0.5 rounded-[2px] text-[10px] font-mono font-medium border uppercase tracking-wider ${
+                            className={`inline-block px-2 py-0.5 rounded text-[10px] font-mono font-medium border uppercase tracking-wider ${
                               emp.employmentStatus === 'Active'
-                                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                                : 'bg-neutral-100 text-neutral-700 border-neutral-300'
+                                ? 'bg-[#E8F4EC] text-[#24734D] border-[#D5DDD6]'
+                                : 'bg-[#F0F3F0] text-[#52615B] border-[#DDE3DE]'
                             }`}
                           >
                             {emp.employmentStatus}
                           </span>
                         </td>
-                        <td className="py-2.5 px-3 text-right font-mono font-medium tabular-nums text-[#041a24]">
+                        <td className="py-2.5 px-3 text-right font-mono font-medium tabular-nums text-[#17231F]">
                           {emp.salary != null ? formatPHP(emp.salary) : '—'}
                         </td>
                       </tr>
@@ -635,18 +639,18 @@ export function EmployeesListView({
 
             {/* Pagination Controls */}
             {totalItems > 0 && (
-              <div className="p-2.5 border-t border-[rgba(4,26,36,0.08)] bg-neutral-50/40 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[11px] text-neutral-500">
+              <div className="p-2.5 border-t border-[#DDE3DE] bg-[#FAFBFA] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[11px] text-[#52615B]">
                 <div className="flex items-center gap-3">
                   <span className="text-[11px]">
                     Showing {Math.min((currentPage - 1) * pageSize + 1, totalItems)}-
                     {Math.min(currentPage * pageSize, totalItems)} of {totalItems}
                   </span>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] text-neutral-400">Rows per page:</span>
+                    <span className="text-[11px] text-[#7A8781]">Rows per page:</span>
                     <select
                       value={pageSize}
                       onChange={(e) => setPageSize(Number(e.target.value))}
-                      className="h-6 px-1.5 text-[11px] rounded border border-neutral-200 bg-white text-[#041a24] focus:outline-none"
+                      className="h-6 px-1.5 text-[11px] rounded border border-[#CCD5CD] bg-white text-[#17231F] focus:outline-none focus:border-[#245B48]"
                     >
                       <option value={10}>10</option>
                       <option value={25}>25</option>

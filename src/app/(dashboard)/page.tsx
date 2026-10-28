@@ -41,12 +41,12 @@ export default async function HomePage({ searchParams }: PageProps) {
       />
 
       {/* 3. ERD Card */}
-      <div className="bg-white rounded-[4px] border border-[rgba(4,26,36,0.16)] p-6 space-y-4">
+      <div className="bg-white rounded-lg border border-[#DDE3DE] p-6 space-y-4 shadow-sm">
         <div>
-          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#041a24]">
+          <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-[#17231F]">
             Our database
           </h2>
-          <p className="text-xs sm:text-sm text-[#41555f] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#52615B] mt-0.5">
             10 tables and how they connect. Select a table to open its page.
           </p>
         </div>

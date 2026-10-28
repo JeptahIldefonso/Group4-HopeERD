@@ -197,28 +197,28 @@ export function NewSalePageView({
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pt-2 sm:pt-4">
+    <div className="max-w-6xl mx-auto space-y-6 pt-2 sm:pt-4 font-sans">
       {/* Header with Back Link */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[rgba(4,26,36,0.12)] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[#DDE3DE] pb-4">
         <div>
           <Link
             href="/sales"
-            className="inline-flex items-center gap-1.5 text-xs text-[#41555f] hover:text-[#041a24] mb-2 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-[#52615B] hover:text-[#17231F] mb-2 transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Sales</span>
           </Link>
-          <h1 className="font-editorial text-2xl sm:text-3xl font-normal tracking-tight text-[#041a24]">
+          <h1 className="font-sans text-2xl sm:text-[28px] font-semibold tracking-tight text-[#17231F]">
             New Sale
           </h1>
-          <p className="text-xs sm:text-sm text-[#41555f] mt-1">
+          <p className="text-xs sm:text-sm text-[#52615B] mt-1">
             Record a new sales transaction with point-in-time pricing.
           </p>
         </div>
       </div>
 
       {errorMsg && (
-        <div className="rounded-[4px] border border-[rgba(134,37,37,0.3)] bg-[#FCECEC] p-3 text-xs text-[#862525] flex items-center gap-2">
+        <div className="rounded-[4px] border border-[#F9C8C4] bg-[#FDECEA] p-3 text-xs text-[#B42318] flex items-center gap-2">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{errorMsg}</span>
         </div>
@@ -229,25 +229,25 @@ export function NewSalePageView({
           {/* Left Column (2/3): Details & Items */}
           <div className="lg:col-span-8 space-y-6">
             {/* Sale Details Card */}
-            <div className="rounded-[4px] border border-[rgba(4,26,36,0.16)] bg-white p-5 space-y-4 shadow-none">
-              <h2 className="text-sm font-semibold text-[#041a24] flex items-center gap-1.5 border-b border-[rgba(4,26,36,0.08)] pb-2.5">
-                <Calendar className="h-4 w-4 text-[#41555f]" />
+            <div className="rounded-[4px] border border-[#DDE3DE] bg-white p-5 space-y-4 shadow-xs">
+              <h2 className="text-sm font-semibold text-[#17231F] flex items-center gap-1.5 border-b border-[#E9EDEA] pb-2.5">
+                <Calendar className="h-4 w-4 text-[#52615B]" />
                 <span>Sale details</span>
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#041a24] mb-1">
+                  <label className="block text-[11px] font-semibold text-[#17231F] mb-1">
                     Sale #
                   </label>
-                  <div className="rounded-[4px] border border-dashed border-[rgba(4,26,36,0.2)] bg-[#FAF8F5] px-3 py-1.5 text-xs text-[#41555f] font-mono">
+                  <div className="rounded-[4px] border border-dashed border-[#CCD5CD] bg-[#FAFBFA] px-3 py-1.5 text-xs text-[#52615B] font-mono">
                     Assigned on save
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#041a24] mb-1">
-                    Sale date <span className="text-rose-600">*</span>
+                  <label className="block text-[11px] font-semibold text-[#17231F] mb-1">
+                    Sale date <span className="text-[#B42318]">*</span>
                   </label>
                   <input
                     type="date"
@@ -255,19 +255,19 @@ export function NewSalePageView({
                     value={salesDate}
                     max={getTodayManila()}
                     onChange={(e) => setSalesDate(e.target.value)}
-                    className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-1.5 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none"
+                    className="w-full rounded-[4px] border border-[#CCD5CD] bg-white px-3 py-1.5 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-2 focus:ring-[#245B48]/20 focus:outline-none"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-[11px] font-semibold text-[#041a24] mb-1">
-                    Customer <span className="text-rose-600">*</span>
+                  <label className="block text-[11px] font-semibold text-[#17231F] mb-1">
+                    Customer <span className="text-[#B42318]">*</span>
                   </label>
                   <select
                     required
                     value={custNo}
                     onChange={(e) => setCustNo(Number(e.target.value))}
-                    className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-1.5 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none"
+                    className="w-full rounded-[4px] border border-[#CCD5CD] bg-white px-3 py-1.5 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-2 focus:ring-[#245B48]/20 focus:outline-none"
                   >
                     {lookups.customers.map((c) => (
                       <option key={c.custNo} value={c.custNo}>
@@ -276,7 +276,7 @@ export function NewSalePageView({
                     ))}
                   </select>
                   {selectedCustomer && (
-                    <div className="mt-1.5 text-[11px] text-[#41555f] space-y-0.5">
+                    <div className="mt-1.5 text-[11px] text-[#52615B] space-y-0.5">
                       <p>Address: {selectedCustomer.address}</p>
                       <p>Payment terms: {selectedCustomer.payTerms}</p>
                     </div>
@@ -284,14 +284,14 @@ export function NewSalePageView({
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#041a24] mb-1">
-                    Sales rep <span className="text-rose-600">*</span>
+                  <label className="block text-[11px] font-semibold text-[#17231F] mb-1">
+                    Sales rep <span className="text-[#B42318]">*</span>
                   </label>
                   <select
                     required
                     value={empNo}
                     onChange={(e) => setEmpNo(Number(e.target.value))}
-                    className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-1.5 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none"
+                    className="w-full rounded-[4px] border border-[#CCD5CD] bg-white px-3 py-1.5 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-2 focus:ring-[#245B48]/20 focus:outline-none"
                   >
                     {eligibleReps.map((e) => (
                       <option key={e.empNo} value={e.empNo}>
@@ -302,12 +302,12 @@ export function NewSalePageView({
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#041a24] mb-1">
+                  <label className="block text-[11px] font-semibold text-[#17231F] mb-1">
                     Department on sale date
                   </label>
-                  <div className="rounded-[4px] border border-[rgba(4,26,36,0.15)] bg-[#FAF8F5] px-3 py-1.5 text-xs text-[#041a24]">
+                  <div className="rounded-[4px] border border-[#DDE3DE] bg-[#FAFBFA] px-3 py-1.5 text-xs text-[#17231F]">
                     {selectedRep?.deptName || 'Retail Sales'}{' '}
-                    <span className="text-[10px] text-[#41555f] font-mono">
+                    <span className="text-[10px] text-[#52615B] font-mono">
                       ({selectedRep?.deptCode || 'DEPT-SLS'})
                     </span>
                   </div>
@@ -316,10 +316,10 @@ export function NewSalePageView({
             </div>
 
             {/* Items Card */}
-            <div className="rounded-[4px] border border-[rgba(4,26,36,0.16)] bg-white p-5 space-y-4 shadow-none">
-              <div className="flex items-center justify-between border-b border-[rgba(4,26,36,0.08)] pb-2.5">
-                <h2 className="text-sm font-semibold text-[#041a24] flex items-center gap-1.5">
-                  <ShoppingBag className="h-4 w-4 text-[#41555f]" />
+            <div className="rounded-[4px] border border-[#DDE3DE] bg-white p-5 space-y-4 shadow-xs">
+              <div className="flex items-center justify-between border-b border-[#E9EDEA] pb-2.5">
+                <h2 className="text-sm font-semibold text-[#17231F] flex items-center gap-1.5">
+                  <ShoppingBag className="h-4 w-4 text-[#52615B]" />
                   <span>Items ({items.length})</span>
                 </h2>
                 <Button
@@ -334,10 +334,10 @@ export function NewSalePageView({
                 </Button>
               </div>
 
-              <div className="overflow-x-auto rounded-[4px] border border-[rgba(4,26,36,0.12)]">
+              <div className="overflow-x-auto rounded-[4px] border border-[#DDE3DE]">
                 <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="border-b border-[rgba(4,26,36,0.1)] bg-[#F8F8F6] text-[#041a24]">
+                    <tr className="border-b border-[#DDE3DE] bg-[#FAFBFA] text-[#52615B]">
                       <th className="py-2.5 px-3 font-semibold">Product</th>
                       <th className="py-2.5 px-3 font-semibold text-center w-20">Unit</th>
                       <th className="py-2.5 px-3 font-semibold text-center w-24">Qty</th>
@@ -346,7 +346,7 @@ export function NewSalePageView({
                       <th className="py-2.5 px-2 text-center w-10"></th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[rgba(4,26,36,0.08)] bg-white font-sans">
+                  <tbody className="divide-y divide-[#E9EDEA] bg-white font-sans">
                     {items.map((item, idx) => {
                       const prodObj = lookups.products.find((p) => p.prodCode === item.prodCode);
                       const lineAmount = item.quantity * item.unitPrice;
@@ -357,7 +357,7 @@ export function NewSalePageView({
                             <select
                               value={item.prodCode}
                               onChange={(e) => handleProductChange(idx, e.target.value)}
-                              className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-2.5 py-1 text-xs text-[#041a24] focus:outline-none"
+                              className="w-full rounded-[4px] border border-[#CCD5CD] bg-white px-2.5 py-1 text-xs text-[#17231F] focus:border-[#245B48] focus:outline-none"
                             >
                               {lookups.products.map((p) => {
                                 const isAlreadyUsed =
@@ -377,7 +377,7 @@ export function NewSalePageView({
                               })}
                             </select>
                           </td>
-                          <td className="py-2.5 px-3 text-center font-mono text-[11px] text-[#41555f]">
+                          <td className="py-2.5 px-3 text-center font-mono text-[11px] text-[#52615B]">
                             {prodObj?.unit || 'pc'}
                           </td>
                           <td className="py-2.5 px-3 text-center">
@@ -388,13 +388,13 @@ export function NewSalePageView({
                               step="1"
                               value={item.quantity}
                               onChange={(e) => handleQtyChange(idx, parseInt(e.target.value, 10))}
-                              className="w-16 rounded-[4px] border border-[rgba(4,26,36,0.2)] px-2 py-1 text-center font-mono text-xs text-[#041a24] focus:outline-none"
+                              className="w-16 rounded-[4px] border border-[#CCD5CD] px-2 py-1 text-center font-mono text-xs text-[#17231F] focus:border-[#245B48] focus:outline-none"
                             />
                           </td>
-                          <td className="py-2.5 px-3 text-right font-mono tabular-nums text-[#41555f]">
+                          <td className="py-2.5 px-3 text-right font-mono tabular-nums text-[#52615B]">
                             {item.loadingPrice ? '...' : formatPHP(item.unitPrice)}
                           </td>
-                          <td className="py-2.5 px-3 text-right font-mono tabular-nums font-semibold text-[#041a24]">
+                          <td className="py-2.5 px-3 text-right font-mono tabular-nums font-semibold text-[#17231F]">
                             {formatPHP(lineAmount)}
                           </td>
                           <td className="py-2.5 px-2 text-center">
@@ -402,7 +402,7 @@ export function NewSalePageView({
                               <button
                                 type="button"
                                 onClick={() => handleRemoveItem(idx)}
-                                className="text-neutral-400 hover:text-rose-600 p-1"
+                                className="text-[#7A8781] hover:text-[#B42318] p-1"
                                 aria-label="Remove item"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
@@ -420,41 +420,41 @@ export function NewSalePageView({
 
           {/* Right Column (1/3, sticky): Summary Card */}
           <div className="lg:col-span-4 sticky top-6 space-y-4">
-            <div className="rounded-[4px] border border-[rgba(4,26,36,0.16)] bg-white p-5 space-y-4 shadow-none">
-              <h2 className="text-sm font-semibold text-[#041a24] border-b border-[rgba(4,26,36,0.08)] pb-2.5">
+            <div className="rounded-[4px] border border-[#DDE3DE] bg-white p-5 space-y-4 shadow-xs">
+              <h2 className="text-sm font-semibold text-[#17231F] border-b border-[#E9EDEA] pb-2.5">
                 Summary
               </h2>
 
               <div className="space-y-3 text-xs font-sans">
-                <div className="flex items-center justify-between text-[#41555f]">
+                <div className="flex items-center justify-between text-[#52615B]">
                   <span>Items</span>
-                  <span className="font-mono tabular-nums text-[#041a24] font-semibold">
+                  <span className="font-mono tabular-nums text-[#17231F] font-semibold">
                     {items.length} {items.length === 1 ? 'item' : 'items'}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t border-[rgba(4,26,36,0.08)]">
-                  <span className="text-sm font-semibold text-[#041a24]">Total</span>
-                  <span className="text-xl font-bold font-mono tabular-nums text-[#041a24]">
+                <div className="flex items-center justify-between pt-3 border-t border-[#E9EDEA]">
+                  <span className="text-sm font-semibold text-[#17231F]">Total</span>
+                  <span className="text-xl font-bold font-mono tabular-nums text-[#17231F]">
                     {formatPHP(grandTotal)}
                   </span>
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-[rgba(4,26,36,0.08)] space-y-2">
+              <div className="pt-3 border-t border-[#E9EDEA] space-y-2">
                 <Button
                   type="submit"
                   variant="primary"
                   size="md"
                   disabled={isSubmitting}
-                  className="w-full text-xs font-medium justify-center"
+                  className="w-full text-xs font-medium justify-center cursor-pointer"
                 >
                   {isSubmitting ? 'Saving sale...' : 'Save sale'}
                 </Button>
 
                 <Link
                   href="/sales"
-                  className="block text-center text-xs text-[#41555f] hover:text-[#041a24] py-1.5 transition-colors"
+                  className="block text-center text-xs text-[#52615B] hover:text-[#17231F] py-1.5 transition-colors"
                 >
                   Cancel
                 </Link>

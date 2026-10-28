@@ -84,31 +84,31 @@ export function AddCustomerModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-[2px]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17231F]/50 p-4 backdrop-blur-[2px]">
       <div
-        className="w-full max-w-md rounded-[6px] border border-[rgba(4,26,36,0.18)] bg-white p-6 shadow-[0_4px_24px_rgba(4,26,36,0.12)] space-y-5"
+        className="w-full max-w-md rounded-lg border border-[#DDE3DE] bg-white p-6 shadow-xl space-y-5"
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[rgba(4,26,36,0.1)] pb-3">
+        <div className="flex items-center justify-between border-b border-[#DDE3DE] pb-3">
           <div className="flex items-center gap-2">
-            <UserPlus className="h-4 w-4 text-[#041a24]" />
-            <h3 className="font-editorial text-lg font-normal text-[#041a24]">
+            <UserPlus className="h-4 w-4 text-[#245B48]" />
+            <h3 className="text-lg font-semibold text-[#17231F]">
               Add Customer
             </h3>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-[#41555f] hover:text-[#041a24] p-1 rounded-[2px]"
+            className="text-[#52615B] hover:text-[#17231F] p-1 rounded-md hover:bg-[#F0F3F0] transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {errorMsg && (
-          <div className="rounded-[4px] border border-[rgba(134,37,37,0.3)] bg-[#FCECEC] p-3 text-xs text-[#862525] flex items-center gap-2">
+          <div className="rounded-md border border-[#FDECEA] bg-[#FDECEA]/60 p-3 text-xs text-[#B42318] flex items-center gap-2">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{errorMsg}</span>
           </div>
@@ -117,7 +117,7 @@ export function AddCustomerModal({
         <form onSubmit={handleSubmit} className="space-y-4 text-xs font-sans">
           {/* Customer Number */}
           <div className="space-y-1">
-            <label className="block font-semibold text-[#041a24]">
+            <label className="block font-semibold text-[#17231F]">
               Customer no. <span className="text-rose-600">*</span>
             </label>
             <input
@@ -127,17 +127,17 @@ export function AddCustomerModal({
               required
               value={custNo}
               onChange={(e) => setCustNo(e.target.value)}
-              className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-2 text-xs font-mono text-[#041a24] focus:border-[#041a24] focus:outline-none"
+              className="w-full rounded-md border border-[#CCD5CD] bg-white px-3 py-2 text-xs font-mono text-[#17231F] focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 focus:outline-none transition-all"
               placeholder="e.g. 1007"
             />
-            <p className="text-[10px] text-[#41555f]">
+            <p className="text-[10px] text-[#52615B]">
               Unique primary key (custNo). Entered once, cannot be modified later.
             </p>
           </div>
 
           {/* Customer Name */}
           <div className="space-y-1">
-            <label className="block font-semibold text-[#041a24]">
+            <label className="block font-semibold text-[#17231F]">
               Customer name <span className="text-rose-600">*</span>
             </label>
             <input
@@ -146,14 +146,14 @@ export function AddCustomerModal({
               maxLength={120}
               value={custName}
               onChange={(e) => setCustName(e.target.value)}
-              className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-2 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none"
+              className="w-full rounded-md border border-[#CCD5CD] bg-white px-3 py-2 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 focus:outline-none transition-all"
               placeholder="e.g. Nexus Tech Hub Cafe"
             />
           </div>
 
           {/* Address */}
           <div className="space-y-1">
-            <label className="block font-semibold text-[#041a24]">
+            <label className="block font-semibold text-[#17231F]">
               Address <span className="text-rose-600">*</span>
             </label>
             <textarea
@@ -162,32 +162,32 @@ export function AddCustomerModal({
               maxLength={255}
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-2 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none"
+              className="w-full rounded-md border border-[#CCD5CD] bg-white px-3 py-2 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 focus:outline-none transition-all"
               placeholder="Single-line address including city/state"
             />
           </div>
 
           {/* Payment Terms */}
           <div className="space-y-1">
-            <label className="block font-semibold text-[#041a24]">
+            <label className="block font-semibold text-[#17231F]">
               Payment term <span className="text-rose-600">*</span>
             </label>
             <select
               value={payTerms}
               onChange={(e) => setPayTerms(e.target.value as any)}
-              className="w-full rounded-[4px] border border-[rgba(4,26,36,0.2)] bg-white px-3 py-2 text-xs text-[#041a24] focus:border-[#041a24] focus:outline-none"
+              className="w-full rounded-md border border-[#CCD5CD] bg-white px-3 py-2 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-1 focus:ring-[#245B48]/30 focus:outline-none transition-all"
             >
               <option value="COD">COD - Cash on Delivery</option>
               <option value="30D">30D - Net 30 Days</option>
               <option value="45D">45D - Net 45 Days</option>
             </select>
-            <p className="text-[10px] text-[#41555f]">
+            <p className="text-[10px] text-[#52615B]">
               Permitted terms: COD, 30D, 45D (R-04).
             </p>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-2 border-t border-[rgba(4,26,36,0.1)] pt-4">
+          <div className="flex items-center justify-end gap-2 border-t border-[#DDE3DE] pt-4">
             <Button
               type="button"
               variant="outline"

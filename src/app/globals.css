@@ -4,23 +4,23 @@
 
 @layer base {
   :root {
-    --bg: #F8F9FA;
+    --bg: #F5F6F4;
     --bg-raised: #FFFFFF;
-    --bg-hover: #F1F3F5;
-    --bg-subtle: #E9ECEF;
+    --bg-hover: #FAFBFA;
+    --bg-subtle: #F0F3F0;
 
-    --fg: #0f172a;
-    --fg-muted: #334155;
-    --fg-subtle: #475569;
+    --fg: #17231F;
+    --fg-muted: #52615B;
+    --fg-subtle: #7A8781;
 
-    --border: #e2e8f0;
-    --border-strong: #0f172a;
+    --border: #DDE3DE;
+    --border-strong: #CBD5CE;
 
-    /* ERD Module Tints */
-    --module-employees: #e6eef4;
-    --module-products: #e8f2ea;
-    --module-customers: #faf0e6;
-    --module-sales: #f4e8ee;
+    /* ERD Module Subtle Enterprise Tints */
+    --module-employees: #EAF0F6;
+    --module-products: #EAF2ED;
+    --module-customers: #FAF4EB;
+    --module-sales: #F6EBF0;
   }
 
   body {
@@ -33,8 +33,8 @@
   }
 
   ::selection {
-    background-color: #041a24;
-    color: #F8F9FA;
+    background-color: #EAF2ED;
+    color: #17231F;
   }
 }
 
@@ -53,11 +53,11 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(15, 23, 42, 0.2);
+  background: #CBD5CE;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(15, 23, 42, 0.4);
+  background: #A0AAA4;
 }
 
 /* Print Styles for Invoices and Official Receipts */

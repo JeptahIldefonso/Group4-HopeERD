@@ -50,36 +50,37 @@ export function Modal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-[#041a24]/65 backdrop-blur-[2px] transition-opacity"
+        className="fixed inset-0 bg-[#17231F]/50 backdrop-blur-[2px] transition-opacity"
         onClick={onClose} 
       />
 
       {/* Modal Dialog */}
       <div
         className={cn(
-          'relative w-full rounded-[4px] bg-white shadow-2xl border border-[rgba(4,26,36,0.25)] z-10 overflow-hidden',
+          'relative w-full rounded-[6px] bg-white shadow-xl border border-[#DDE3DE] z-10 overflow-hidden font-sans',
           maxWidths[maxWidth]
         )}
       >
-        {/* Editorial Header */}
-        <div className="flex items-center justify-between border-b border-[rgba(4,26,36,0.14)] bg-[#FAFAFA] px-6 py-4">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-[#E9EDEA] bg-[#FAFBFA] px-6 py-4">
           <div>
-            <h2 className="font-editorial text-xl font-normal text-[#041a24] tracking-tight">{title}</h2>
+            <h2 className="font-sans text-lg font-semibold text-[#17231F] tracking-tight">{title}</h2>
             {description && (
-              <p className="text-xs text-[rgba(4,26,36,0.65)] mt-0.5 font-sans">{description}</p>
+              <p className="text-xs text-[#52615B] mt-0.5">{description}</p>
             )}
           </div>
           <button
+            type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="rounded-[2px] border border-[rgba(4,26,36,0.18)] p-1 text-[rgba(4,26,36,0.7)] hover:bg-[#EAEAE4] hover:text-[#041a24] transition-colors"
+            className="rounded-[4px] border border-[#DDE3DE] p-1.5 text-[#52615B] hover:bg-[#F0F3F0] hover:text-[#17231F] transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 max-h-[82vh] overflow-y-auto bg-white text-[#041a24]">{children}</div>
+        <div className="p-6 max-h-[82vh] overflow-y-auto bg-white text-[#17231F]">{children}</div>
       </div>
     </div>
   );

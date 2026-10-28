@@ -1,5 +1,5 @@
 // ========================================================================
-// HOPE Group4: CENTRALIZED UI LABELS & COPY DECK
+// Group 4 HopeERD: CENTRALIZED UI LABELS & COPY DECK
 // Single source of truth for navigation, page headers, KPI cards, and buttons.
 // ========================================================================
 
@@ -10,6 +10,7 @@ import {
   Package,
   Building2,
   BarChart3,
+  type LucideIcon,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/types';
 
@@ -17,7 +18,8 @@ export interface NavigationItem {
   href: string;
   label: string;
   caption: string;
-  icon: any;
+  section: 'OVERVIEW' | 'TRANSACTIONS' | 'CATALOG' | 'ORGANIZATION' | 'ANALYTICS';
+  icon: LucideIcon;
   roles: UserRole[];
 }
 
@@ -26,6 +28,7 @@ export const navigationItems: NavigationItem[] = [
     href: '/',
     label: 'Home',
     caption: 'ERD Overview',
+    section: 'OVERVIEW',
     icon: Home,
     roles: ['admin', 'sales', 'cashier'],
   },
@@ -33,6 +36,7 @@ export const navigationItems: NavigationItem[] = [
     href: '/sales',
     label: 'Sales',
     caption: 'Sales Detail',
+    section: 'TRANSACTIONS',
     icon: ShoppingCart,
     roles: ['admin', 'sales', 'cashier'],
   },
@@ -40,6 +44,7 @@ export const navigationItems: NavigationItem[] = [
     href: '/customers',
     label: 'Customers',
     caption: 'Payments',
+    section: 'TRANSACTIONS',
     icon: Users,
     roles: ['admin', 'sales', 'cashier'],
   },
@@ -47,6 +52,7 @@ export const navigationItems: NavigationItem[] = [
     href: '/products',
     label: 'Products',
     caption: 'Price History',
+    section: 'CATALOG',
     icon: Package,
     roles: ['admin', 'sales', 'cashier'],
   },
@@ -54,6 +60,7 @@ export const navigationItems: NavigationItem[] = [
     href: '/employees',
     label: 'Employees',
     caption: 'Job, Department',
+    section: 'ORGANIZATION',
     icon: Building2,
     roles: ['admin'],
   },
@@ -61,6 +68,7 @@ export const navigationItems: NavigationItem[] = [
     href: '/reports',
     label: 'Reports',
     caption: 'Summaries',
+    section: 'ANALYTICS',
     icon: BarChart3,
     roles: ['admin'],
   },
@@ -68,8 +76,8 @@ export const navigationItems: NavigationItem[] = [
 
 export const LABELS = {
   // Brand Header
-  brandName: 'HOPE Group4',
-  brandSubtitle: 'Sales & Payments',
+  brandName: 'Group 4 HopeERD',
+  brandSubtitle: 'Sales and Payments Monitoring System',
 
   // Navigation Items
   nav: navigationItems.map((item) => ({

@@ -12,9 +12,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
     return (
-      <div className="w-full space-y-1.5">
+      <div className="w-full space-y-1.5 font-sans">
         {label && (
-          <label htmlFor={inputId} className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label htmlFor={inputId} className="block text-xs sm:text-[13px] font-medium text-[#17231F]">
             {label}
           </label>
         )}
@@ -23,18 +23,18 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           type={type}
           ref={ref}
           className={cn(
-            'flex h-10 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm transition-colors',
-            'placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-600',
-            'disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100',
-            error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
+            'flex h-10 w-full rounded-[4px] border border-[#CCD5CD] bg-white px-3 py-2 text-xs sm:text-sm text-[#17231F] shadow-xs transition-colors',
+            'placeholder:text-[#7A8781] focus:border-[#245B48] focus:outline-none focus:ring-2 focus:ring-[#245B48]/20',
+            'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#F0F3F0]',
+            error && 'border-[#B42318] focus:border-[#B42318] focus:ring-[#B42318]/20',
             className
           )}
           {...props}
         />
         {error ? (
-          <p className="text-xs text-red-600 dark:text-red-400 font-medium">{error}</p>
+          <p className="text-xs text-[#B42318] font-medium">{error}</p>
         ) : helperText ? (
-          <p className="text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
+          <p className="text-xs text-[#52615B]">{helperText}</p>
         ) : null}
       </div>
     );
