@@ -30,7 +30,7 @@ export default async function HomePage({ searchParams }: PageProps) {
   const counts = data?.counts || {};
 
   return (
-    <div className="space-y-6 max-w-[1500px] mx-auto pb-16 font-sans">
+    <div className="space-y-8 sm:space-y-9 max-w-[1240px] mx-auto pb-16 font-sans">
       {/* 1. Dashboard Header */}
       <DashboardHeader
         fullName={user.fullName || 'Admin'}
@@ -41,14 +41,14 @@ export default async function HomePage({ searchParams }: PageProps) {
 
       {/* 2. Operational Transactions Ledger */}
       {data?.recentTransactions && (
-        <div>
+        <section aria-label="Recent Transactions">
           <RecentTransactionsCard transactions={data.recentTransactions} />
-        </div>
+        </section>
       )}
 
-      {/* 3. Database Overview & Interactive Canonical ERD Section */}
-      <div id="erd" className="pt-2">
-        <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-7 shadow-2xs space-y-6">
+      {/* 3. Database Overview & Interactive Canonical ERD Section (Standalone Card) */}
+      <section id="erd" aria-label="Relational Database Architecture">
+        <div className="bg-white rounded-xl border border-gray-200 p-5 sm:p-6 shadow-2xs space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-4">
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
@@ -58,7 +58,7 @@ export default async function HomePage({ searchParams }: PageProps) {
                 </span>
               </h2>
               <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                Hope ERD, visualization
+                Canonical ERD schema mapping departments, jobs, employees, customers, products, sales, and payments.
               </p>
             </div>
           </div>
@@ -67,20 +67,21 @@ export default async function HomePage({ searchParams }: PageProps) {
             counts={counts}
             userRole={user.role}
           />
-
-          <div className="pt-4 border-t border-gray-100">
-            <ExploreGrid
-              counts={counts}
-              userRole={user.role}
-            />
-          </div>
         </div>
-      </div>
+      </section>
 
-      {/* 4. KPI Metric Cards (Moved to the very bottom) */}
-      <div className="pt-2">
+      {/* 4. Explore System Modules (Standalone Section with clean transition & breathing room) */}
+      <section id="modules" aria-label="Explore System Modules" className="pt-2">
+        <ExploreGrid
+          counts={counts}
+          userRole={user.role}
+        />
+      </section>
+
+      {/* 5. KPI Metric Cards (Very bottom) */}
+      <section aria-label="Key Performance Indicators" className="pt-2">
         {data?.kpis && <DashboardKpis kpis={data.kpis} />}
-      </div>
+      </section>
     </div>
   );
 }

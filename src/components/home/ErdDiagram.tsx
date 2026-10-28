@@ -367,8 +367,8 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
           >
             <svg
               viewBox="0 0 1240 610"
-              className="w-full h-auto select-none"
-              style={{ maxHeight: '660px' }}
+              className="w-full max-w-[1160px] mx-auto h-auto select-none block"
+              style={{ maxHeight: '550px' }}
             >
               {/* Definitions */}
               <defs>

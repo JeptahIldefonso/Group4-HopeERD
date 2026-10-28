@@ -216,7 +216,7 @@ export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {
       </div>
 
       {/* Grid: 2 columns on desktop, 1 on mobile */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 sm:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
         {ERD_MODULES.map((mod) => {
           const config = moduleConfigs[mod.id] || moduleConfigs.sales;
           const canAccess = mod.roles.includes(userRole);
@@ -226,24 +226,24 @@ export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {
           return (
             <div
               key={mod.id}
-              className={`relative bg-white rounded-2xl border border-gray-200/90 border-l-[4px] ${config.accentBorder} p-6 sm:p-7 flex flex-col justify-between gap-5 shadow-2xs hover:shadow-xs transition-all overflow-hidden`}
+              className={`relative bg-white rounded-xl border border-gray-200/90 border-l-[4px] ${config.accentBorder} p-5 sm:p-5.5 flex flex-col justify-between gap-4 shadow-2xs hover:shadow-xs transition-all overflow-hidden`}
             >
               {/* Soft watermark blur in top-right */}
               <div
                 className={`pointer-events-none absolute -right-12 -top-12 w-48 h-48 rounded-full ${config.watermarkColor} blur-2xl`}
               />
 
-              <div className="relative z-10 space-y-5">
+              <div className="relative z-10 space-y-4">
                 {/* 1. Header: Module Icon + Title & Subtitle + Top Right Badge */}
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-3.5">
+                  <div className="flex items-start gap-3">
                     <div
-                      className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${config.iconBg} ${config.iconColor}`}
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${config.iconBg} ${config.iconColor}`}
                     >
                       <Icon className="w-5 h-5 stroke-[2]" />
                     </div>
                     <div>
-                      <h4 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
+                      <h4 className="text-base sm:text-[17px] font-bold text-gray-900 tracking-tight">
                         {mod.name}
                       </h4>
                       <p className="text-xs text-gray-500 mt-0.5 leading-snug">
@@ -255,13 +255,13 @@ export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {
                   {/* Top Right Pill Badge */}
                   <div className="shrink-0">
                     {!canAccess ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 text-[10px] font-semibold uppercase tracking-wider">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 text-[10px] font-semibold uppercase tracking-wider">
                         <Lock className="w-3 h-3 stroke-[2]" />
                         <span>Admin only</span>
                       </span>
                     ) : (
                       <span
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-medium ${config.badgeBg} ${config.badgeColor}`}
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-xs font-medium ${config.badgeBg} ${config.badgeColor}`}
                       >
                         <BadgeIcon className="w-3.5 h-3.5 stroke-[2]" />
                         <span>{config.badgeText}</span>
@@ -271,24 +271,24 @@ export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {
                 </div>
 
                 {/* 2. Middle: 3 Stat Cards */}
-                <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+                <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
                   {config.stats.map((stat, idx) => {
                     const StatIcon = stat.icon;
                     return (
                       <div
                         key={idx}
-                        className="bg-gray-50/80 rounded-xl p-3 sm:py-3.5 sm:px-4 border border-gray-100 flex items-center gap-2.5 sm:gap-3 min-w-0"
+                        className="bg-[#F8FAFC] rounded-lg p-2 sm:py-2.5 sm:px-3 border border-gray-100 flex items-center gap-2 min-w-0"
                       >
                         <div
-                          className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 ${stat.iconBg} ${stat.iconColor}`}
+                          className={`w-6 h-6 rounded flex items-center justify-center shrink-0 ${stat.iconBg} ${stat.iconColor}`}
                         >
-                          <StatIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" />
+                          <StatIcon className="w-3.5 h-3.5 stroke-[2]" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 truncate">
+                          <span className="block text-[9px] font-bold uppercase tracking-wider text-gray-400 truncate">
                             {stat.label}
                           </span>
-                          <span className="block text-sm sm:text-base font-bold text-gray-900 tabular-nums">
+                          <span className="block text-xs sm:text-sm font-bold text-gray-900 tabular-nums">
                             {stat.value}
                           </span>
                         </div>
@@ -299,8 +299,8 @@ export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {
               </div>
 
               {/* 3. Bottom: Main view & Detail on left, Solid Emerald Button on right */}
-              <div className="relative z-10 pt-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="space-y-1.5 text-xs">
+              <div className="relative z-10 pt-3.5 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-1 text-xs">
                   <div className="flex items-center gap-2 text-gray-500">
                     <Eye className="w-3.5 h-3.5 text-gray-400 shrink-0" />
                     <span>
@@ -322,7 +322,7 @@ export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {
                   {canAccess ? (
                     <Link
                       href={mod.href}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#166B52] hover:bg-[#11523E] text-white text-xs sm:text-sm font-semibold shadow-2xs transition-colors cursor-pointer w-full sm:w-auto"
+                      className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#166B52] hover:bg-[#11523E] text-white text-xs font-semibold shadow-2xs transition-colors cursor-pointer w-full sm:w-auto"
                     >
                       <span>Open {mod.name}</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -331,7 +331,7 @@ export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {
                     <button
                       type="button"
                       disabled
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gray-100 text-gray-400 text-xs sm:text-sm font-semibold cursor-not-allowed w-full sm:w-auto"
+                      className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gray-100 text-gray-400 text-xs font-semibold cursor-not-allowed w-full sm:w-auto"
                     >
                       <span>Open {mod.name}</span>
                       <Lock className="w-3.5 h-3.5 text-gray-400" />
