@@ -3,47 +3,48 @@
 import React, { useEffect, useRef } from 'react';
 
 // ============================================================================
-// TOPOGRAPHIC & CELESTIAL CONFIGURATION
-// Matches the design from ARTISTIC_INTRO_PAGE.md with deep emerald & midnight navy
+// LIGHT ENTERPRISE TOPOGRAPHIC PRECISION CONFIGURATION
+// Subtle pale gray-green elevation contours on off-white/light-gray background
 // ============================================================================
 export const TOPO_CONFIG = {
-  // Density of contour elevation rings across screen (18 - 24 for clean cartography)
-  lineDensity: 22.0,
+  // Density of contour elevation rings across screen (spacious, clear)
+  lineDensity: 20.0,
   // Standard contour line width in physical screen pixels
-  lineWidthPixels: 1.20,
+  lineWidthPixels: 1.10,
   // Index contour line width (every 5th line slightly bolder)
-  indexLineWidthPixels: 2.10,
-  // Visibility
-  lineOpacity: 0.70,
-  indexLineOpacity: 0.85,
+  indexLineWidthPixels: 1.90,
+  // Visibility: low opacity (~14-22%) for subtle, elegant background texture
+  lineOpacity: 0.16,
+  indexLineOpacity: 0.26,
   blurAmount: '0px',
-  vignetteOpacity: 0.75,
+  vignetteOpacity: 0.40,
 
   // Speed of gentle undulating terrain drift
-  animationSpeed: 0.025,
+  animationSpeed: 0.020,
 
-  // Celestial mouse starburst (JWST diffraction spike star)
-  starSpikeLength: 0.085,
-  starDiagSpikeLength: 0.055,
-  starBrightness: 0.85,
-  mouseLerp: 0.10,
-  mouseFadeSpeed: 0.07,
+  // Soft cursor interaction (gentle subtle glimmer, not an aggressive starburst)
+  starSpikeLength: 0.055,
+  starDiagSpikeLength: 0.035,
+  starBrightness: 0.12,
+  mouseLerp: 0.08,
+  mouseFadeSpeed: 0.06,
 
   // Micro film grain to eliminate digital banding
-  grainStrength: 0.008,
+  grainStrength: 0.003,
 
-  // Color Palette (Normalized RGB: 0.0 to 1.0)
+  // Color Palette: Light enterprise colors
+  // Off-white / light-gray base with pale gray-green contours
   colors: {
-    darkTeal: [0.016, 0.102, 0.141], // Base brand midnight cyan (#041a24)
-    forestPine: [0.035, 0.145, 0.105], // Deep muted forest (#09251b)
-    earthyMoss: [0.082, 0.243, 0.176], // Intermediate terrain tone (#153e2d)
-    contourSage: [0.161, 0.357, 0.271], // Standard contour lines (#295b45)
-    indexHighlight: [0.243, 0.467, 0.369], // Index contour lines (#3e775e, soft sage)
-    // JWST Astronomical Starburst Colors
-    starNucleus: [1.0, 0.98, 0.95],
-    starHalo: [0.96, 0.82, 0.58],
-    starSpike: [0.94, 0.84, 0.64],
-    starDiag: [0.80, 0.87, 0.95],
+    baseBg: [0.961, 0.965, 0.957], // #F5F6F4 Main page background
+    surfaceSubtle: [0.941, 0.949, 0.937], // #F0F2EF Secondary surface
+    surfaceSection: [0.914, 0.929, 0.914], // #E9EDE9 Subtle section background
+    contourSage: [0.550, 0.620, 0.570], // Pale gray-green (#8CA092 muted stroke)
+    indexHighlight: [0.380, 0.480, 0.420], // Index contour (#617A6B)
+    // Subtle mouse glimmer
+    starNucleus: [0.85, 0.92, 0.88],
+    starHalo: [0.88, 0.94, 0.90],
+    starSpike: [0.82, 0.90, 0.85],
+    starDiag: [0.86, 0.92, 0.88],
   },
 };
 
@@ -115,7 +116,7 @@ void main() {
   float n2 = snoise(p * 2.30 - vec2(t * 0.16, n1 * 0.45));
   float n3 = snoise(p * 4.20 + vec2(n2 * 0.35, t * 0.11));
 
-  // Pure natural elevation heightmap — zero terrain distortion on hover
+  // Pure natural elevation heightmap
   float elevation = (n1 * 0.52 + n2 * 0.32 + n3 * 0.16) * 0.5 + 0.5;
 
   // Topographic contour calculation
@@ -142,75 +143,60 @@ void main() {
     float indexLine = 1.0 - smoothstep(0.003, 0.016, indexDist);
   #endif
 
-  // Colors
-  vec3 c_bg_dark   = vec3(${TOPO_CONFIG.colors.darkTeal.join(', ')});
-  vec3 c_bg_forest = vec3(${TOPO_CONFIG.colors.forestPine.join(', ')});
-  vec3 c_moss      = vec3(${TOPO_CONFIG.colors.earthyMoss.join(', ')});
-  vec3 c_sage      = vec3(${TOPO_CONFIG.colors.contourSage.join(', ')});
-  vec3 c_hi        = vec3(${TOPO_CONFIG.colors.indexHighlight.join(', ')});
+  // Colors: Light enterprise base
+  vec3 c_bg_base    = vec3(${TOPO_CONFIG.colors.baseBg.join(', ')});
+  vec3 c_bg_subtle  = vec3(${TOPO_CONFIG.colors.surfaceSubtle.join(', ')});
+  vec3 c_bg_section = vec3(${TOPO_CONFIG.colors.surfaceSection.join(', ')});
+  vec3 c_sage       = vec3(${TOPO_CONFIG.colors.contourSage.join(', ')});
+  vec3 c_hi         = vec3(${TOPO_CONFIG.colors.indexHighlight.join(', ')});
 
-  // Star colors matching JWST astronomical reference
   vec3 c_star_nucleus = vec3(${TOPO_CONFIG.colors.starNucleus.join(', ')});
   vec3 c_star_halo    = vec3(${TOPO_CONFIG.colors.starHalo.join(', ')});
   vec3 c_star_spike   = vec3(${TOPO_CONFIG.colors.starSpike.join(', ')});
   vec3 c_star_diag    = vec3(${TOPO_CONFIG.colors.starDiag.join(', ')});
 
-  // Base terrain elevation gradient (deep muted green background)
-  vec3 col = mix(c_bg_dark, c_bg_forest, smoothstep(0.15, 0.75, elevation));
-  col = mix(col, c_moss, smoothstep(0.40, 0.85, elevation) * 0.35);
+  // Gentle light elevation gradient
+  vec3 col = mix(c_bg_base, c_bg_subtle, smoothstep(0.15, 0.75, elevation));
+  col = mix(col, c_bg_section, smoothstep(0.40, 0.85, elevation) * 0.25);
 
-  // Render crisp contour elevation lines
+  // Render subtle contour lines in pale gray-green
   col = mix(col, c_sage, line * ${TOPO_CONFIG.lineOpacity.toFixed(2)});
-
-  // Render crisp index contours
   col = mix(col, c_hi, indexLine * ${TOPO_CONFIG.indexLineOpacity.toFixed(2)});
 
-  // Celestial diffraction spike starburst tracking cursor
+  // Soft subtle cursor tracking
   vec2 toMouse = uv - mouse;
   float r = length(toMouse);
 
-  // 1. Central pinpoint nucleus & warm starlight halo
   float nucleus = exp(-r * 320.0);
-  float halo = exp(-r * 55.0) * 0.42;
+  float halo = exp(-r * 55.0) * 0.35;
 
-  // 2. Primary cardinal diffraction spikes (+ cross: horizontal & vertical)
   float spikeLen = ${TOPO_CONFIG.starSpikeLength.toFixed(4)};
   float taperH = pow(max(0.0, 1.0 - abs(toMouse.x) / spikeLen), 2.2);
-  float profileH = exp(-abs(toMouse.y) * 450.0) * 0.82 + exp(-abs(toMouse.y) * 85.0) * 0.18;
+  float profileH = exp(-abs(toMouse.y) * 450.0);
   float spikeH = taperH * profileH;
 
   float taperV = pow(max(0.0, 1.0 - abs(toMouse.y) / spikeLen), 2.2);
-  float profileV = exp(-abs(toMouse.x) * 450.0) * 0.82 + exp(-abs(toMouse.x) * 85.0) * 0.18;
+  float profileV = exp(-abs(toMouse.x) * 450.0);
   float spikeV = taperV * profileV;
 
-  // 3. Secondary diagonal diffraction spikes (x cross: 45° and 135°)
   vec2 diagMouse = mat2(0.7071, -0.7071, 0.7071, 0.7071) * toMouse;
   float diagLen = ${TOPO_CONFIG.starDiagSpikeLength.toFixed(4)};
-
   float taperD1 = pow(max(0.0, 1.0 - abs(diagMouse.x) / diagLen), 2.4);
-  float profileD1 = exp(-abs(diagMouse.y) * 500.0) * 0.85 + exp(-abs(diagMouse.y) * 110.0) * 0.15;
+  float profileD1 = exp(-abs(diagMouse.y) * 500.0);
   float spikeD1 = taperD1 * profileD1;
 
   float taperD2 = pow(max(0.0, 1.0 - abs(diagMouse.y) / diagLen), 2.4);
-  float profileD2 = exp(-abs(diagMouse.x) * 500.0) * 0.85 + exp(-abs(diagMouse.x) * 110.0) * 0.15;
+  float profileD2 = exp(-abs(diagMouse.x) * 500.0);
   float spikeD2 = taperD2 * profileD2;
 
-  // 4. Subtle celestial twinkle
-  float twinkle = 0.94 + 0.06 * sin(u_time * 2.8);
+  vec3 starCol = c_star_nucleus * nucleus
+               + c_star_halo * halo * 0.50
+               + c_star_spike * (spikeH + spikeV) * 0.60
+               + c_star_diag * (spikeD1 + spikeD2) * 0.40;
 
-  // 5. Combine diffraction starlight rays
-  vec3 starCol = c_star_nucleus * nucleus * 1.15
-               + c_star_halo * halo * 0.65
-               + c_star_spike * (spikeH + spikeV) * 0.85
-               + c_star_diag * (spikeD1 + spikeD2) * 0.60;
+  col += starCol * (${TOPO_CONFIG.starBrightness.toFixed(2)} * u_mouse_intensity);
 
-  col += starCol * (${TOPO_CONFIG.starBrightness.toFixed(2)} * u_mouse_intensity * twinkle);
-
-  // Cinematic edge vignette
-  float vig = 1.0 - smoothstep(0.50, 1.40, length(st - 0.5) * 1.25);
-  col *= mix(0.72, 1.0, vig);
-
-  // Micro tactile film grain to eliminate digital banding
+  // Subtle film grain
   float grain = (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * ${TOPO_CONFIG.grainStrength.toFixed(4)};
   col += vec3(grain);
 
@@ -253,9 +239,9 @@ export function TopographicCanvas() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      grad.addColorStop(0, '#041a24');
-      grad.addColorStop(0.6, '#09251b');
-      grad.addColorStop(1, '#153e2d');
+      grad.addColorStop(0, '#F5F6F4');
+      grad.addColorStop(0.6, '#F0F2EF');
+      grad.addColorStop(1, '#E9EDE9');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       return;
@@ -375,7 +361,8 @@ export function TopographicCanvas() {
         mouse.x += (mouse.targetX - mouse.x) * TOPO_CONFIG.mouseLerp;
         mouse.y += (mouse.targetY - mouse.y) * TOPO_CONFIG.mouseLerp;
         mouse.intensity +=
-          (mouse.targetIntensity - mouse.intensity) * TOPO_CONFIG.mouseFadeSpeed;
+          (mouse.targetIntensity - mouse.intensity) *
+          TOPO_CONFIG.mouseFadeSpeed;
       } else {
         accumulatedTime = 0.5;
         mouse.intensity = 0;
@@ -411,7 +398,7 @@ export function TopographicCanvas() {
 
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-0 h-full w-full overflow-hidden select-none"
+      className="pointer-events-none fixed inset-0 z-0 h-full w-full overflow-hidden select-none bg-[#F5F6F4]"
       aria-hidden="true"
     >
       {/* Topographic WebGL Canvas */}
@@ -423,16 +410,13 @@ export function TopographicCanvas() {
         }}
       />
 
-      {/* Radial dark vignette overlay to ensure center hero readability */}
+      {/* Subtle radial soft vignette keeping the central authentication zone visually clean and calm */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `radial-gradient(ellipse at center, transparent 30%, rgba(4, 26, 36, ${TOPO_CONFIG.vignetteOpacity}) 85%)`,
+          background: `radial-gradient(ellipse at center, rgba(245, 246, 244, 0.88) 25%, rgba(245, 246, 244, 0.40) 85%)`,
         }}
       />
-
-      {/* Soft uniform dark tint overlay */}
-      <div className="pointer-events-none absolute inset-0 bg-[#041a24]/20" />
     </div>
   );
 }
