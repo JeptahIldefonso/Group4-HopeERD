@@ -86,9 +86,9 @@ export function GlobalSearchBar() {
   const products = results.filter((r) => r.type === 'product');
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-md">
+    <div ref={containerRef} className="relative w-56 sm:w-64 md:w-72">
       <div className="relative flex items-center">
-        <Search className="absolute left-3 h-4 w-4 text-slate-400 pointer-events-none" />
+        <Search className="absolute left-2.5 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
         <input
           ref={inputRef}
           type="text"
@@ -101,11 +101,11 @@ export function GlobalSearchBar() {
             if (query.trim() || results.length > 0) setIsOpen(true);
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Search customer, sale #, product code... (Ctrl+K)"
-          className="w-full h-10 pl-9 pr-9 text-xs sm:text-sm bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-slate-900 placeholder-slate-400 rounded-lg border border-slate-200 focus:border-slate-800 focus:ring-1 focus:ring-slate-800 transition-all outline-none"
+          placeholder="Search..."
+          className="w-full h-8 pl-8 pr-7 text-xs bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-slate-900 placeholder-slate-400 rounded-[4px] border border-slate-200 focus:border-[#041a24] focus:ring-1 focus:ring-[#041a24] transition-all outline-none"
         />
         {isLoading ? (
-          <Loader2 className="absolute right-3 h-4 w-4 text-slate-400 animate-spin" />
+          <Loader2 className="absolute right-2 h-3.5 w-3.5 text-slate-400 animate-spin" />
         ) : query ? (
           <button
             type="button"
@@ -114,16 +114,16 @@ export function GlobalSearchBar() {
               setResults([]);
               setIsOpen(false);
             }}
-            className="absolute right-2.5 p-1 text-slate-400 hover:text-slate-600 rounded-md"
+            className="absolute right-1.5 p-1 text-slate-400 hover:text-slate-600 rounded"
           >
-            <X className="h-3.5 w-3.5" />
+            <X className="h-3 w-3" />
           </button>
         ) : null}
       </div>
 
       {/* Dropdown Results */}
       {isOpen && query.trim() && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white rounded-lg border border-slate-200 shadow-xl overflow-hidden z-50 max-h-96 overflow-y-auto">
+        <div className="absolute top-full left-0 mt-1.5 w-80 sm:w-96 bg-white rounded-[4px] border border-slate-200 shadow-xl overflow-hidden z-50 max-h-96 overflow-y-auto">
           {isLoading && results.length === 0 ? (
             <div className="py-6 text-center text-xs text-slate-500">
               <Loader2 className="h-4 w-4 animate-spin mx-auto mb-1 text-slate-400" />
