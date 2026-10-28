@@ -31,14 +31,13 @@ export function Sidebar({ userRole = 'admin', userName = 'Admin' }: SidebarProps
 
   const roleLabel = roleLabels[userRole] || 'Administrator';
 
-  // Group items by the exact sections required in Section 3
+  // Group items by clean canonical sections
   const sections: { key: string; label: string; items: NavigationItem[] }[] = [
     { key: 'OVERVIEW', label: 'OVERVIEW', items: [] },
     { key: 'TRANSACTIONS', label: 'TRANSACTIONS', items: [] },
-    { key: 'MASTER DATA', label: 'MASTER DATA', items: [] },
+    { key: 'CATALOG', label: 'CATALOG', items: [] },
     { key: 'ORGANIZATION', label: 'ORGANIZATION', items: [] },
     { key: 'ANALYTICS', label: 'ANALYTICS', items: [] },
-    { key: 'SYSTEM', label: 'SYSTEM', items: [] },
   ];
 
   filteredNav.forEach((item) => {
@@ -110,10 +109,7 @@ export function Sidebar({ userRole = 'admin', userName = 'Admin' }: SidebarProps
                   const isDashboard = item.href === '/';
                   const isActive = isDashboard
                     ? pathname === '/'
-                    : pathname === item.href ||
-                      (item.href !== '/#erd' &&
-                        item.href !== '/customers' &&
-                        pathname.startsWith(item.href + '/'));
+                    : pathname === item.href || pathname.startsWith(item.href + '/');
 
                   return (
                     <Link

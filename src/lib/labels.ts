@@ -1,18 +1,15 @@
 // ========================================================================
-// HopeERD: CENTRALIZED UI LABELS & COPY DECK
-// Configured to match the exact navigation hierarchy and subtitles.
+// GROUP 4 Hope ERD: CENTRALIZED UI LABELS & NAVIGATION
+// Clean, non-repeating navigation mapping 1-to-1 with actual system routes.
 // ========================================================================
 
 import {
   LayoutDashboard,
   ShoppingCart,
-  Receipt,
   Users,
   Box,
   User,
-  Network,
   BarChart3,
-  Database,
   type LucideIcon,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/types';
@@ -22,7 +19,7 @@ export interface NavigationItem {
   label: string;
   subtitle: string;
   caption: string;
-  section: 'OVERVIEW' | 'TRANSACTIONS' | 'MASTER DATA' | 'ORGANIZATION' | 'ANALYTICS' | 'SYSTEM';
+  section: 'OVERVIEW' | 'TRANSACTIONS' | 'CATALOG' | 'ORGANIZATION' | 'ANALYTICS';
   icon: LucideIcon;
   roles: UserRole[];
 }
@@ -48,66 +45,39 @@ export const navigationItems: NavigationItem[] = [
   },
   {
     href: '/customers',
-    label: 'Payments',
-    subtitle: 'Payment records',
-    caption: 'Payment records',
-    section: 'TRANSACTIONS',
-    icon: Receipt,
-    roles: ['admin', 'sales', 'cashier'],
-  },
-  {
-    href: '/customers',
     label: 'Customers',
-    subtitle: 'Customer records & terms',
-    caption: 'Customer records & terms',
-    section: 'MASTER DATA',
+    subtitle: 'Accounts & payment records',
+    caption: 'Accounts & payment records',
+    section: 'TRANSACTIONS',
     icon: Users,
     roles: ['admin', 'sales', 'cashier'],
   },
   {
     href: '/products',
-    label: 'Products & Pricing',
-    subtitle: 'Product catalog & price history',
-    caption: 'Product catalog & price history',
-    section: 'MASTER DATA',
+    label: 'Products',
+    subtitle: 'Catalog & price history',
+    caption: 'Catalog & price history',
+    section: 'CATALOG',
     icon: Box,
     roles: ['admin', 'sales', 'cashier'],
   },
   {
     href: '/employees',
     label: 'Employees',
-    subtitle: 'Staff profiles & history',
-    caption: 'Staff profiles & history',
+    subtitle: 'Staff, jobs & departments',
+    caption: 'Staff, jobs & departments',
     section: 'ORGANIZATION',
     icon: User,
     roles: ['admin'],
   },
   {
-    href: '/employees',
-    label: 'Departments & Jobs',
-    subtitle: 'Organizational structure',
-    caption: 'Organizational structure',
-    section: 'ORGANIZATION',
-    icon: Network,
-    roles: ['admin'],
-  },
-  {
     href: '/reports',
     label: 'Reports',
-    subtitle: 'Business summaries',
-    caption: 'Business summaries',
+    subtitle: 'Business summaries & analytics',
+    caption: 'Business summaries & analytics',
     section: 'ANALYTICS',
     icon: BarChart3,
     roles: ['admin'],
-  },
-  {
-    href: '/#erd',
-    label: 'Database Overview',
-    subtitle: 'ERD schema & relationships',
-    caption: 'ERD schema & relationships',
-    section: 'SYSTEM',
-    icon: Database,
-    roles: ['admin', 'sales', 'cashier'],
   },
 ];
 
@@ -133,7 +103,7 @@ export const LABELS = {
   pages: {
     home: {
       title: 'Dashboard',
-      subtitle: 'Overview & metrics',
+      subtitle: 'Overview 3NF data managed',
     },
     sales: {
       title: 'Sales',
@@ -145,19 +115,19 @@ export const LABELS = {
     },
     customers: {
       title: 'Customers',
-      subtitle: 'Customer records & terms',
+      subtitle: 'Customer accounts, payment terms, and official receipts ledger.',
     },
     products: {
-      title: 'Products & Pricing',
-      subtitle: 'Product catalog & price history',
+      title: 'Products',
+      subtitle: 'Product catalog, unit prices and price history.',
     },
     employees: {
       title: 'Employees',
-      subtitle: 'Staff profiles & history',
+      subtitle: 'Employee records, job history and department assignments.',
     },
     reports: {
       title: 'Reports',
-      subtitle: 'Business summaries',
+      subtitle: 'Sales and payments analytics across periods, employees, departments, and products.',
     },
   },
 
