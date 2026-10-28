@@ -56,8 +56,8 @@ EMPLOYEE (empNo PK) ──< has >── JOBHISTORY (empNo, jobCode, effDate PK) 
 | Module | URL Path | Key Features |
 |---|---|---|
 | **Executive Dashboard** | `/dashboard` | 4 KPI Cards (Month-over-Month Sales, Collections, Total Receivables, Overdue Debt), 12-Month Area Chart, Department Performance Bar Chart, Recent Ledger Activity, and Top PC Hardware Revenue Drivers. |
-| **Sales & Invoicing** | `/sales` | Searchable sales ledger, multi-criteria filters, CSV export, and `[ + New Sale ]` modal with live point-in-time price lookups. |
-| **Official Invoice** | `/sales/[transNo]` | Printable browser invoice with HOPE Group4 branding, line items table, payment receipts history, and 1-Year Limited Warranty Assumption Notice. |
+| **Sales & Invoicing** | `/sales` | Canonical ERD-aligned views: `Sales` (`Transaction Number`, `Sales Date`, `Customer`, `Employee Representative`) and `Sales Detail` (`Transaction Number`, `Product Code`, `Quantity`), multi-criteria filters, CSV export, and `[ + New Sale ]` modal with live point-in-time price lookups. |
+| **Official Invoice** | `/sales/[transNo]` | Printable browser invoice with HOPE Group4 branding, sales detail breakdown, payment receipts history, and 1-Year Limited Warranty Assumption Notice. |
 | **Collections Ledger** | `/payments` | Collections-per-day register, daily totals, CSV export, and `[ + Record Payment ]` modal enforcing `amount <= balance`. |
 | **Official Receipt (OR)** | `/payments/[orNo]` | Printable Official Receipt voucher with auto-numbered OR, balance remaining breakdown, and cashier/customer signature sign-off. |
 | **Customer Credit Directory** | `/customers` | Directory of customer accounts, approved terms, billed totals, collections, and overdue indicators. |
