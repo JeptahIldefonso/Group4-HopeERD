@@ -61,7 +61,7 @@ export function SalesMainView({
   const periodFilter = searchParams.get('period') || 'all';
   const deptFilter = searchParams.get('dept') || 'all';
   const repFilter = searchParams.get('rep') ? Number(searchParams.get('rep')) : 0;
-  const sortCol = searchParams.get('sort') || (activeView === 'lines' ? 'salesDate' : 'salesDate');
+  const sortCol = searchParams.get('sort') || (activeView === 'lines' ? 'transNo' : 'salesDate');
   const sortOrder = (searchParams.get('order') || 'desc') as 'asc' | 'desc';
   const currentPage = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
   const pageSize = [10, 25, 50].includes(parseInt(searchParams.get('size') || '10', 10))
@@ -277,25 +277,15 @@ export function SalesMainView({
     const today = new Date().toISOString().split('T')[0];
     const headers = [
       'Transaction number',
-      'Sales date',
-      'Customer',
       'Product code',
       'Description',
-      'Unit',
       'Quantity',
-      'Unit price',
-      'Amount',
     ];
     const rows = filteredLines.map((l) => [
       l.transNo,
-      l.salesDate,
-      `"${l.custName.replace(/"/g, '""')}"`,
       l.prodCode,
       `"${l.description.replace(/"/g, '""')}"`,
-      l.unit,
       l.quantity,
-      l.unitPrice.toFixed(2),
-      l.lineAmount.toFixed(2),
     ]);
 
     const csvContent =
@@ -520,10 +510,7 @@ export function SalesMainView({
               <span className="font-semibold text-[#041a24] font-mono tabular-nums">
                 {filteredLines.length}
               </span>{' '}
-              sales detail items &bull; Total{' '}
-              <span className="font-semibold text-[#041a24] font-mono tabular-nums">
-                {formatPHP(filteredLines.reduce((acc, l) => acc + l.lineAmount, 0))}
-              </span>
+              sales detail records
             </div>
           )}
         </div>
@@ -701,37 +688,11 @@ export function SalesMainView({
                           </div>
                         </th>
                         <th
-                          onClick={() => handleSort('salesDate')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none whitespace-nowrap"
-                        >
-                          <div className="flex items-center gap-1">
-                            <span>Sales Date</span>
-                            {sortCol === 'salesDate' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
-                          onClick={() => handleSort('custName')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none min-w-[160px]"
-                        >
-                          <div className="flex items-center gap-1">
-                            <span>Customer</span>
-                            {sortCol === 'custName' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
                           onClick={() => handleSort('prodCode')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none whitespace-nowrap"
+                          className="py-2.5 px-3 font-semibold cursor-pointer select-none min-w-[220px]"
                         >
                           <div className="flex items-center gap-1">
-                            <span>Product code</span>
+                            <span>Product Code</span>
                             {sortCol === 'prodCode' ? (
                               sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
                             ) : (
@@ -740,64 +701,12 @@ export function SalesMainView({
                           </div>
                         </th>
                         <th
-                          onClick={() => handleSort('description')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none min-w-[200px]"
-                        >
-                          <div className="flex items-center gap-1">
-                            <span>Description</span>
-                            {sortCol === 'description' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
-                          onClick={() => handleSort('unit')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none text-center whitespace-nowrap"
-                        >
-                          <div className="flex items-center justify-center gap-1">
-                            <span>Unit</span>
-                            {sortCol === 'unit' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
                           onClick={() => handleSort('quantity')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none text-center whitespace-nowrap"
+                          className="py-2.5 px-3 font-semibold cursor-pointer select-none text-right whitespace-nowrap"
                         >
-                          <div className="flex items-center justify-center gap-1">
-                            <span>Qty</span>
+                          <div className="flex items-center justify-end gap-1">
+                            <span>Quantity</span>
                             {sortCol === 'quantity' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
-                          onClick={() => handleSort('unitPrice')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none text-right whitespace-nowrap"
-                        >
-                          <div className="flex items-center justify-end gap-1">
-                            <span>Unit price</span>
-                            {sortCol === 'unitPrice' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
-                          onClick={() => handleSort('lineAmount')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none text-right whitespace-nowrap"
-                        >
-                          <div className="flex items-center justify-end gap-1">
-                            <span>Amount</span>
-                            {sortCol === 'lineAmount' ? (
                               sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
                             ) : (
                               <ArrowUpDown className="h-3 w-3 text-neutral-400" />
@@ -821,29 +730,16 @@ export function SalesMainView({
                             <td className="py-2.5 px-3 font-mono font-medium text-[#041a24] whitespace-nowrap">
                               #{l.transNo}
                             </td>
-                            <td className="py-2.5 px-3 whitespace-nowrap text-[#041a24] tabular-nums">
-                              {formatDate(l.salesDate)}
-                            </td>
-                            <td className="py-2.5 px-3 font-medium text-[#041a24]">
-                              {l.custName}
-                            </td>
-                            <td className="py-2.5 px-3 font-mono font-medium text-[#041a24] whitespace-nowrap">
-                              {l.prodCode}
-                            </td>
-                            <td className="py-2.5 px-3 text-[#41555f] leading-snug line-clamp-1">
-                              {l.description}
-                            </td>
-                            <td className="py-2.5 px-3 text-center font-mono text-[11px] text-[#41555f]">
-                              {l.unit}
-                            </td>
-                            <td className="py-2.5 px-3 text-center font-mono tabular-nums text-[#041a24]">
-                              {l.quantity}
-                            </td>
-                            <td className="py-2.5 px-3 text-right font-mono tabular-nums text-[#41555f] whitespace-nowrap">
-                              {formatPHP(l.unitPrice)}
+                            <td className="py-2.5 px-3">
+                              <div className="font-mono font-medium text-[#041a24]">
+                                {l.prodCode}
+                              </div>
+                              <div className="text-[11px] text-[#41555f] mt-0.5 line-clamp-1">
+                                {l.description}
+                              </div>
                             </td>
                             <td className="py-2.5 px-3 text-right font-mono tabular-nums font-semibold text-[#041a24] whitespace-nowrap">
-                              {formatPHP(l.lineAmount)}
+                              {l.quantity}
                             </td>
                           </tr>
                         );
