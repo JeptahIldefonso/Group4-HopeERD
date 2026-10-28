@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { X, ArrowRight, ShoppingCart, Receipt, ShieldCheck, Info } from 'lucide-react';
+import { X, ArrowRight, ShoppingCart, Receipt, Info } from 'lucide-react';
 import { BRAND } from '@/lib/brand';
 import type { UserRole } from '@/lib/types';
 
@@ -45,18 +45,9 @@ export function InfoStrip({ userRole = 'admin' }: InfoStripProps) {
       stepNum: 2,
       title: 'Record a payment',
       desc: 'Issue official receipts against customer sales with sequential OR numbering and atomic overpayment protection.',
-      href: '/customers?tab=payments',
+      href: '/customers',
       icon: Receipt,
       roles: ['admin', 'cashier'] as UserRole[],
-    },
-    {
-      id: 'step-warranty',
-      stepNum: 3,
-      title: 'Check warranty',
-      desc: 'Verify 1-year (365-day) product warranty status across all purchased hardware items, independent of payment status.',
-      href: '/customers?tab=warranty',
-      icon: ShieldCheck,
-      roles: ['admin', 'sales', 'cashier'] as UserRole[],
     },
   ];
 

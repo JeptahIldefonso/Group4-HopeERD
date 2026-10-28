@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronDown, Plus, CreditCard, ShieldCheck, ChevronRight } from 'lucide-react';
+import { ChevronDown, Plus, CreditCard, ChevronRight } from 'lucide-react';
 import { BRAND } from '@/lib/brand';
 import { RecordPaymentDialog } from '@/components/payments/RecordPaymentDialog';
 import type { UserRole } from '@/lib/types';
@@ -120,14 +120,6 @@ export function OverviewHeader({
                     <span>Record Payment</span>
                   </button>
                 )}
-                <Link
-                  href="/customers?tab=warranty"
-                  onClick={() => setIsActionsOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
-                >
-                  <ShieldCheck className="h-3.5 w-3.5 text-neutral-500" />
-                  <span>Check Warranty</span>
-                </Link>
               </div>
             )}
           </div>

@@ -10,14 +10,14 @@
 
 ## 📌 1. Project Concept & Architecture
 
-The **HOPE Group4 Sales and Payments Monitoring System** is an enterprise sales monitoring and payment tracking platform built strictly on the canonical 10-table **Hope ERD**. It provides staff daily tools to record sales transactions, inspect line items (product, quantity, computed amounts), record customer payments with auto-numbered Official Receipts (OR), monitor customer profiles, track PC hardware price histories, and verify 1-year product warranties.
+The **HOPE Group4 Sales and Payments Monitoring System** is an enterprise sales monitoring and payment tracking platform built strictly on the canonical 10-table **Hope ERD**. It provides staff daily tools to record sales transactions, inspect line items (product, quantity, computed amounts), record customer payments with auto-numbered Official Receipts (OR), monitor customer profiles, and track PC hardware price histories.
 
 ### The Four Core Tabs
 
 The application is structured into four primary operational tabs (plus Overview and Reports):
 1. **Employees:** Workforce records, historical job assignments, and department assignments.
 2. **Products & Pricing:** Product specifications, current unit prices, and historical price adjustments.
-3. **Customers & Payments:** Master-detail customer directory, payment records (OR #, payment date, sale #, amount), warranty records, and payment recording.
+3. **Customers & Payments:** Master-detail customer directory, payment records (OR #, payment date, sale #, amount), and payment recording.
 4. **Sales:** Invoiced sales transactions and sales details (transaction number, product code, quantity, computed amount).
 
 ### Strictly 10-Table Relational Schema
@@ -49,8 +49,7 @@ EMPLOYEE (empNo PK) ──< has >── JOBHISTORY (empNo, jobCode, effDate PK) 
 2. **Point-in-Time Department Assignment:** Sales revenue is attributed to the employee's assigned `DEPARTMENT` in `JOBHISTORY` on the transaction date.
 3. **Payment Records & Official Receipts:** `PAYMENT` records are linked directly to `SALES`. Official Receipts are auto-numbered and cannot exceed the sale total.
 4. **Historical Immutability (Backdating Prevention):** Triggers reject any `PRICEHIST` row dated on or before a recorded sale for that product, and reject any `JOBHISTORY` row dated on or before an employee's recorded sales.
-5. **1-Year Warranty Assumption:** Standard 365-day limited warranty is computed purely from `salesDate + 365 days` as an assumed business rule without adding a warranty column.
-6. **Structured PC Hardware Catalog:** Without adding a category column, product categories are parsed from codes (`CPU`, `GPU`, `MB`, `RAM`, `SSD`, `PSU`, `CASE`, `MON`, `KB`, `MS`), and specifications are parsed from pipe-delimited descriptions (`Brand Model | Spec 1 | Spec 2 | Spec 3`).
+5. **Structured PC Hardware Catalog:** Without adding a category column, product categories are parsed from codes (`CPU`, `GPU`, `MB`, `RAM`, `SSD`, `PSU`, `CASE`, `MON`, `KB`, `MS`), and specifications are parsed from pipe-delimited descriptions (`Brand Model | Spec 1 | Spec 2 | Spec 3`).
 
 ---
 
@@ -62,7 +61,7 @@ The sidebar displays each section label with a secondary descriptive caption:
 |---|---|---|---|---|
 | **Overview** | **Dashboard** | Overview | `/dashboard` | Executive KPIs (Total sales, Payments received, Number of sales, Active customers), Recent sales, Recent payments, and Quick actions. (All roles) |
 | **Sales** | **Sales** | Sales Detail | `/sales` | Invoiced sales transactions, sales detail line items, CSV export, and New Sale modal. (All roles) |
-| **Customers** | **Customers** | Payments | `/customers` | Master-detail customer directory, Payments tab (OR #, Date, Sale #, Amount, Receipt action link), Warranty tab, and Record Payment dialog. (All roles) |
+| **Customers** | **Customers** | Payments | `/customers` | Master-detail customer directory, Payments tab (OR #, Date, Sale #, Amount, Receipt action link), and Record Payment dialog. (All roles) |
 | **Products** | **Products** | Price History | `/products` | Hardware catalog with current prices, price trends, and Price History timeline. (All roles) |
 | **Employees** | **Employees** | Job, Department | `/employees` | Master-detail workforce directory, job assignment history, and department transfers. (Admin only) |
 | **Reports** | **Reports** | Summaries | `/reports` | Operational summaries: Sales by period, Sales by employee, Sales by department, Sales by product, and Payments by period with CSV export. (Admin only) |
@@ -121,3 +120,8 @@ On the `/login` screen, use the **One-Click Demo Login** buttons:
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase Anon/Public API Key
    - `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase Service Role Key (for admin management)
 4. Click **Deploy**. Your system will be live at `https://hope-group4.vercel.app`!
+
+---
+
+## ⚠️ Limitations
+- Warranty tracking is not included.

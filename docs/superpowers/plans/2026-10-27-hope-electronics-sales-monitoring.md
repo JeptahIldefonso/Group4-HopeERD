@@ -142,7 +142,7 @@
 - [x] **Step 5.1:** Build Sales Ledger table with multi-criteria search (Trans #, Customer, Sales Rep, Department), status filters (`ALL`, `PAID`, `PARTIAL`, `UNPAID`, `OVERDUE`), date range presets (`Today`, `This Week`, `This Month`), and CSV export.
 - [x] **Step 5.2:** Implement `NewSaleModal`: Customer dropdown, Sales Rep dropdown, line items table with product selector, quantity, and auto-populated unit price based on selected `salesDate`.
 - [x] **Step 5.3:** Connect `createSaleAction` calling the atomic `create_sale()` Supabase RPC with Zod validation.
-- [x] **Step 5.4:** Build `/sales/[transNo]` printable invoice view with **HOPE Group4** header, client details, line items table, payments received, running balance, and 1-year warranty assumption note.
+- [x] **Step 5.4:** Build `/sales/[transNo]` printable invoice view with **HOPE Group4** header, client details, line items table, payments received, running balance, and official receipts list.
 
 ---
 
@@ -253,7 +253,7 @@
 - Produces: Unauthenticated customer lookup by `custNo` and `transNo`.
 
 - [x] **Step 11.1:** Build public `/track` page requiring Customer Number and Transaction Number.
-- [x] **Step 11.2:** Implement `trackOrderAction` querying invoice details, items, payments made, remaining balance, and 1-year warranty assumption note without exposing internal employee or department data.
+- [x] **Step 11.2:** Implement `trackOrderAction` querying invoice details, items, payments made, remaining balance, without exposing internal employee or department data.
 - [x] **Step 11.3:** Render clear status card showing delivery/order date, payments credited, balance due, and printable customer receipt.
 
 ---

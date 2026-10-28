@@ -64,7 +64,7 @@ The system establishes a clear tripartite typographic structure:
 | **Body & Descriptions** | Geist Sans / Inter (`--font-sans`) | `text-xs sm:text-sm text-[#1c313b] leading-normal` | Page subtitles, card descriptions, table cell text |
 | **Numbers & Currency** | Geist Sans / Inter (`--font-sans`) | `font-semibold tabular-nums tracking-tight` | Peso amounts (`₱8,495.00`), quantities, balances |
 | **Technical Metadata** | Geist Mono / JetBrains Mono (`--font-mono`) | `text-[10px] sm:text-xs font-mono text-[#41555f]` | Product codes (`CPU-R5-5600`), Sale `#5001`, `OR #9001`, timestamps |
-| **Status Badges & Pills** | Geist Mono / JetBrains Mono (`--font-mono`) | `text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.14em]` | Valid, Expiring, Expired, Active status pills |
+| **Status Badges & Pills** | Geist Mono / JetBrains Mono (`--font-mono`) | `text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.14em]` | Active, Inactive status pills |
 
 ---
 
@@ -104,10 +104,8 @@ The system establishes a clear tripartite typographic structure:
 ### B. Status Badges & Pills (`src/components/ui/Badge.tsx`)
 - **Structure:** `inline-flex items-center px-2 py-0.5 text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.14em] rounded-[2px] border`.
 - **Semantics:**
-  - `VALID`: `bg-[#EAF3EC] text-[#1c4d29] border-[#1c4d29]/30`
-  - `EXPIRING`: `bg-[#FDF4E7] text-[#824f11] border-[#824f11]/30`
-  - `EXPIRED`: `bg-[#FCECEC] text-[#862525] border-[#862525]/30`
   - `ACTIVE`: `bg-[#EAF3EC] text-[#1c4d29] border-[#1c4d29]/30`
+  - `INACTIVE`: `bg-[#FCECEC] text-[#862525] border-[#862525]/30`
 
 ### C. Cards & Metric Containers (`src/components/ui/Card.tsx`)
 - **Structure:** `bg-white rounded-[4px] border border-[rgba(4,26,36,0.16)] shadow-[0_1px_2px_rgba(4,26,36,0.04)] hover:border-[#041a24] transition-colors`.
@@ -149,3 +147,8 @@ The system establishes a clear tripartite typographic structure:
 - **Reference Analysis:** The live reference site `https://jeptahzrepo.vercel.app/home` is exclusively and deliberately light mode (warm parchment `#F4F4F0` canvas with white raised cards and `#041a24` ink).
 - **Rule Alignment:** "Offer dark mode only if the reference has it."
 - **Execution:** HOPE Group4 is strictly light mode, using high-contrast paper and midnight ink to eliminate eye strain and maximize rapid scanning for operational accounting and sales staff.
+
+---
+
+## 7. Limitations
+- Warranty tracking is not included.

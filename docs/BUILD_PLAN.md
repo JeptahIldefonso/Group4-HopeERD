@@ -22,7 +22,7 @@ The system does not maintain running customer balances, credit ledgers, or payme
 
 ### Milestone 2: Formal Overview Dashboard Redesign (Anti-Slop Implementation)
 - Redesigned `/dashboard` into an uncluttered, formal Overview:
-  1. **Page Header:** Breadcrumb (`HOPE Group4 / Overview`), title (`Overview`), PHT timestamp (`Data as of {date, time} (PHT)`), unified **Period filter** dropdown (`This month`, `Last month`, `Last 3 months`, `This year`), and role-based **Quick actions** dropdown (`New Sale`, `Record Payment`, `Check Warranty`).
+  1. **Page Header:** Breadcrumb (`HOPE Group4 / Overview`), title (`Overview`), PHT timestamp (`Data as of {date, time} (PHT)`), unified **Period filter** dropdown (`This month`, `Last month`, `Last 3 months`, `This year`), and role-based **Quick actions** dropdown (`New Sale`, `Record Payment`).
   2. **Information Strip:** Dismissible banner with `lib/brand.ts` text and a `"How it works"` link triggering a role-tailored side drawer panel.
   3. **Four Equal KPI Tiles:** `Total sales`, `Payments received`, `Number of sales`, and `Active customers` (distinct customers with $\ge 1$ sale in the period), each with small percentage change vs. equivalent previous period.
   4. **Recent Activity Tables:** Compact side-by-side tables for *"Recent sales"* and *"Recent payments"*.
@@ -52,23 +52,22 @@ The system does not maintain running customer balances, credit ledgers, or payme
 
 ### Milestone 5: Dashboard & Reports Overhaul
 - **Dashboard (`/dashboard`):**
-  - Role-filtered Welcome Card with 3 steps: Record a sale, Record a payment, Check warranty.
+  - Role-filtered Welcome Card with 2 steps: Record a sale, Record a payment.
   - Three KPI cards: Sales this month, Payments received this month, Number of sales this month (sub-line: average sale value) with last month comparisons and period label.
   - Charts row: "Sales by month" bar chart (last 6 months, y-axis from 0, no smoothing) next to "Sales by department" horizontal bars for the current month.
   - Feeds row: Recent sales (5 rows) and Recent payments (5 rows) with "View all" links.
 - **Reports (`/reports`):**
   - Five structured reports with Period filters and CSV export: Sales by period, Sales by employee, Sales by department, Sales by product, and Payments by period.
 
-### Milestone 6: Customers & Hardware Warranty Tracking
-- Retained dual-tab interface at `/customers`: "Customers" and "Warranty check".
-- Customers tab: Customer Name, Address, Payment terms (plain text), Purchases count, and Active warranties count.
-- Customer detail page: Customer profile, 3 summary chips (Valid, Expiring soon, Expired), and "Purchases and warranty" table.
-- 1-Year Warranty Rule: `WARRANTY_DAYS = 365` from `salesDate` in `Asia/Manila` timezone.
+### Milestone 6: Customers & Payments Module
+- Master-detail interface at `/customers`: Customers list and Payments table.
+- Customers list: Customer Name, Address, Payment terms (plain text), and Purchases count.
+- Customer detail: Customer profile, payment records table, and Record Payment action.
 - Zero debt or payment status chips.
 
 ### Milestone 7: Database Migration Files & Demo Dataset
 - `database/07_remove_debt_objects.sql`: safe-to-re-run migration dropping debt views, recreating `v_sales_summary` and `v_payments_ledger` with `security_invoker = true`, revoking anon access, and defining `record_payment_receipt`.
-- `database/08_demo_data.sql`: safe-to-re-run 12-month operational dataset (142 sales, ₱250k-₱460k upward trend, 88.7% paid in full, OR numbers 9001-9126 in strict date order without gaps, selling departments only, and warranty coverage spanning expired, expiring soon, and valid).
+- `database/08_demo_data.sql`: safe-to-re-run 12-month operational dataset (142 sales, ₱250k-₱460k upward trend, 88.7% paid in full, OR numbers 9001-9126 in strict date order without gaps, selling departments only, and full payment integrity).
 
 ### Milestone 8: Complete Employees Module Enhancement (`/employees`, `/employees/[empNo]`)
 - **Strict 4-Table Faithful ERD Implementation:** Built 100% on `EMPLOYEE`, `JOBHISTORY`, `JOB`, and `DEPARTMENT` (all 16 columns traceable and demonstrable on screen; zero external columns/tables).
@@ -113,10 +112,9 @@ The system does not maintain running customer balances, credit ledgers, or payme
   - Removed `/payments` route and sidebar item; redirected `/payments` to `/customers`.
   - Redirected `/payments/[orNo]` to `/receipts/[orNo]`.
 - **Master-Detail Customers & Payments Layout (`/customers`):**
-  - Left column: Searchable customer list showing customer name and customer number with active count. Selection synced via `?custNo=` and `?tab=`.
+  - Left column: Searchable customer list showing customer name and customer number with active count. Selection synced via `?custNo=`.
   - Right detail view: Customer header (`custName`, Customer no., address, plain-text payment terms).
-  - Tab "Payments" (default): Table with OR #, Date, Sale #, Amount, Receipt action link, summary bar (`"{n} receipts - Total {sum}"`), "Record payment" button (admin/cashier), and "Export CSV". Empty state: *"No payments recorded for this customer."*
-  - Tab "Warranty": Preserved 365-day warranty rules and status badges.
+  - Payments table directly below header: Table with OR #, Date, Sale #, Amount, Receipt action link, summary bar (`"{n} receipts - Total {sum}"`), "Record payment" button (admin/cashier), and "Export CSV". Empty state: *"No payments recorded for this customer."*
 - **Shared Record Payment Dialog (`RecordPaymentDialog`):**
   - Shared modal component used across Customers Payments tab, Sale detail page (`/sales/[transNo]`), and Dashboard Quick actions menu.
   - Searchable or pre-selected sale, payment date default today, pre-filled sale total amount, read-only sequential OR preview, submit via `record_payment_receipt` RPC. Toast notification with *"Print receipt"* link to `/receipts/[orNo]`.
@@ -133,3 +131,6 @@ The system does not maintain running customer balances, credit ledgers, or payme
   - Rendered with 52px row height, centered icons, 14px label, 2px gap, 12px muted caption, darker active caption, and tablet tooltip with `aria-label`.
 - **Complete Clean Architecture & File Cleanup:**
   - Removed unimported legacy files `init_local_db.sql`, `inspect_db.js`, and `scratch/`.
+
+## Limitations
+- Warranty tracking is not included.

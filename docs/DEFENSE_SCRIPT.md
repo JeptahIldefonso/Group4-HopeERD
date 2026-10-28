@@ -1,6 +1,6 @@
 # Hope ERD: Information Management Defense & Presentation Guide
 
-- **Project:** Hope Electronics Operations & Warranty Monitoring System
+- **Project:** HOPE Group4 Sales and Payments Monitoring System
 - **Presentation Duration:** 5 to 7 Minutes
 - **Audience:** Information Management Defense Panel & Professors
 
@@ -9,8 +9,8 @@
 ## 🎯 5-Minute Presentation Outline
 
 ### Step 1: System Introduction (1 Minute)
-> *"Good morning panel and professors. Today we present the **Hope Electronics Enterprise Operations & Warranty Monitoring System**.*  
-> *Rather than a generic consumer shopping cart, our system is an internal operations monitoring platform built for branch managers and executives. It unifies workforce productivity, departmental revenue attribution, historical product prices, customer collections, and live hardware warranty verification—built strictly around our assigned 10-table Hope ERD with zero added tables."*
+> *"Good morning panel and professors. Today we present the **HOPE Group4 Sales and Payments Monitoring System**.*  
+> *Rather than a generic consumer shopping cart, our system is an internal operations monitoring platform built for branch managers and executives. It unifies workforce productivity, departmental revenue attribution, historical product prices, customer payment collections, and official receipts—built strictly around our assigned 10-table Hope ERD with zero added tables."*
 
 ---
 
@@ -37,8 +37,6 @@
    * *"In the Products tab, clicking a hardware item like 'RTX 4060 GPU' opens its price timeline showing how its price evolved across effective dates in `PRICEHIST`."*
 4. **Customers & Payments (`/customers`):**
    * *"In Customers & Payments, we see customer accounts and their official receipts. We can record a payment with auto-numbered Official Receipts. If an overpayment is attempted, our database RPC immediately rejects it."*
-5. **Customer Accounts & Warranty Checks (`/customers`):**
-   * *"In Customer Accounts, our warranty engine calculates whether a device is under warranty by computing `salesDate + 365 days` evaluated in Philippine Time (`Asia/Manila`), dynamically flagging purchases as VALID WARRANTY or WARRANTY EXPIRED."*
 
 ---
 
@@ -56,9 +54,9 @@
 * **Your Answer:**  
   *"Storing `totalAmount` or `balance` directly in the table violates 3NF normalization because it creates redundant, derived data. If a payment is posted or a price changes, stored totals could become out of sync. Using SQL Views (`v_sales_summary`) with `WITH (security_invoker = true)` calculates these figures dynamically in real time without bypassing Row Level Security."*
 
-### Question 4: *"How did you handle the 1-year electronics warranty when there is no warranty table in the ERD?"*
+### Question 4: *"Why is there no warranty feature in the system?"*
 * **Your Answer:**  
-  *"We strictly followed the professor's constraint not to add extra tables. In commercial electronics, warranty duration is a deterministic business rule derived from the date of purchase. Our system calculates warranty coverage dynamically using `SALES.salesDate + INTERVAL '365 days'` in Asia/Manila time, and customer payment terms from `CUSTOMER.payTerms`."*
+  *"We strictly adhered to the assigned Hope ERD with zero additional tables or columns. Hardware warranty tracking is not included."*
 
 ### Question 5: *"What prevents an operator from inserting an old price into `PRICEHIST` and corrupting yesterday's sales figures?"*
 * **Your Answer:**  

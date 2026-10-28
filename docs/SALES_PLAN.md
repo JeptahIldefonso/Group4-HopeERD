@@ -344,7 +344,7 @@ Replace the demo sales with data that exercises every behavior.
 5. **Department history:** at least one rep transferred departments, with sales both before and after the transfer date, so the department on old sales differs from today's.
 6. **Price history:** at least one product has a price change between two of its sales, and one price row is dated in the future. Every product on every sale has a PRICEHIST row on or before the sale date, so the earliest price rows must predate the earliest sale.
 7. **Customers:** every customer has at least one sale, spread across customers.
-8. **Warranty demo dates:** some sales are roughly 400, 340 and under 100 days old so all warranty badges can appear in the Customers tab.
+8. **Temporal spread:** sales are spread across the last 12 months with varying intervals.
 9. Dates are relative to today (`current_date - interval ...`) and all names are fictional.
 10. **Consistency checks** (queries at the end of the seed file, each must return zero rows): a sale without lines, a line without a price on the sale date, a sale dated before its rep's hire date or after the rep's separation date, a sale with a rep who has no job record on or before the sale date, and `transNo` order that disagrees with `salesDate` order.
 
@@ -357,7 +357,7 @@ Replace the demo sales with data that exercises every behavior.
 | Products and PRICEHIST | New price rows must be dated later than the product's latest sale date, and PRICEHIST rows cannot be edited or deleted. Without this rule, a backdated price would change old sale totals |
 | Employees | The Employees module's rules R-05, R-06 and R-10 keep job records and separation dates consistent with sales. Sales reads rep names and departments only through the safe views |
 | Payments | The Record payment button opens the shared Record Payment Dialog. The Payments tab inside Customers & Payments validates that payments never exceed the sale total and lists the same receipts shown on the sale detail page |
-| Customers | The customer detail page lists that customer's sales from `v_sales_summary` and offers **New Sale** that opens `/sales/new?custNo=...`. Warranty status lives in Customers, not here |
+| Customers | The customer detail page lists that customer's sales from `v_sales_summary` and offers **New Sale** that opens `/sales/new?custNo=...`. Payment history lives in Customers, not here |
 | Dashboard and Reports | Use `v_sales_summary` and `v_sale_lines` so totals match this module for any period |
 | Global search (Ctrl+K) | Sale numbers open `/sales/[transNo]` |
 
@@ -406,7 +406,7 @@ The **Export CSV** button offers two files, both limited to the current filters 
 - No balance, payment status, due date, or installments. Debt tracking is not included
 - No stock count. Sales do not check or reduce inventory
 - No time of day on sales. The ERD stores only `salesDate`, so order within a day follows `transNo`
-- No warranty display on the Sales pages (warranty is shown in Customers and is an assumed 1-year rule)
+- Warranty tracking is not included.
 - A sale cannot be backdated before the latest saved sale
 - A product can appear only once on a sale, so quantity must be combined into one line
 

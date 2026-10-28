@@ -23,7 +23,7 @@ Success means a panelist can pick any column in PRODUCT or PRICEHIST, or any sin
 ## 2. Hard constraints (read first)
 
 1. **No new tables and no new columns.** The ERD stays exactly as assigned.
-2. **No fields outside the two tables.** Do not add or show brand, model, specification, cost, margin, supplier, category column, image, barcode, warranty, stock on hand, reorder level or notes.
+2. **No fields outside the two tables.** Do not add or show brand, model, specification, cost, margin, supplier, category column, image, barcode, stock on hand, reorder level or notes.
 3. **Calculated values are allowed** when they come only from existing columns: current price, previous price, price change, family (from the code prefix), price record status, units sold, sales revenue, last sold date and counts.
 4. **Price comes from PRICEHIST, never from PRODUCT.** PRODUCT has no price column.
 5. **History is protected.** Adding or correcting a price must never change the amount of a past sale (see R-05, R-06 and R-09 in Section 11).

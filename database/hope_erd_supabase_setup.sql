@@ -1,7 +1,6 @@
 -- ========================================================================
--- HOPE ELECTRONICS: EXTENDED ENTERPRISE OPERATIONS & WARRANTY SYSTEM
--- Complete Setup with Inventory Stock, Service Tickets, Overdue Tracking,
--- Roles (Admin, Sales, Cashier), and Demo Payment Records.
+-- HOPE ELECTRONICS: ENTERPRISE OPERATIONS & PAYMENTS SYSTEM
+-- Complete Setup with Roles (Admin, Sales, Cashier), and Demo Payment Records.
 -- ========================================================================
 
 -- STEP 1: CLEANUP
@@ -165,23 +164,6 @@ CREATE TABLE PAYMENT (
     CONSTRAINT fk_payment_sales FOREIGN KEY (transNo) 
         REFERENCES SALES(transNo) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT chk_payment_amount CHECK (amount > 0)
-);
-
--- 12. SERVICETICKET (Warranty Claims Extension)
-CREATE TABLE SERVICETICKET (
-    ticketNo SERIAL NOT NULL,
-    transNo INT NOT NULL,
-    prodCode VARCHAR(20) NOT NULL,
-    ticketDate DATE DEFAULT CURRENT_DATE NOT NULL,
-    issueDescription TEXT NOT NULL,
-    status VARCHAR(20) DEFAULT 'OPEN' NOT NULL,
-    resolution TEXT NULL,
-    CONSTRAINT pk_serviceticket PRIMARY KEY (ticketNo),
-    CONSTRAINT fk_serviceticket_sales FOREIGN KEY (transNo) 
-        REFERENCES SALES(transNo) ON UPDATE CASCADE ON DELETE RESTRICT,
-    CONSTRAINT fk_serviceticket_product FOREIGN KEY (prodCode) 
-        REFERENCES PRODUCT(prodCode) ON UPDATE CASCADE ON DELETE RESTRICT,
-    CONSTRAINT chk_ticket_status CHECK (status IN ('OPEN', 'IN_PROGRESS', 'RESOLVED', 'REJECTED'))
 );
 
 -- ========================================================================
@@ -386,13 +368,7 @@ SELECT
         WHEN CURRENT_DATE > (s.salesDate + c.termDays) AND (COALESCE(SUM(vsd.lineTotal), 0.00) - COALESCE(pay.totalPaid, 0.00)) > 0
         THEN (CURRENT_DATE - (s.salesDate + c.termDays))
         ELSE 0
-    END AS daysOverdue,
-    -- 1-Year Electronics Warranty Expiry
-    (s.salesDate + 365) AS warrantyExpiryDate,
-    CASE 
-        WHEN CURRENT_DATE <= (s.salesDate + 365) THEN 'VALID_WARRANTY'
-        ELSE 'WARRANTY_EXPIRED'
-    END AS warrantyStatus
+    END AS daysOverdue
 FROM SALES s
 JOIN CUSTOMER c ON c.custNo = s.custNo
 JOIN v_sales_with_dept vd ON vd.transNo = s.transNo
@@ -443,7 +419,7 @@ INSERT INTO DEPARTMENT (deptCode, deptName) VALUES
 ('DEP-CRP', 'Corporate IT Solutions'),
 ('DEP-LOG', 'Warehouse & Fulfillment'),
 ('DEP-FIN', 'Finance & Billing'),
-('DEP-SVC', 'Technical Service & Warranty');
+('DEP-SVC', 'Technical Service & Support');
 
 INSERT INTO JOB (jobCode, jobDesc) VALUES
 ('JOB-SREP', 'Enterprise Sales Specialist'),
@@ -533,13 +509,7 @@ INSERT INTO PAYMENT (ORNo, payDate, amount, transNo) VALUES
 (9004, '2023-06-10', 58500.00, 5003),  -- Sale 5003 PAID
 (9005, '2023-09-15', 10000.00, 5004);  -- Sale 5004 PARTIAL
 
--- Sample Warranty Service Claims
-INSERT INTO SERVICETICKET (ticketNo, transNo, prodCode, ticketDate, issueDescription, status, resolution) VALUES
-(1, 5001, 'GPU-NV-4060', '2023-01-15', 'Fan bearing noise under 3D load', 'RESOLVED', 'Replaced thermal assembly under manufacturer warranty'),
-(2, 5002, 'SSD-NV-1TB',  '2023-07-20', 'Read/write throughput dropping to zero', 'IN_PROGRESS', 'Diagnosing sector wear at service lab'),
-(3, 5003, 'KEY-MC-BLU',  '2023-08-10', 'Spacebar switch double-registering', 'OPEN', NULL);
-
 -- Verification Query
-SELECT transNo, salesDate, custName, totalAmount, totalPaid, balance, paymentStatus, daysOverdue, warrantyStatus 
+SELECT transNo, salesDate, custName, totalAmount, totalPaid, balance, paymentStatus, daysOverdue 
 FROM v_sales_summary 
 ORDER BY transNo;

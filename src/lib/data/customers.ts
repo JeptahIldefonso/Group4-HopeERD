@@ -84,23 +84,13 @@ export interface CustomerSalesSummaryItem {
   salesDate: string;
 }
 
-export interface CustomerWarrantyItem {
-  custNo: number;
-  transNo: number;
-  salesDate: string;
-  prodCode: string;
-  description: string;
-  quantity: number;
-}
-
 /**
- * Fetch Customer overview list, all payments ledger, summary metrics, sales links, and warranty items.
+ * Fetch Customer overview list, all payments ledger, summary metrics, and sales links.
  */
 export async function getCustomersPageData(): Promise<{
   customers: CustomerOverviewItem[];
   payments: PaymentLedgerItem[];
   sales: CustomerSalesSummaryItem[];
-  warrantyItems: CustomerWarrantyItem[];
   metrics: CustomerSummaryMetrics;
 }> {
   if (isSupabaseLive()) {
@@ -145,19 +135,6 @@ export async function getCustomersPageData(): Promise<{
           salesDate: String(s.salesDate),
         }));
 
-        const { data: warrantyData } = await supabase
-          .from('SALESDETAIL')
-          .select('transNo, quantity, prodCode, SALES(custNo, salesDate), PRODUCT(description)');
-
-        const warrantyItems: CustomerWarrantyItem[] = (warrantyData || []).map((w: any) => ({
-          custNo: Number(w.SALES?.custNo || 0),
-          transNo: Number(w.transNo || 0),
-          salesDate: String(w.SALES?.salesDate || ''),
-          prodCode: String(w.prodCode || ''),
-          description: String(w.PRODUCT?.description || ''),
-          quantity: Number(w.quantity || 1),
-        }));
-
         const termCounts: Record<string, number> = { ALL: customers.length, COD: 0, '30D': 0, '45D': 0 };
         for (const c of customers) {
           const t = c.payTerms;
@@ -172,7 +149,6 @@ export async function getCustomersPageData(): Promise<{
           customers,
           payments,
           sales,
-          warrantyItems,
           metrics: {
             totalCustomers: customers.length,
             totalTermsCount: distinctTerms.length,
@@ -194,19 +170,6 @@ export async function getCustomersPageData(): Promise<{
   const custRows = db.prepare('SELECT * FROM v_customer_overview ORDER BY custNo ASC').all() as any[];
   const payRows = db.prepare('SELECT * FROM v_customer_payments ORDER BY payDate DESC, ORNo DESC').all() as any[];
   const salesRows = db.prepare('SELECT transNo, custNo, salesDate FROM SALES ORDER BY salesDate DESC, transNo DESC').all() as any[];
-  const warrantyRows = db.prepare(`
-    SELECT 
-      s.custNo,
-      s.transNo,
-      s.salesDate,
-      sd.prodCode,
-      p.description,
-      sd.quantity
-    FROM SALES s
-    JOIN SALESDETAIL sd ON sd.transNo = s.transNo
-    JOIN PRODUCT p ON p.prodCode = sd.prodCode
-    ORDER BY s.salesDate DESC, s.transNo DESC
-  `).all() as any[];
 
   const customers: CustomerOverviewItem[] = custRows.map((r) => ({
     custNo: Number(r.custNo),
@@ -239,15 +202,6 @@ export async function getCustomersPageData(): Promise<{
     salesDate: String(s.salesDate),
   }));
 
-  const warrantyItems: CustomerWarrantyItem[] = warrantyRows.map((w) => ({
-    custNo: Number(w.custNo),
-    transNo: Number(w.transNo),
-    salesDate: String(w.salesDate),
-    prodCode: String(w.prodCode),
-    description: String(w.description || ''),
-    quantity: Number(w.quantity || 1),
-  }));
-
   const termCounts: Record<string, number> = { ALL: customers.length, COD: 0, '30D': 0, '45D': 0 };
   for (const c of customers) {
     const t = c.payTerms;
@@ -262,7 +216,6 @@ export async function getCustomersPageData(): Promise<{
     customers,
     payments,
     sales,
-    warrantyItems,
     metrics: {
       totalCustomers: customers.length,
       totalTermsCount: distinctTerms.length,

@@ -1,6 +1,6 @@
 # Hope ERD: Database Specification & Data Dictionary
 
-- **Project:** Hope Electronics Operations & Warranty Monitoring System
+- **Project:** HOPE Group4 Sales and Payments Monitoring System
 - **Subject:** Information Management (2nd Year Computer Science)
 - **Target DBMS:** PostgreSQL 15+ (Supabase) / SQLite 3.50+ Local
 
@@ -124,7 +124,7 @@ In relational databases, parent lookup tables must be created first before depen
 | Column | Data Type | Nullable | Key / Constraint | Description |
 | :--- | :--- | :---: | :--- | :--- |
 | `transNo` | `INT` | NO | **PRIMARY KEY** | Official sales invoice / transaction number. |
-| `salesDate` | `DATE` | NO | None | Transaction date (used for pricing & warranty). |
+| `salesDate` | `DATE` | NO | None | Transaction date (used for pricing resolution). |
 | `custNo` | `INT` | NO | `FK -> CUSTOMER(custNo)` | Purchasing customer. |
 | `empNo` | `INT` | NO | `FK -> EMPLOYEE(empNo)` | Sales representative closing the transaction. |
 
@@ -211,7 +211,7 @@ In relational databases, parent lookup tables must be created first before depen
 
 To remain **100% faithful to the assigned 10-table ERD**, the following business assumptions and boundaries are formally established:
 
-1. **Warranty Coverage Period:** Hardware warranty is assumed to be **365 days** from the transaction date (`SALES.salesDate + 365 days`). This is calculated dynamically in SQL / application code.
+1. **Scope Boundaries:** Warranty tracking is not included.
 2. **Collections vs. Amortization:** Payments are recorded against the total transaction balance using Official Receipts (`PAYMENT.ORNo`). The system does not maintain fixed installment amortization schedules because no payment schedule table exists in the ERD.
 3. **Inventory Tracking:** The system tracks catalog items and **total units sold** (`SUM(quantity)`). It does not track current on-hand warehouse stock counts because stock balance is outside the ERD scope.
 4. **Recent Activity vs. Event Audit Logs:** The dashboard displays **"Recent Transactions & Collections"** derived from `SALES` and `PAYMENT`. It does not claim to log system logins or security events because the ERD contains no audit log entity.

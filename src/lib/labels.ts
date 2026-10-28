@@ -100,7 +100,7 @@ export const LABELS = {
     },
     customers: {
       title: 'Customers',
-      subtitle: 'Customer accounts, payment terms, purchase history, and product warranty tracking.',
+      subtitle: 'Customer accounts, payment terms, and official receipts ledger.',
     },
     products: {
       title: 'Products',
@@ -167,7 +167,6 @@ export const LABELS = {
     sales: 'No sales records match your search criteria.',
     payments: 'No payments recorded matching the selected filter.',
     customers: 'No customers found matching your search.',
-    warranty: 'No purchased items found matching the selected filter.',
     reports: 'No transactions found for the selected reporting period.',
   },
 } as const;

@@ -251,7 +251,7 @@ INSERT INTO PAYMENT (ORNo, payDate, amount, transNo) VALUES
 -- Trans 5011: 27,950 (PAID)
 (9013, (CURRENT_DATE - INTERVAL '10 days')::DATE,  27950.00,  5011),
 
--- Trans 5012: 33,860 (OVERDUE: 0 paid, NET 15 expired 3 days ago!)
+-- Trans 5012: 33,860 (No payment recorded)
 -- No payment inserted
 
 -- Trans 5013: 86,940 (PARTIAL: paid 40,000, active NET 30)

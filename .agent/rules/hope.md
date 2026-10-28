@@ -9,8 +9,8 @@
 3. **Payments & Cash Realization**:
    - Auto-sequencing `ORNo` on cash collection entries.
    - Strict overpayment prevention: payment amount cannot exceed remaining unpaid balance.
-4. **Warranty Assumption**:
-   - 1-Year Limited Warranty (365 calendar days from date of sale) is an explicit business policy derived from `salesDate`.
+4. **Scope Limitations**:
+   - Warranty tracking is not included.
 5. **UI & Code Quality**:
    - Business software tone: calm, trustworthy, high information density, high scannability.
    - Strict separation of concerns: queries and business logic must not be modified during UI styling passes.

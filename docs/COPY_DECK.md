@@ -7,7 +7,7 @@
 - **Four Core Modules / Tabs:**
   1. **Employees:** Workforce records, job history, and department assignments.
   2. **Products & Pricing:** Product catalog, unit prices, and price history.
-  3. **Customers & Payments:** Master-detail customer directory, payment records (OR #, date, sale #, amount), warranty checks, and payment recording.
+  3. **Customers & Payments:** Master-detail customer directory, payment records (OR #, date, sale #, amount), and payment recording.
   4. **Sales:** Invoiced sales transactions and sales details (product, quantity, computed amount).
 - **Architecture Principle:** Payments data is integrated inside "Customers & Payments" and on each sale. There is no standalone Payments page or debt ledger.
 
@@ -41,7 +41,7 @@ The navigation is defined as a single configuration array with href, label, capt
 | **Dashboard** | **Overview** | Data as of {date, time} (PHT) | *“HOPE Group4 / Overview”* |
 | **Sales** | **Sales** | All recorded sales transactions and line-item details. | *“HOPE Group4 / Sales”* |
 | **Sale Detail** | **Sale #{transNo}** | Transaction details, line items, and official payment receipts. | *“HOPE Group4 / Sales / #{transNo}”* |
-| **Customers & Payments** | **Customers & Payments** | Customer records, official receipts, and 1-year product warranty. | *“HOPE Group4 / Customers”* |
+| **Customers & Payments** | **Customers & Payments** | Customer records, payment history, and official receipts. | *“HOPE Group4 / Customers”* |
 | **Products & Pricing** | **Products & Pricing** | Product catalog, unit prices, and price history. | *“HOPE Group4 / Products”* |
 | **Employees** | **Employees** | Employee directory, job assignments, and department history. | *“HOPE Group4 / Employees”* |
 | **Reports** | **Reports** | Operational summaries and payment reports by period with CSV export. | *“HOPE Group4 / Reports”* |
@@ -58,9 +58,9 @@ The navigation is defined as a single configuration array with href, label, capt
 | **KPI 3** | **Number of sales** | Total sales invoice count in period with vs previous period change |
 | **KPI 4** | **Active customers** | Distinct customers with $\ge 1$ sale in period with vs previous period change |
 | **Table 1** | **Recent sales** | Latest 5 sales (Sale #, Date, Customer, Total) with *“View all →”* linking to `/sales` |
-| **Table 2** | **Recent payments** | Latest 5 official receipts (OR #, Date, Customer, Amount). OR # links to `/receipts/[orNo]`; Customer links to `/customers?custNo=[custNo]&tab=payments` |
+| **Table 2** | **Recent payments** | Latest 5 official receipts (OR #, Date, Customer, Amount). OR # links to `/receipts/[orNo]`; Customer links to `/customers?custNo=[custNo]` |
 | **Info Strip** | **System guidance strip** | Quick walkthrough of core workflows |
-| **Quick Actions** | **Quick actions menu** | *New Sale* (admin, sales), *Record Payment* (opens dialog, admin, cashier), *Check Warranty* |
+| **Quick Actions** | **Quick actions menu** | *New Sale* (admin, sales), *Record Payment* (opens dialog, admin, cashier) |
 
 ---
 
@@ -68,7 +68,7 @@ The navigation is defined as a single configuration array with href, label, capt
 
 - **New Sale Button:** Icon + **New Sale**. Visible to admin and sales roles.
 - **Record Payment Button / Dialog:** Shared `RecordPaymentDialog` used in three places:
-  1. Customers & Payments page (`/customers` Payments tab)
+  1. Customers & Payments page (`/customers`)
   2. Sale detail page (`/sales/[transNo]`)
   3. Dashboard Quick actions menu
   - Fields: Sale (searchable or pre-locked), Payment date (defaults to today), Amount (pre-filled with sale total), OR number (read-only preview, assigned by database).
@@ -90,3 +90,8 @@ The navigation is defined as a single configuration array with href, label, capt
    - No settlement status pills (`PAID`, `PARTIAL`, `UNPAID`).
 3. **Canonical ERD Terminology Enforced:**
    - Only standard ERD entities: `CUSTOMER`, `PAYMENT`, `SALES`, `SALESDETAIL`, `PRODUCT`, `PRICEHIST`, `EMPLOYEE`, `JOBHIST`, `JOBTITLE`, `DEPARTMENT`.
+
+---
+
+## 7. Limitations
+- Warranty tracking is not included.

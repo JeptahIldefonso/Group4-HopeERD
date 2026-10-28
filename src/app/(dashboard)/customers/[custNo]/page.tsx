@@ -6,5 +6,5 @@ interface PageProps {
 
 export default async function CustomerDetailPage({ params }: PageProps) {
   const { custNo } = await params;
-  redirect(`/customers?code=${custNo}`);
+  redirect(`/customers?custNo=${custNo}`);
 }

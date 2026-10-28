@@ -7,7 +7,7 @@
 - **Core Architecture & Four Operational Tabs:**
   1. **Employees:** Workforce records, historical appointments, and department assignments.
   2. **Products & Pricing:** Hardware specifications, unit prices, and price history adjustments.
-  3. **Customers & Payments:** Master-detail customer directory, payment records (OR #, payment date, sale #, amount), warranty checks, and payment recording.
+  3. **Customers & Payments:** Master-detail customer directory, payment records (OR #, payment date, sale #, amount), and payment recording.
   4. **Sales:** Invoiced sales transactions and line-item details (product, quantity, computed amounts).
 - **Architectural Principle:** Payments data is integrated inside "Customers & Payments" and on each sale detail page. There is no standalone Payments list page.
 
@@ -62,7 +62,7 @@ The sidebar renders navigation items from a single configuration array in `lib/l
 |---|---|---|---|---|
 | **Dashboard** | Overview | `/dashboard` | All roles | Key operations metrics, quick actions, recent sales and payments. |
 | **Sales** | Sales Detail | `/sales` | All roles | Invoiced transactions and line-item details. |
-| **Customers** | Payments | `/customers` | All roles | Master-detail customer directory, payment records, and warranties. |
+| **Customers** | Payments | `/customers` | All roles | Master-detail customer directory and payment records. |
 | **Products** | Price History | `/products` | All roles | Component specifications, current prices, and historical changes. |
 | **Employees** | Job, Department | `/employees` | Admin only | Staff directory, career timelines, and department assignments. |
 | **Reports** | Summaries | `/reports` | Admin only | Operational summaries and payment reports by period with CSV export. |
@@ -77,7 +77,7 @@ The sidebar renders navigation items from a single configuration array in `lib/l
 
 ### 3.1 Screen 1: Overview Dashboard (`/dashboard`)
 * **Page Header:** Breadcrumb (`HOPE Group4 / Overview`), page title (`Overview`), timestamp (`Data as of {date, time} (PHT)`), Period filter (`This month`, `Last month`, `Last 3 months`, `This year`), and **Quick actions** menu.
-* **Quick Actions Menu:** Provides in-place triggers: *New Sale* (admin, sales), *Record Payment* (opens shared `RecordPaymentDialog`, admin, cashier), and *Check Warranty* (`/customers?tab=warranty`).
+* **Quick Actions Menu:** Provides in-place triggers: *New Sale* (admin, sales), and *Record Payment* (opens shared `RecordPaymentDialog`, admin, cashier).
 * **Four KPI Cards:** 
   1. `Total sales` (point-in-time pricing in period)
   2. `Payments received` (official receipts in period)
@@ -85,7 +85,7 @@ The sidebar renders navigation items from a single configuration array in `lib/l
   4. `Active customers` (distinct customers with $\ge 1$ sale in period)
 * **Recent Tables:** 
   - *"Recent sales"*: 5 latest sales linking to `/sales/[transNo]`.
-  - *"Recent payments"*: 5 latest official receipts. The OR # links to `/receipts/[orNo]` and the customer name links directly to that customer's Payments tab at `/customers?custNo=[custNo]&tab=payments`.
+  - *"Recent payments"*: 5 latest official receipts. The OR # links to `/receipts/[orNo]` and the customer name links directly to that customer's Payments view at `/customers?custNo=[custNo]`.
 
 ### 3.2 Screen 2: Products & Pricing (`/products`)
 * **Strict 2-Table Schema:** Built 100% on `PRODUCT` and `PRICEHIST`.
@@ -103,15 +103,14 @@ The sidebar renders navigation items from a single configuration array in `lib/l
 
 ### 3.4 Screen 4: Customers & Payments (`/customers`)
 * **Master-Detail Layout:**
-  - **Left Column:** Searchable customer list showing customer name and customer number, with total customer count. Selection is retained in the URL (`?custNo={custNo}&tab={payments|warranty}`).
+  - **Left Column:** Searchable customer list showing customer name and customer number, with total customer count. Selection is retained in the URL (`?custNo={custNo}`).
   - **Right Detail View:**
     - Header: Customer name, Customer no., address, and Payment terms as plain text.
-    - **Tab "Payments" (default):** Official receipts table displaying OR #, Date, Sale #, Amount, and Receipt action link (navigating to `/receipts/[orNo]`). Summary bar states `"{n} receipts - Total {sum}"`. Includes **Record payment** button (admin and cashier) and **Export CSV** button. If no payments exist, displays *"No payments recorded for this customer."*
-    - **Tab "Warranty":** Lists purchased products for that customer with purchase date, 1-year warranty end date (`salesDate + 365 days`), and status badge (`Valid`, `Expiring soon`, `Expired`).
+    - **Payments Table:** Official receipts table displaying OR #, Date, Sale #, Amount, and Receipt action link (navigating to `/receipts/[orNo]`). Summary bar states `"{n} receipts - Total {sum}"`. Includes **Record payment** button (admin and cashier) and **Export CSV** button. If no payments exist, displays *"No payments recorded for this customer."*
 
 ### 3.5 Screen 5: Shared Record Payment Dialog
 * **Unified Dialog:** A single reusable modal component utilized in three key operational touchpoints:
-  1. Customers & Payments page (`/customers` Payments tab)
+  1. Customers & Payments page (`/customers`)
   2. Sale detail page (`/sales/[transNo]`)
   3. Dashboard Quick actions menu
 * **Form Fields:**
@@ -143,4 +142,4 @@ The sidebar renders navigation items from a single configuration array in `lib/l
 
 1. **Strict 10-Table ERD:** No new tables or columns. No debt or credit tracking models exist in the schema.
 2. **Point-in-Time Resolution:** Sales line prices and employee department assignments are resolved dynamically using effective dates (`PRICEHIST.effDate <= SALES.salesDate` and `JOBHISTORY.effDate <= SALES.salesDate`).
-3. **1-Year Warranty Rule:** Calculated purely as 365 calendar days from sale date (`salesDate + 365 days`), operating independently of payments.
+3. **Scope Limitations:** Warranty tracking is not included.

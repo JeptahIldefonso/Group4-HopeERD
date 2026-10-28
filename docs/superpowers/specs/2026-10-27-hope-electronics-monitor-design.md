@@ -1,7 +1,7 @@
-# Hope Electronics Enterprise Operations & Warranty Monitoring System
+# HOPE Group4 Sales and Payments Monitoring System
 ## System Design Specification
 
-- **Project:** Hope Electronics Enterprise Operations & Warranty Monitoring System
+- **Project:** HOPE Group4 Sales and Payments Monitoring System
 - **Subject:** Information Management (2nd Year Computer Science)
 - **Target Users:** Business Owners, Branch Executives, Department Heads, and System Administrators
 - **Tech Stack:** Next.js (App Router, TypeScript), Tailwind CSS, Supabase (PostgreSQL + Auth), Vercel
@@ -10,13 +10,13 @@
 
 ## 1. Intent & Purpose
 
-The goal of this project is to build an internal **Executive Operations, Commercial Monitoring, and Warranty System** for a wholesale/branch electronics enterprise ("Hope Electronics"). 
+The goal of this project is to build an internal **Executive Operations and Commercial Monitoring System** for a wholesale/branch electronics enterprise ("Hope Electronics"). 
 
-The system provides high-level business intelligence across 5 pillars:
+The system provides high-level business intelligence across 4 pillars:
 1. **Workforce & Department Performance:** Staff categorized by department, tenure/time spent, salary progression, and career transfers (`EMPLOYEE`, `JOB`, `DEPARTMENT`, `JOBHISTORY`).
 2. **Product & Pricing Trajectory:** Electronic hardware catalog, units sold, and historical price adjustments over time (`PRODUCT`, `PRICEHIST`, `SALESDETAIL`).
 3. **Financials & Payments:** Invoices, receivables, and collections tracked via Official Receipts (`SALES`, `CUSTOMER`, `PAYMENT`).
-4. **Customer Service & Warranty:** Real-time electronics warranty validation computed from purchase dates (`salesDate + 365 days`), along with customer credit terms (`payTerms`).
+4. **Customer Accounts & Payments:** Customer directory and payments records tracked via Official Receipts.
 5. **System Security & Sign-In Logs:** Protected authentication gateway ensuring only verified administrators access company data, backed by audit/access logs.
 
 ---
@@ -51,7 +51,7 @@ The system provides high-level business intelligence across 5 pillars:
   2. `Products & Pricing` (Hardware catalog & price history)
   3. `Finances & Sales` (Invoices, OR collections, balances)
   4. `Employees & Workforce` (Departments, tenure, salary histories)
-  5. `Customer Service & Warranty` (Client accounts, payment terms, live warranty tracker)
+  5. `Customers & Payments` (Client accounts, payment terms, and official receipts)
 
 ### 3.3 Screen Breakdown
 
@@ -90,12 +90,9 @@ The system provides high-level business intelligence across 5 pillars:
 - Clicking an employee opens their **Career & Promotion History**:
   - Full chronological list of all `JOBHISTORY` appointments with effective dates and salaries.
 
-#### Screen 5: Customer Service & Warranty Tracker (`/customers`)
+#### Screen 5: Customers & Payments (`/customers`)
 - Customer Directory: Name, Address, Payment Terms (`CUSTOMER.payTerms`).
-- **Live Warranty Engine:**
-  - Shows each hardware purchase.
-  - Purchase Date (`salesDate`) $\rightarrow$ Expiry Date (`salesDate + 365 days`).
-  - Status Pill: `VALID WARRANTY` (Green) or `WARRANTY EXPIRED` (Red).
+- Payments records: Official Receipts table (OR #, Date, Sale #, Amount).
 - Customer Accounts Receivable Summary: Total purchased vs total outstanding balance.
 
 ---
