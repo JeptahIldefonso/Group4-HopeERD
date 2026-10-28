@@ -15,6 +15,16 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: false,
       },
+      {
+        source: '/reports',
+        destination: '/',
+        permanent: false,
+      },
+      {
+        source: '/reports/:path*',
+        destination: '/',
+        permanent: false,
+      },
     ];
   },
 };

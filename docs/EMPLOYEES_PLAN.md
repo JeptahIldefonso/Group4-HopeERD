@@ -335,7 +335,6 @@ If adjusting hire dates of 101 to 105 would break these checks, adjust their fir
 | Module | Dependency |
 |---|---|
 | Sales | The Sales rep dropdown lists only employees active on the sale date (`hireDate <=` sale date and `sepDate` empty or `>=` sale date). A sale's department is the rep's assignment on the sale date, from `v_employee_assignments` |
-| Reports | Sales by employee and sales by department use the same point-in-time department rule |
 | Dashboard | Uses sales by department only. It shows no employee personal data and no salaries |
 | Sidebar | The Employees item shows for admins only |
 | CSV and print | See Section 15 |

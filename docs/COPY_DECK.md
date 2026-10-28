@@ -24,7 +24,6 @@ The navigation is defined as a single configuration array with href, label, capt
 | **Nav Item 3** | **Customers** | Payments | `/customers` | All roles |
 | **Nav Item 4** | **Products** | Price History | `/products` | All roles |
 | **Nav Item 5** | **Employees** | Job, Department | `/employees` | Admin only |
-| **Nav Item 6** | **Reports** | Summaries | `/reports` | Admin only |
 
 - **Label Styling:** 14px, medium font weight (`font-medium`).
 - **Caption Styling:** 12px, muted text (`#41555f` in light mode), sentence case, normal sans-serif, 2px gap below label.
@@ -44,7 +43,6 @@ The navigation is defined as a single configuration array with href, label, capt
 | **Customers & Payments** | **Customers & Payments** | Customer records, payment history, and official receipts. | *“HOPE Group4 / Customers”* |
 | **Products & Pricing** | **Products & Pricing** | Product catalog, unit prices, and price history. | *“HOPE Group4 / Products”* |
 | **Employees** | **Employees** | Employee directory, job assignments, and department history. | *“HOPE Group4 / Employees”* |
-| **Reports** | **Reports** | Operational summaries and payment reports by period with CSV export. | *“HOPE Group4 / Reports”* |
 | **Official Receipt** | **Official Receipt #{orNo}** | Official receipt voucher (printable). | *“HOPE Group4 / Receipts / #{orNo}”* |
 
 ---
@@ -75,7 +73,7 @@ The Home page (`/`) serves as the core system hub displaying database health, th
 - **Row Actions:**
   - Sale row: **View** (opens `/sales/[transNo]`).
   - Receipt row / action: **Receipt** (opens `/receipts/[orNo]`).
-- **Export Actions:** **Export CSV** (available on Customers & Payments, Sales, Products, and Reports).
+- **Export Actions:** **Export CSV** (available on Customers & Payments, Sales, Products, and Employees).
 
 ---
 
@@ -93,3 +91,4 @@ The Home page (`/`) serves as the core system hub displaying database health, th
 
 ## 7. Limitations
 - Warranty tracking is not included.
+- Reporting and analytics are not included. Sales can be filtered by period, department and sales rep and exported to CSV.

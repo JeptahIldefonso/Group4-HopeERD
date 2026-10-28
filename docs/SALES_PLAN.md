@@ -322,7 +322,7 @@ Both views are created with `security_invoker = true` and read the employee data
 | `v_sale_lines` | transNo, salesDate, prodCode, description, unit, quantity, unitPrice, priceEffDate, lineAmount |
 | `v_sales_summary` | transNo, salesDate, custNo, custName, empNo, repName, deptCode, deptName, itemCount, totalAmount |
 
-The Dashboard, Reports, Customers and Payments modules must read sale totals from these same views so every number matches.
+The Dashboard, Customers and Payments modules must read sale totals from these same views so every number matches.
 
 ### 11.4 Policies (RLS on, no access for `anon`)
 - SALES and SALESDETAIL: select for any signed-in user with a role. No insert, update or delete policy (only `create_sale` writes)
@@ -358,7 +358,7 @@ Replace the demo sales with data that exercises every behavior.
 | Employees | The Employees module's rules R-05, R-06 and R-10 keep job records and separation dates consistent with sales. Sales reads rep names and departments only through the safe views |
 | Payments | The Record payment button opens the shared Record Payment Dialog. The Payments tab inside Customers & Payments validates that payments never exceed the sale total and lists the same receipts shown on the sale detail page |
 | Customers | The customer detail page lists that customer's sales from `v_sales_summary` and offers **New Sale** that opens `/sales/new?custNo=...`. Payment history lives in Customers, not here |
-| Dashboard and Reports | Use `v_sales_summary` and `v_sale_lines` so totals match this module for any period |
+| Dashboard | Uses `v_sales_summary` and `v_sale_lines` so totals match this module for any period |
 | Global search (Ctrl+K) | Sale numbers open `/sales/[transNo]` |
 
 ---
@@ -425,7 +425,7 @@ Record these in the Limitations section of `SYSTEM_DOCUMENTATION.md`.
 | 5 | `/sales/[transNo]` detail with the three cards and the print layout | All 7 core columns in Section 3.2 are visible |
 | 6 | `/sales/new` form wired to `create_sale` | Rules R-01 to R-09 pass the tests below |
 | 7 | CSV exports | Section 15 matches the files |
-| 8 | Integration checks with Payments, Customers, Dashboard and Reports | Totals match across screens (T-18) |
+| 8 | Integration checks with Payments, Customers and Dashboard | Totals match across screens (T-18) |
 | 9 | Docs update and final verification | Section 19 and Section 20 are complete |
 
 After every step run `npm run lint` and `npm run build`, and commit to Git.

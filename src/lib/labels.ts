@@ -9,7 +9,6 @@ import {
   Users,
   Box,
   User,
-  BarChart3,
   type LucideIcon,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/types';
@@ -19,7 +18,7 @@ export interface NavigationItem {
   label: string;
   subtitle: string;
   caption: string;
-  section: 'OVERVIEW' | 'TRANSACTIONS' | 'CATALOG' | 'ORGANIZATION' | 'ANALYTICS';
+  section: 'OVERVIEW' | 'TRANSACTIONS' | 'CATALOG' | 'ORGANIZATION';
   icon: LucideIcon;
   roles: UserRole[];
 }
@@ -27,9 +26,9 @@ export interface NavigationItem {
 export const navigationItems: NavigationItem[] = [
   {
     href: '/',
-    label: 'Dashboard',
+    label: 'Home',
     subtitle: 'Overview & metrics',
-    caption: 'Overview & metrics',
+    caption: 'ERD Overview',
     section: 'OVERVIEW',
     icon: LayoutDashboard,
     roles: ['admin', 'sales', 'cashier'],
@@ -38,25 +37,25 @@ export const navigationItems: NavigationItem[] = [
     href: '/sales',
     label: 'Sales',
     subtitle: 'Transactions & line items',
-    caption: 'Transactions & line items',
+    caption: 'Sales Detail',
     section: 'TRANSACTIONS',
     icon: ShoppingCart,
     roles: ['admin', 'sales', 'cashier'],
   },
   {
     href: '/customers',
-    label: 'Customers',
+    label: 'Customers & Payments',
     subtitle: 'Accounts & payment records',
-    caption: 'Accounts & payment records',
+    caption: 'Payments',
     section: 'TRANSACTIONS',
     icon: Users,
     roles: ['admin', 'sales', 'cashier'],
   },
   {
     href: '/products',
-    label: 'Products',
+    label: 'Products & Pricing',
     subtitle: 'Catalog & price history',
-    caption: 'Catalog & price history',
+    caption: 'Price History',
     section: 'CATALOG',
     icon: Box,
     roles: ['admin', 'sales', 'cashier'],
@@ -65,18 +64,9 @@ export const navigationItems: NavigationItem[] = [
     href: '/employees',
     label: 'Employees',
     subtitle: 'Staff, jobs & departments',
-    caption: 'Staff, jobs & departments',
+    caption: 'Job, Department',
     section: 'ORGANIZATION',
     icon: User,
-    roles: ['admin'],
-  },
-  {
-    href: '/reports',
-    label: 'Reports',
-    subtitle: 'Business summaries & analytics',
-    caption: 'Business summaries & analytics',
-    section: 'ANALYTICS',
-    icon: BarChart3,
     roles: ['admin'],
   },
 ];
@@ -125,10 +115,6 @@ export const LABELS = {
       title: 'Employees',
       subtitle: 'Employee records, job history and department assignments.',
     },
-    reports: {
-      title: 'Reports',
-      subtitle: 'Sales and payments analytics across periods, employees, departments, and products.',
-    },
   },
 
   // Action Buttons
@@ -163,6 +149,5 @@ export const LABELS = {
     sales: 'No sales records match your search criteria.',
     payments: 'No payments recorded matching the selected filter.',
     customers: 'No customers found matching your search.',
-    reports: 'No transactions found for the selected reporting period.',
   },
 } as const;

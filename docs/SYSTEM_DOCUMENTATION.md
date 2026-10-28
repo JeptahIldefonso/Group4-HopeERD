@@ -34,7 +34,6 @@
 │          ├── /customers             ──> Customers & Payments Master-Detail  │
 │          ├── /products              ──> Product Catalog & Price History     │
 │          ├── /employees             ──> Departments, Tenure & Job Timelines │
-│          ├── /reports               ──> Sales & Payments Operational Reports│
 │          └── /receipts/[orNo]       ──> Printable Official Receipt Voucher  │
 │                                                                             │
 │  [ Server Actions (Zod Validated) ]                                         │
@@ -65,7 +64,6 @@ The sidebar renders navigation items from a single configuration array in `lib/l
 | **Customers** | Payments | `/customers` | All roles | Master-detail customer directory and payment records. |
 | **Products** | Price History | `/products` | All roles | Component specifications, current prices, and historical changes. |
 | **Employees** | Job, Department | `/employees` | Admin only | Staff directory, career timelines, and department assignments. |
-| **Reports** | Summaries | `/reports` | Admin only | Operational summaries and payment reports by period with CSV export. |
 
 - **Layout Details:** ~52px row height, vertically centered icon, 2px gap between label and caption.
 - **Active State:** High-contrast highlight with darker caption.
@@ -140,10 +138,6 @@ The sidebar renders navigation items from a single configuration array in `lib/l
   - Directory ledger searchable by employee name, number, job, and department with tenure and status.
   - Detail profile with complete appointment history from `JOBHISTORY`. Restricted strictly to administrators.
 
-### 3.8 Screen 8: Reports & Summaries (`/reports`)
-* Five operational reports: Sales by period, Sales by employee, Sales by department, Sales by product, and Payments by period.
-* Period filtering and CSV export.
-
 ---
 
 ## 4. Architectural Limitations & ERD Compliance Scope
@@ -151,3 +145,4 @@ The sidebar renders navigation items from a single configuration array in `lib/l
 1. **Strict 10-Table ERD:** No new tables or columns. No debt or credit tracking models exist in the schema.
 2. **Point-in-Time Resolution:** Sales line prices and employee department assignments are resolved dynamically using effective dates (`PRICEHIST.effDate <= SALES.salesDate` and `JOBHISTORY.effDate <= SALES.salesDate`).
 3. **Scope Limitations:** Warranty tracking is not included.
+4. **Reporting Scope:** Reporting and analytics are not included. Sales can be filtered by period, department and sales rep and exported to CSV.

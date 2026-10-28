@@ -26,7 +26,6 @@ The system does not maintain running customer balances, credit ledgers, or payme
   2. **Block 2: Database Status Card:** Real-time health check calling `supabase.rpc('get_home_summary')`, measuring query response time, presenting connection status (*“Everything is connected and working.”*), checked timestamp in PHT, manual Refresh action, and 3 summary chips (*10 tables*, *9 relationships*, *{total rows} rows*). Cached at most 30s.
   3. **Block 3: ERD Card ("Our database"):** Interactive SVG diagram rendering all 10 Hope ERD tables, 9 relationships, crow's foot notation (`||`, `O<`, `|<`), module tint headers, live row-count chips, and table-hover highlighting with keyboard accessibility and role-restricted navigation.
   4. **Block 4: Explore the System Grid:** Two-column responsive module directory displaying cards for Employees, Products & Pricing, Customers & Payments, and Sales with order badges, table chips, and direct entry buttons.
-- Relocated historical "Sales by month" and "Sales by department" charts to `/reports` under an Overview tab.
 - Purged all vanity counters, period filters, and redundant activity feeds.
 
 ### Milestone 3: Payment Security
@@ -50,14 +49,12 @@ The system does not maintain running customer balances, credit ledgers, or payme
   - Shared `RecordPaymentDialog` used across Customers Payments tab, Sale detail, and Dashboard Quick actions.
   - Standalone printable Official Receipt page at `/receipts/[orNo]`.
 
-### Milestone 5: Dashboard & Reports Overhaul
+### Milestone 5: Dashboard Overhaul
 - **Dashboard (`/dashboard`):**
   - Role-filtered Welcome Card with 2 steps: Record a sale, Record a payment.
   - Three KPI cards: Sales this month, Payments received this month, Number of sales this month (sub-line: average sale value) with last month comparisons and period label.
   - Charts row: "Sales by month" bar chart (last 6 months, y-axis from 0, no smoothing) next to "Sales by department" horizontal bars for the current month.
   - Feeds row: Recent sales (5 rows) and Recent payments (5 rows) with "View all" links.
-- **Reports (`/reports`):**
-  - Five structured reports with Period filters and CSV export: Sales by period, Sales by employee, Sales by department, Sales by product, and Payments by period.
 
 ### Milestone 6: Customers & Payments Module
 - Master-detail interface at `/customers`: Customers list and Payments table.
@@ -127,10 +124,10 @@ The system does not maintain running customer balances, credit ledgers, or payme
     - Customers: "Payments"
     - Products: "Price History"
     - Employees: "Job, Department"
-    - Reports: "Summaries"
   - Rendered with 52px row height, centered icons, 14px label, 2px gap, 12px muted caption, darker active caption, and tablet tooltip with `aria-label`.
 - **Complete Clean Architecture & File Cleanup:**
   - Removed unimported legacy files `init_local_db.sql`, `inspect_db.js`, and `scratch/`.
 
 ## Limitations
 - Warranty tracking is not included.
+- Reporting and analytics are not included. Sales can be filtered by period, department and sales rep and exported to CSV.

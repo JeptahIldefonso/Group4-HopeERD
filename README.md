@@ -14,7 +14,7 @@ The **HOPE Group4 Sales and Payments Monitoring System** is an enterprise sales 
 
 ### The Four Core Tabs
 
-The application is structured into four primary operational tabs (plus Home and Reports):
+The application is structured into four primary operational tabs (plus Home):
 1. **Employees:** Workforce records, historical job assignments, and department assignments.
 2. **Products & Pricing:** Product specifications, current unit prices, and historical price adjustments.
 3. **Customers & Payments:** Master-detail customer directory, payment records (OR #, payment date, sale #, amount), and payment recording.
@@ -64,7 +64,6 @@ The sidebar displays each section label with a secondary descriptive caption:
 | **Customers** | **Customers** | Payments | `/customers` | Master-detail customer directory, Payments tab (OR #, Date, Sale #, Amount, Receipt action link), and Record Payment dialog. (All roles) |
 | **Products** | **Products** | Price History | `/products` | Hardware catalog with current prices, price trends, and Price History timeline. (All roles) |
 | **Employees** | **Employees** | Job, Department | `/employees` | Master-detail workforce directory, job assignment history, and department transfers. (Admin only) |
-| **Reports** | **Reports** | Summaries | `/reports` | Operational summaries: Sales by period, Sales by employee, Sales by department, Sales by product, and Payments by period with CSV export. (Admin only) |
 
 ### Home Page Blocks (`/`)
 1. **Welcome Card:** Personalized greeting (*“Welcome back, {firstName}.”*), company introduction, and direct **New Sale** and **Record Payment** action buttons.
@@ -131,3 +130,4 @@ On the `/login` screen, use the **One-Click Demo Login** buttons:
 
 ## ⚠️ Limitations
 - Warranty tracking is not included.
+- Reporting and analytics are not included. Sales can be filtered by period, department and sales rep and exported to CSV.

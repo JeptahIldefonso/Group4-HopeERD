@@ -79,7 +79,6 @@ export async function createSaleAction(input: CreateSaleInput) {
 
         revalidatePath('/sales');
         revalidatePath('/');
-        revalidatePath('/reports');
         revalidatePath('/customers');
         return { success: true, transNo: data };
       } catch (err: any) {
@@ -168,7 +167,6 @@ export async function createSaleAction(input: CreateSaleInput) {
 
       revalidatePath('/sales');
       revalidatePath('/');
-      revalidatePath('/reports');
       revalidatePath('/customers');
 
       return { success: true, transNo };

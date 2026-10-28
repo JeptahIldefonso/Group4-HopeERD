@@ -37,7 +37,6 @@ export function Sidebar({ userRole = 'admin', userName = 'Admin' }: SidebarProps
     { key: 'TRANSACTIONS', label: 'TRANSACTIONS', items: [] },
     { key: 'CATALOG', label: 'CATALOG', items: [] },
     { key: 'ORGANIZATION', label: 'ORGANIZATION', items: [] },
-    { key: 'ANALYTICS', label: 'ANALYTICS', items: [] },
   ];
 
   filteredNav.forEach((item) => {
