@@ -47,7 +47,9 @@ export function CustomersMainView({
 
   // Selected customer state (URL synced ?custNo=)
   const custNoParam = searchParams.get('custNo');
-  const initialCustNo = custNoParam || initialCustomers[0]?.custNo || '';
+  const initialCustNo = custNoParam
+    ? parseInt(custNoParam, 10)
+    : initialCustomers[0]?.custNo || 0;
 
   // Modal state
   const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState(false);
@@ -83,14 +85,14 @@ export function CustomersMainView({
 
   // Selected customer object
   const selectedCustomer = useMemo(() => {
-    const found = initialCustomers.find((c) => String(c.custNo) === String(initialCustNo));
+    const found = initialCustomers.find((c) => c.custNo === initialCustNo);
     return found || initialCustomers[0] || null;
   }, [initialCustomers, initialCustNo]);
 
   // Payments for the selected customer
   const customerPayments = useMemo(() => {
     if (!selectedCustomer) return [];
-    return initialPayments.filter((p) => String(p.custNo) === String(selectedCustomer.custNo));
+    return initialPayments.filter((p) => p.custNo === selectedCustomer.custNo);
   }, [initialPayments, selectedCustomer]);
 
   // Payments total sum for selected customer
@@ -127,16 +129,16 @@ export function CustomersMainView({
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[#DDE3DE] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[#DCE3E8] pb-4">
         <div>
-          <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-[#52615B] block">
-            Group 4 HopeERD · Customers &amp; Payments
+          <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-[#64748B] block">
+            HopeERD · Customers
           </span>
-          <h1 className="text-2xl sm:text-[28px] font-semibold tracking-tight text-[#17231F] mt-1">
-            Customers &amp; Payments
+          <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-[#172B3A] mt-1">
+            Customers
           </h1>
-          <p className="text-xs sm:text-sm text-[#52615B] mt-1">
-            Customer directory, payment terms, and official receipts ledger.
+          <p className="text-xs sm:text-sm text-[#64748B] mt-1">
+            Customer profiles, credit limits, and payment terms.
           </p>
         </div>
       </div>
@@ -186,20 +188,20 @@ export function CustomersMainView({
                       onClick={() => updateUrl({ custNo: String(c.custNo) })}
                       className={`w-full text-left px-3.5 py-3 transition-colors flex items-center justify-between cursor-pointer ${
                         isSelected
-                          ? 'bg-[#EAF2ED] text-[#245B48] font-semibold border-l-4 border-[#245B48]'
-                          : 'hover:bg-[#F5F6F4] text-[#17231F]'
+                          ? 'bg-[#E8F3EE] text-[#176B52] font-semibold border-l-4 border-[#176B52]'
+                          : 'hover:bg-[#F5F7F8] text-[#172B3A]'
                       }`}
                     >
                       <div className="min-w-0 pr-2">
-                        <p className={`text-xs leading-snug truncate ${isSelected ? 'font-semibold text-[#245B48]' : 'font-medium text-[#17231F]'}`}>
+                        <p className={`text-xs leading-snug truncate ${isSelected ? 'font-semibold text-[#176B52]' : 'font-medium text-[#172B3A]'}`}>
                           {c.custName}
                         </p>
-                        <p className="text-[11px] font-mono text-[#52615B] mt-0.5">
+                        <p className="text-[11px] font-mono text-[#64748B] mt-0.5">
                           Customer #{c.custNo}
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="text-[10px] font-mono text-[#52615B] px-1.5 py-0.5 rounded bg-[#F0F3F0] border border-[#DDE3DE]">
+                        <span className="text-[10px] font-mono text-[#64748B] px-1.5 py-0.5 rounded bg-[#EEF2F5] border border-[#DCE3E8]">
                           {c.payTerms}
                         </span>
                       </div>

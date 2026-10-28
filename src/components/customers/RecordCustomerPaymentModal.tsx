@@ -10,10 +10,10 @@ import { X, Receipt, AlertCircle, Calendar } from 'lucide-react';
 interface RecordCustomerPaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  custNo: string | number;
+  custNo: number;
   custName: string;
   eligibleTransactions: {
-    transNo: string | number;
+    transNo: number;
     salesDate: string;
   }[];
 }
@@ -31,8 +31,8 @@ export function RecordCustomerPaymentModal({
     return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
   };
 
-  const [selectedTransNo, setSelectedTransNo] = useState<string | number>(
-    eligibleTransactions[0]?.transNo || ''
+  const [selectedTransNo, setSelectedTransNo] = useState<number>(
+    eligibleTransactions[0]?.transNo || 0
   );
   const [orNo, setOrNo] = useState('');
   const [amount, setAmount] = useState('');
@@ -56,15 +56,16 @@ export function RecordCustomerPaymentModal({
   if (!isOpen) return null;
 
   const currentSelectedSale = eligibleTransactions.find(
-    (t) => String(t.transNo) === String(selectedTransNo)
+    (t) => t.transNo === Number(selectedTransNo)
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
 
-    if (!orNo || !orNo.trim()) {
-      setErrorMsg('OR number is required (R-08).');
+    const parsedOrNo = parseInt(orNo, 10);
+    if (isNaN(parsedOrNo) || parsedOrNo <= 0) {
+      setErrorMsg('OR number must be a positive integer (R-08).');
       return;
     }
 
@@ -74,7 +75,7 @@ export function RecordCustomerPaymentModal({
       return;
     }
 
-    if (!selectedTransNo) {
+    if (!selectedTransNo || selectedTransNo <= 0) {
       setErrorMsg('Please select a valid sales transaction (R-05).');
       return;
     }
@@ -97,10 +98,10 @@ export function RecordCustomerPaymentModal({
     setIsSubmitting(true);
     try {
       const result = await recordCustomerPaymentAction({
-        orNo: orNo.trim(),
+        orNo: parsedOrNo,
         payDate,
         amount: parsedAmount,
-        transNo: selectedTransNo,
+        transNo: Number(selectedTransNo),
         custNo,
       });
 

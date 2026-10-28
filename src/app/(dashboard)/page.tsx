@@ -1,10 +1,11 @@
 import React from 'react';
 import { getCurrentUser } from '@/app/actions/auth';
-import { getHomeSummary } from '@/lib/data/home';
+import { getDashboardData } from '@/lib/data/home';
 import { WelcomeCard } from '@/components/home/WelcomeCard';
 import { DatabaseStatusCard } from '@/components/home/DatabaseStatusCard';
-import { ErdDiagram } from '@/components/home/ErdDiagram';
-import { ExploreGrid } from '@/components/home/ExploreGrid';
+import { SummaryCards } from '@/components/home/SummaryCards';
+import { RecentTransactionsCard } from '@/components/home/RecentTransactionsCard';
+import { DatabaseOverviewCard } from '@/components/home/DatabaseOverviewCard';
 import { redirect } from 'next/navigation';
 
 export const revalidate = 30;
@@ -13,7 +14,7 @@ interface PageProps {
   searchParams: Promise<{ forceFailure?: string }>;
 }
 
-export default async function HomePage({ searchParams }: PageProps) {
+export default async function DashboardPage({ searchParams }: PageProps) {
   const [user, params] = await Promise.all([
     getCurrentUser(),
     searchParams,
@@ -24,43 +25,35 @@ export default async function HomePage({ searchParams }: PageProps) {
   }
 
   const forceFailure = params?.forceFailure === '1';
-  const summary = await getHomeSummary(forceFailure);
+  const { summary, metrics, recentSales } = await getDashboardData(forceFailure);
   const counts = summary.data?.counts || {};
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12">
-      {/* 1. Welcome Card */}
+    <div className="space-y-6 max-w-7xl mx-auto pb-12 font-sans">
+      {/* 1. Header / Welcome & Quick Actions */}
       <WelcomeCard
         fullName={user.fullName}
         userRole={user.role}
       />
 
-      {/* 2. Database Status Card */}
+      {/* 2. Top Summary KPI Cards (4 Cards across top) */}
+      <SummaryCards
+        metrics={metrics}
+      />
+
+      {/* 3. Database Connection Verification Card */}
       <DatabaseStatusCard
         summary={summary}
       />
 
-      {/* 3. ERD Card */}
-      <div className="bg-white rounded-lg border border-[#DDE3DE] p-6 space-y-4 shadow-sm">
-        <div>
-          <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-[#17231F]">
-            Our database
-          </h2>
-          <p className="text-xs sm:text-sm text-[#52615B] mt-0.5">
-            10 tables and how they connect. Select a table to open its page.
-          </p>
-        </div>
+      {/* 4. Recent Activity: Recent Sales Transactions Table (Clean panels & tables, No graphs) */}
+      <RecentTransactionsCard
+        recentSales={recentSales}
+      />
 
-        <ErdDiagram
-          counts={counts}
-          userRole={user.role}
-        />
-      </div>
-
-      {/* 4. Explore the System Grid */}
-      <ExploreGrid
+      {/* 5. Database Relationship Overview (Compact card pointing to dedicated /database page) */}
+      <DatabaseOverviewCard
         counts={counts}
-        userRole={user.role}
       />
     </div>
   );

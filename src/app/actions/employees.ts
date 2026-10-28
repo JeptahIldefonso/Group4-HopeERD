@@ -36,7 +36,7 @@ const addEmployeeSchema = z.object({
 });
 
 const addJobRecordSchema = z.object({
-  empNo: z.union([z.number(), z.string().trim().min(1)]),
+  empNo: z.number().int().positive('Employee number is required'),
   jobCode: z.string().trim().min(1, 'Job is required'),
   deptCode: z.string().trim().min(1, 'Department is required'),
   effDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Valid effective date is required'),
@@ -44,7 +44,7 @@ const addJobRecordSchema = z.object({
 });
 
 const updateEmployeeSchema = z.object({
-  empNo: z.union([z.number(), z.string().trim().min(1)]),
+  empNo: z.number().int().positive('Employee number is required'),
   lastName: z.string().trim().min(1, 'Last name is required').max(50),
   firstName: z.string().trim().min(1, 'First name is required').max(50),
   gender: z.enum(['M', 'F']),
@@ -53,7 +53,7 @@ const updateEmployeeSchema = z.object({
 });
 
 const separateEmployeeSchema = z.object({
-  empNo: z.union([z.number(), z.string().trim().min(1)]),
+  empNo: z.number().int().positive('Employee number is required'),
   sepDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Valid separation date is required'),
 });
 

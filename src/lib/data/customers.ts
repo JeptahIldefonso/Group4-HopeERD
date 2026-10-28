@@ -3,7 +3,7 @@ import path from 'node:path';
 import { createClient } from '@/lib/supabase/server';
 
 export interface CustomerOverviewItem {
-  custNo: string | number;
+  custNo: number;
   custName: string;
   address: string;
   payTerms: string;
@@ -12,16 +12,16 @@ export interface CustomerOverviewItem {
   totalPaid: number;
   unpaidOrders: number;
   lastPaymentDate: string | null;
-  lastPaymentOrNo: string | number | null;
+  lastPaymentOrNo: number | null;
   customerSince: string | null;
 }
 
 export interface PaymentLedgerItem {
-  orNo: string | number;
+  orNo: number;
   payDate: string;
   amount: number;
-  transNo: string | number;
-  custNo: string | number | null;
+  transNo: number;
+  custNo: number | null;
   custName: string | null;
   salesDate: string | null;
   isUnlinked: boolean;
@@ -38,7 +38,7 @@ export interface CustomerSummaryMetrics {
 
 export interface CustomerDetailData {
   customer: {
-    custNo: string | number;
+    custNo: number;
     custName: string;
     address: string;
     payTerms: string;
@@ -49,17 +49,17 @@ export interface CustomerDetailData {
     paymentCount: number;
     unpaidOrders: number;
     lastPaymentDate: string | null;
-    lastPaymentOrNo: string | number | null;
+    lastPaymentOrNo: number | null;
     customerSince: string | null;
   };
   paymentHistory: {
-    orNo: string | number;
+    orNo: number;
     payDate: string;
     amount: number;
-    transNo: string | number;
+    transNo: number;
   }[];
   eligibleTransactions: {
-    transNo: string | number;
+    transNo: number;
     salesDate: string;
   }[];
 }
@@ -79,8 +79,8 @@ function isSupabaseLive(): boolean {
 }
 
 export interface CustomerSalesSummaryItem {
-  transNo: string | number;
-  custNo: string | number;
+  transNo: number;
+  custNo: number;
   salesDate: string;
 }
 
@@ -105,7 +105,7 @@ export async function getCustomersPageData(): Promise<{
 
       if (!custRes.error && !payRes.error && custRes.data) {
         const customers: CustomerOverviewItem[] = custRes.data.map((r: any) => ({
-          custNo: r.custNo,
+          custNo: Number(r.custNo),
           custName: String(r.custName || ''),
           address: String(r.address || ''),
           payTerms: String(r.payTerms || 'COD'),
@@ -114,24 +114,24 @@ export async function getCustomersPageData(): Promise<{
           totalPaid: Number(r.totalPaid || 0),
           unpaidOrders: Math.max(0, Number(r.unpaidOrders || 0)),
           lastPaymentDate: r.lastPaymentDate ? String(r.lastPaymentDate) : null,
-          lastPaymentOrNo: r.lastPaymentOrNo != null ? r.lastPaymentOrNo : null,
+          lastPaymentOrNo: r.lastPaymentOrNo != null ? Number(r.lastPaymentOrNo) : null,
           customerSince: r.customerSince ? String(r.customerSince) : null,
         }));
 
         const payments: PaymentLedgerItem[] = (payRes.data || []).map((r: any) => ({
-          orNo: r.ORNo || r.orNo,
+          orNo: Number(r.ORNo || r.orNo),
           payDate: String(r.payDate),
           amount: Number(r.amount || 0),
-          transNo: r.transNo,
-          custNo: r.custNo != null ? r.custNo : null,
+          transNo: Number(r.transNo),
+          custNo: r.custNo != null ? Number(r.custNo) : null,
           custName: r.custName ? String(r.custName) : null,
           salesDate: r.salesDate ? String(r.salesDate) : null,
           isUnlinked: Boolean(r.isUnlinked),
         }));
 
         const sales: CustomerSalesSummaryItem[] = (salesRes.data || []).map((s: any) => ({
-          transNo: s.transNo,
-          custNo: s.custNo,
+          transNo: Number(s.transNo),
+          custNo: Number(s.custNo),
           salesDate: String(s.salesDate),
         }));
 
@@ -172,7 +172,7 @@ export async function getCustomersPageData(): Promise<{
   const salesRows = db.prepare('SELECT transNo, custNo, salesDate FROM SALES ORDER BY salesDate DESC, transNo DESC').all() as any[];
 
   const customers: CustomerOverviewItem[] = custRows.map((r) => ({
-    custNo: r.custNo,
+    custNo: Number(r.custNo),
     custName: String(r.custName || ''),
     address: String(r.address || ''),
     payTerms: String(r.payTerms || 'COD'),
@@ -181,24 +181,24 @@ export async function getCustomersPageData(): Promise<{
     totalPaid: Number(r.totalPaid || 0),
     unpaidOrders: Math.max(0, Number(r.unpaidOrders || 0)),
     lastPaymentDate: r.lastPaymentDate ? String(r.lastPaymentDate) : null,
-    lastPaymentOrNo: r.lastPaymentOrNo != null ? r.lastPaymentOrNo : null,
+    lastPaymentOrNo: r.lastPaymentOrNo != null ? Number(r.lastPaymentOrNo) : null,
     customerSince: r.customerSince ? String(r.customerSince) : null,
   }));
 
   const payments: PaymentLedgerItem[] = payRows.map((r) => ({
-    orNo: r.ORNo || r.orNo,
+    orNo: Number(r.ORNo || r.orNo),
     payDate: String(r.payDate),
     amount: Number(r.amount || 0),
-    transNo: r.transNo,
-    custNo: r.custNo != null ? r.custNo : null,
+    transNo: Number(r.transNo),
+    custNo: r.custNo != null ? Number(r.custNo) : null,
     custName: r.custName ? String(r.custName) : null,
     salesDate: r.salesDate ? String(r.salesDate) : null,
     isUnlinked: Boolean(r.isUnlinked),
   }));
 
   const sales: CustomerSalesSummaryItem[] = salesRows.map((s) => ({
-    transNo: s.transNo,
-    custNo: s.custNo,
+    transNo: Number(s.transNo),
+    custNo: Number(s.custNo),
     salesDate: String(s.salesDate),
   }));
 
@@ -230,7 +230,7 @@ export async function getCustomersPageData(): Promise<{
 /**
  * Fetch single customer details, calculated summary, their payments, and their sales transactions.
  */
-export async function getCustomerDetailData(custNo: number | string): Promise<CustomerDetailData | null> {
+export async function getCustomerDetailData(custNo: number): Promise<CustomerDetailData | null> {
   const db = getSqliteDb();
 
   const custRow = db.prepare('SELECT * FROM CUSTOMER WHERE custNo = ?').get(custNo) as any;
@@ -257,7 +257,7 @@ export async function getCustomerDetailData(custNo: number | string): Promise<Cu
 
   return {
     customer: {
-      custNo: custRow.custNo,
+      custNo: Number(custRow.custNo),
       custName: String(custRow.custName),
       address: String(custRow.address),
       payTerms: String(custRow.payTerms),
@@ -268,17 +268,17 @@ export async function getCustomerDetailData(custNo: number | string): Promise<Cu
       paymentCount: Number(overviewRow?.paymentCount || 0),
       unpaidOrders: Math.max(0, Number(overviewRow?.unpaidOrders || 0)),
       lastPaymentDate: overviewRow?.lastPaymentDate ? String(overviewRow.lastPaymentDate) : null,
-      lastPaymentOrNo: overviewRow?.lastPaymentOrNo != null ? overviewRow.lastPaymentOrNo : null,
+      lastPaymentOrNo: overviewRow?.lastPaymentOrNo != null ? Number(overviewRow.lastPaymentOrNo) : null,
       customerSince: overviewRow?.customerSince ? String(overviewRow.customerSince) : null,
     },
     paymentHistory: payments.map((p) => ({
-      orNo: p.orNo,
+      orNo: Number(p.orNo),
       payDate: String(p.payDate),
       amount: Number(p.amount),
-      transNo: p.transNo,
+      transNo: Number(p.transNo),
     })),
     eligibleTransactions: sales.map((s) => ({
-      transNo: s.transNo,
+      transNo: Number(s.transNo),
       salesDate: String(s.salesDate),
     })),
   };

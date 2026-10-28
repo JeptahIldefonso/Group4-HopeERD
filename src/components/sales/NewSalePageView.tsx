@@ -28,7 +28,7 @@ interface LineItemState {
 
 interface NewSalePageViewProps {
   lookups: SaleLookupData;
-  preSelectedCustNo?: string | number | null;
+  preSelectedCustNo?: number | null;
   userRole?: string;
 }
 
@@ -44,8 +44,8 @@ export function NewSalePageView({
   };
 
   const [salesDate, setSalesDate] = useState<string>(getTodayManila());
-  const [custNo, setCustNo] = useState<string | number>(
-    preSelectedCustNo || lookups.customers[0]?.custNo || ''
+  const [custNo, setCustNo] = useState<number>(
+    preSelectedCustNo || lookups.customers[0]?.custNo || 0
   );
 
   // Eligible sales reps active on salesDate (R-06)
@@ -57,18 +57,18 @@ export function NewSalePageView({
     });
   }, [lookups.employees, salesDate]);
 
-  const [empNo, setEmpNo] = useState<string | number>(
-    eligibleReps[0]?.empNo || lookups.employees[0]?.empNo || ''
+  const [empNo, setEmpNo] = useState<number>(
+    eligibleReps[0]?.empNo || lookups.employees[0]?.empNo || 0
   );
 
   useEffect(() => {
-    if (eligibleReps.length > 0 && !eligibleReps.some((e) => String(e.empNo) === String(empNo))) {
+    if (eligibleReps.length > 0 && !eligibleReps.some((e) => e.empNo === empNo)) {
       setEmpNo(eligibleReps[0].empNo);
     }
   }, [eligibleReps, empNo]);
 
-  const selectedRep = lookups.employees.find((e) => String(e.empNo) === String(empNo));
-  const selectedCustomer = lookups.customers.find((c) => String(c.custNo) === String(custNo));
+  const selectedRep = lookups.employees.find((e) => e.empNo === empNo);
+  const selectedCustomer = lookups.customers.find((c) => c.custNo === custNo);
 
   const [items, setItems] = useState<LineItemState[]>([
     {
@@ -266,7 +266,7 @@ export function NewSalePageView({
                   <select
                     required
                     value={custNo}
-                    onChange={(e) => setCustNo(e.target.value)}
+                    onChange={(e) => setCustNo(Number(e.target.value))}
                     className="w-full rounded-[4px] border border-[#CCD5CD] bg-white px-3 py-1.5 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-2 focus:ring-[#245B48]/20 focus:outline-none"
                   >
                     {lookups.customers.map((c) => (
@@ -290,7 +290,7 @@ export function NewSalePageView({
                   <select
                     required
                     value={empNo}
-                    onChange={(e) => setEmpNo(e.target.value)}
+                    onChange={(e) => setEmpNo(Number(e.target.value))}
                     className="w-full rounded-[4px] border border-[#CCD5CD] bg-white px-3 py-1.5 text-xs text-[#17231F] focus:border-[#245B48] focus:ring-2 focus:ring-[#245B48]/20 focus:outline-none"
                   >
                     {eligibleReps.map((e) => (

@@ -11,41 +11,69 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        forest: {
-          50: '#EAF2ED',
-          100: '#D2E4D8',
-          200: '#A8C6B2',
-          500: '#477763',
-          600: '#245B48',
-          700: '#1C4939',
-          800: '#15392C',
+        // Standardized Enterprise Palette
+        navy: {
+          900: '#172B3A', // Primary text
+          800: '#1F384C',
+          700: '#2A4A62',
         },
-        charcoal: {
-          900: '#17231F',
-          700: '#52615B',
-          500: '#7A8781',
-          400: '#A0AAA4',
+        deepgreen: {
+          50: '#E8F3EE',  // Soft tint
+          100: '#D1E7DC',
+          500: '#1E8767',
+          DEFAULT: '#176B52', // Primary buttons & brand accent
+          hover: '#125540',   // Button hover
+          active: '#0E4030',
         },
-        border: {
-          standard: '#DDE3DE',
-          strong: '#CBD5CE',
-          divider: '#E9EDEA',
+        slate: {
+          500: '#64748B', // Secondary text
+          400: '#94A3B8', // Muted text
+          300: '#CBD5E1', // Hairline / subtle
+        },
+        softgray: {
+          DEFAULT: '#DCE3E8', // Borders
+          subtle: '#EEF2F5',
+        },
+        status: {
+          success: '#15803D',
+          warning: '#B45309',
+          error: '#B91C1C',
         },
         // Backward-compatible semantic aliases
+        forest: {
+          50: '#E8F3EE',
+          100: '#D1E7DC',
+          200: '#A8C6B2',
+          500: '#1E8767',
+          600: '#176B52',
+          700: '#125540',
+          800: '#0E4030',
+        },
+        charcoal: {
+          900: '#172B3A',
+          700: '#64748B',
+          500: '#64748B',
+          400: '#94A3B8',
+        },
+        border: {
+          standard: '#DCE3E8',
+          strong: '#CBD5E1',
+          divider: '#EEF2F5',
+        },
         paper: {
-          DEFAULT: '#F5F6F4',
+          DEFAULT: '#F5F7F8',
           raised: '#FFFFFF',
-          hover: '#FAFBFA',
-          subtle: '#F0F3F0',
+          hover: '#FAFBFC',
+          subtle: '#EEF2F5',
         },
         ink: {
-          DEFAULT: '#17231F',
-          muted: '#52615B',
-          subtle: '#7A8781',
-          faint: '#A0AAA4',
+          DEFAULT: '#172B3A',
+          muted: '#64748B',
+          subtle: '#94A3B8',
+          faint: '#CBD5E1',
         },
-        hairline: '#DDE3DE',
-        'hairline-strong': '#CBD5CE',
+        hairline: '#DCE3E8',
+        'hairline-strong': '#CBD5E1',
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
@@ -60,8 +88,8 @@ const config: Config = {
         xl: '8px',
       },
       boxShadow: {
-        paper: '0 1px 3px rgba(23, 35, 31, 0.05), 0 1px 2px rgba(23, 35, 31, 0.03)',
-        'paper-raised': '0 4px 6px -1px rgba(23, 35, 31, 0.07), 0 2px 4px -1px rgba(23, 35, 31, 0.04)',
+        paper: '0 1px 3px rgba(23, 43, 58, 0.05), 0 1px 2px rgba(23, 43, 58, 0.03)',
+        'paper-raised': '0 4px 6px -1px rgba(23, 43, 58, 0.07), 0 2px 4px -1px rgba(23, 43, 58, 0.04)',
       },
     },
   },

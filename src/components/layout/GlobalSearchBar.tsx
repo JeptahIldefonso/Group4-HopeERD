@@ -88,7 +88,7 @@ export function GlobalSearchBar() {
   return (
     <div ref={containerRef} className="relative w-56 sm:w-64 md:w-72 font-sans">
       <div className="relative flex items-center">
-        <Search className="absolute left-2.5 h-3.5 w-3.5 text-[#7A8781] pointer-events-none" />
+        <Search className="absolute left-2.5 h-3.5 w-3.5 text-[#94A3B8] pointer-events-none" />
         <input
           ref={inputRef}
           type="text"
@@ -101,11 +101,11 @@ export function GlobalSearchBar() {
             if (query.trim() || results.length > 0) setIsOpen(true);
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Search..."
-          className="w-full h-8 pl-8 pr-7 text-xs bg-[#FAFBFA] hover:bg-white focus:bg-white text-[#17231F] placeholder-[#7A8781] rounded-[4px] border border-[#CCD5CD] focus:border-[#245B48] focus:ring-2 focus:ring-[#245B48]/20 transition-all outline-none"
+          placeholder="Search records, customers, products..."
+          className="w-full h-8 pl-8 pr-7 text-xs bg-[#FAFBFC] hover:bg-white focus:bg-white text-[#172B3A] placeholder-[#94A3B8] rounded-[4px] border border-[#DCE3E8] focus:border-[#176B52] focus:ring-2 focus:ring-[#176B52]/20 transition-all outline-none"
         />
         {isLoading ? (
-          <Loader2 className="absolute right-2 h-3.5 w-3.5 text-[#7A8781] animate-spin" />
+          <Loader2 className="absolute right-2 h-3.5 w-3.5 text-[#94A3B8] animate-spin" />
         ) : query ? (
           <button
             type="button"
@@ -114,7 +114,7 @@ export function GlobalSearchBar() {
               setResults([]);
               setIsOpen(false);
             }}
-            className="absolute right-1.5 p-1 text-[#7A8781] hover:text-[#17231F] rounded"
+            className="absolute right-1.5 p-1 text-[#94A3B8] hover:text-[#172B3A] rounded"
           >
             <X className="h-3 w-3" />
           </button>
@@ -123,18 +123,18 @@ export function GlobalSearchBar() {
 
       {/* Dropdown Results */}
       {isOpen && query.trim() && (
-        <div className="absolute top-full left-0 mt-1.5 w-80 sm:w-96 bg-white rounded-[4px] border border-[#DDE3DE] shadow-lg overflow-hidden z-50 max-h-96 overflow-y-auto">
+        <div className="absolute top-full left-0 mt-1.5 w-80 sm:w-96 bg-white rounded-[4px] border border-[#DCE3E8] shadow-lg overflow-hidden z-50 max-h-96 overflow-y-auto">
           {isLoading && results.length === 0 ? (
-            <div className="py-6 text-center text-xs text-[#52615B]">
-              <Loader2 className="h-4 w-4 animate-spin mx-auto mb-1 text-[#245B48]" />
+            <div className="py-6 text-center text-xs text-[#64748B]">
+              <Loader2 className="h-4 w-4 animate-spin mx-auto mb-1 text-[#176B52]" />
               Searching records...
             </div>
           ) : results.length === 0 ? (
-            <div className="py-6 px-4 text-center text-xs text-[#52615B]">
+            <div className="py-6 px-4 text-center text-xs text-[#64748B]">
               No records found matching &ldquo;{query}&rdquo;
             </div>
           ) : (
-            <div className="divide-y divide-[#E9EDEA] p-1">
+            <div className="divide-y divide-[#EEF2F5] p-1">
               {/* Customers Group */}
               {customers.length > 0 && (
                 <div className="p-1.5">

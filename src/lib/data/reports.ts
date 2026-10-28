@@ -8,7 +8,7 @@ export interface SalesByPeriodRow {
 }
 
 export interface SalesByEmployeeRow {
-  empNo: string | number;
+  empNo: number;
   empName: string;
   deptName: string;
   ordersCount: number;
@@ -99,14 +99,14 @@ export async function getReportsData(): Promise<ReportsData> {
   `).all() as any[];
 
   // Total sales across all transactions
-  const transTotals: Record<string, { transNo: string | number; salesDate: string; empNo: string | number; empName: string; deptCode: string; deptName: string; total: number }> = {};
+  const transTotals: Record<number, { transNo: number; salesDate: string; empNo: number; empName: string; deptCode: string; deptName: string; total: number }> = {};
   for (const r of rawSales) {
-    const tNo = String(r.transNo);
+    const tNo = Number(r.transNo);
     if (!transTotals[tNo]) {
       transTotals[tNo] = {
-        transNo: r.transNo,
+        transNo: tNo,
         salesDate: String(r.salesDate),
-        empNo: r.empNo,
+        empNo: Number(r.empNo),
         empName: String(r.empName),
         deptCode: String(r.deptCode),
         deptName: String(r.deptName),
@@ -135,11 +135,10 @@ export async function getReportsData(): Promise<ReportsData> {
     .sort((a, b) => b.period.localeCompare(a.period));
 
   // Report 2: Sales by employee
-  const empMap: Record<string, { empNo: string | number; empName: string; deptName: string; count: number; total: number }> = {};
+  const empMap: Record<number, { empNo: number; empName: string; deptName: string; count: number; total: number }> = {};
   for (const s of allSalesList) {
-    const key = String(s.empNo);
-    if (!empMap[key]) {
-      empMap[key] = {
+    if (!empMap[s.empNo]) {
+      empMap[s.empNo] = {
         empNo: s.empNo,
         empName: s.empName,
         deptName: s.deptName,
@@ -147,8 +146,8 @@ export async function getReportsData(): Promise<ReportsData> {
         total: 0,
       };
     }
-    empMap[key].count++;
-    empMap[key].total += s.total;
+    empMap[s.empNo].count++;
+    empMap[s.empNo].total += s.total;
   }
   const salesByEmployee: SalesByEmployeeRow[] = Object.values(empMap)
     .map((e) => ({

@@ -10,7 +10,7 @@ interface EditCustomerModalProps {
   isOpen: boolean;
   onClose: () => void;
   customer: {
-    custNo: string | number;
+    custNo: number;
     custName: string;
     address: string;
     payTerms: string;

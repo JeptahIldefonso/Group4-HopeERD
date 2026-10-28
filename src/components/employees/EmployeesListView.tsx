@@ -263,18 +263,18 @@ export function EmployeesListView({
   return (
     <div className="space-y-6">
       {/* 1. Header (Section 7.1) */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#DDE3DE] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#DCE3E8] pb-4">
         <div>
-          <nav className="flex items-center text-xs text-[#52615B] mb-1 font-mono uppercase tracking-[0.12em]">
-            <span>Group 4 HopeERD</span>
+          <nav className="flex items-center text-xs text-[#64748B] mb-1 font-mono uppercase tracking-[0.12em]">
+            <span>HopeERD</span>
             <span className="mx-1.5">·</span>
-            <span className="text-[#17231F] font-semibold">Employees</span>
+            <span className="text-[#172B3A] font-semibold">Employees</span>
           </nav>
-          <h1 className="text-2xl sm:text-[28px] font-semibold text-[#17231F] tracking-tight">
+          <h1 className="text-2xl sm:text-[28px] font-bold text-[#172B3A] tracking-tight">
             Employees
           </h1>
-          <p className="text-xs sm:text-sm text-[#52615B] mt-0.5">
-            Employee records, job history and department assignments.
+          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
+            Employee records, current job assignments and departmental structure.
           </p>
         </div>
 

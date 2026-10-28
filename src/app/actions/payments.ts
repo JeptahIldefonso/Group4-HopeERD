@@ -9,23 +9,23 @@ import { getCurrentUser } from './auth';
 import { getSalesForPayment, getNextORNumberPreview } from '@/lib/data/payments';
 
 const recordPaymentSchema = z.object({
-  transNo: z.union([z.number(), z.string().trim().min(1)]),
+  transNo: z.number().int().positive('Transaction number is required'),
   amount: z.number().positive('Payment amount must be greater than zero'),
   payDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Valid payment date (YYYY-MM-DD) is required'),
 });
 
 export type RecordPaymentInput = z.infer<typeof recordPaymentSchema>;
 
-export async function getPaymentFormDataAction(filter?: { transNo?: string | number; custNo?: string | number }) {
+export async function getPaymentFormDataAction(filter?: { transNo?: number; custNo?: number }) {
   try {
     const nextOrPreview = await getNextORNumberPreview();
     const rawSales = await getSalesForPayment();
     let sales = rawSales;
     if (filter?.custNo) {
-      sales = sales.filter((s) => String(s.custNo) === String(filter.custNo));
+      sales = sales.filter((s) => s.custNo === filter.custNo);
     }
     if (filter?.transNo) {
-      sales = sales.filter((s) => String(s.transNo) === String(filter.transNo));
+      sales = sales.filter((s) => s.transNo === filter.transNo);
     }
     return { sales, nextOrPreview };
   } catch (err: any) {
@@ -134,13 +134,8 @@ export async function recordPaymentAction(input: RecordPaymentInput) {
       }
 
       // 6. Assign next OR number in sequence
-      const lastOrRow = db.prepare('SELECT ORNo FROM PAYMENT ORDER BY length(ORNo) DESC, ORNo DESC LIMIT 1').get() as any;
-      let nextNum = 1;
-      if (lastOrRow?.ORNo) {
-        const match = String(lastOrRow.ORNo).match(/\d+/);
-        if (match) nextNum = parseInt(match[0], 10) + 1;
-      }
-      const orNo = `OR${String(nextNum).padStart(6, '0')}`;
+      const maxOrRow = db.prepare('SELECT COALESCE(MAX(ORNo), 9000) + 1 AS nextORNo FROM PAYMENT').get() as any;
+      const orNo = Number(maxOrRow.nextORNo);
 
       // 7. Insert payment
       db.prepare(`

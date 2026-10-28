@@ -7,12 +7,12 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 
 export function Badge({ className, variant = 'default', children, ...props }: BadgeProps) {
   const variants: Record<string, string> = {
-    default: 'bg-[#F0F3F0] text-[#17231F] border-[#DDE3DE]',
-    success: 'bg-[#E8F4EC] text-[#24734D] border-[#C6E6D2]',
-    warning: 'bg-[#FBF2DD] text-[#956316] border-[#F2DEB0]',
-    danger:  'bg-[#FDECEA] text-[#B42318] border-[#F9C8C4]',
+    default: 'bg-[#F5F7F8] text-[#172B3A] border-[#DCE3E8]',
+    success: 'bg-[#E8F5E9] text-[#15803D] border-[#C8E6C9]',
+    warning: 'bg-[#FEF3C7] text-[#B45309] border-[#FDE68A]',
+    danger:  'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]',
     info:    'bg-[#EAF2FA] text-[#285A91] border-[#C8DFFA]',
-    outline: 'bg-white text-[#17231F] border-[#DDE3DE]',
+    outline: 'bg-white text-[#172B3A] border-[#DCE3E8]',
   };
 
   const badgeClass = variants[variant] || variants.default;

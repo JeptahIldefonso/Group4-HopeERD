@@ -1,19 +1,20 @@
 // ========================================================================
-// Group 4 HopeERD: BRANDING & SYSTEM METADATA
-// Single source of truth for company name, headers, and display titles.
+// HopeERD: BRANDING & SYSTEM METADATA
+// Single source of truth for application identity, naming, and copy.
 // ========================================================================
 
 export const BRAND = {
-  name: 'Group 4 HopeERD',
-  companyName: 'Group 4 HopeERD',
-  shortName: 'H4',
-  systemName: 'Sales and Payments Monitoring System',
-  fullTitle: 'Group 4 HopeERD — Sales and Payments Monitoring System',
-  tagline: 'Enterprise PC Hardware Sales & Payments Ledger',
-  description: 'Operations system for point-in-time sales recording, official receipt payments, and customer accounts.',
-  welcomeText: 'Group 4 HopeERD supplies PC parts such as processors, graphics cards, memory and storage. Use this system to record sales and receive payments.',
-  infoStripText: 'Group 4 HopeERD supplies PC parts such as processors, graphics cards, memory and storage. Use this system to record sales and receive payments.',
-  homeIntro: 'Group 4 HopeERD supplies PC parts such as processors, graphics cards, memory and storage. This system keeps our sales, customers, products and employees in one database.',
+  name: 'HopeERD',
+  shortName: 'HopeERD',
+  systemName: 'Sales & Business Records Management System',
+  organization: 'HOPE Group 4',
+  category: 'Business Information System',
+  fullTitle: 'HopeERD — Sales & Business Records Management System',
+  tagline: 'Sales & Business Records Management System',
+  description: 'Business information system to monitor sales transactions, payments, product pricing, customers, and employee records.',
+  purpose: 'Monitor sales transactions, payments, product pricing, customers, and employee records.',
+  welcomeText: 'Welcome to HopeERD. Monitor sales transactions, payments, product pricing, customers, and employee records.',
+  homeIntro: 'Sales and business records overview for HOPE Group 4 operations.',
   domain: 'hope-group4.vercel.app',
   currency: {
     symbol: '₱',
@@ -21,5 +22,5 @@ export const BRAND = {
   },
   locale: 'en-PH',
   timezone: 'Asia/Manila',
-  footerText: '© 2026 Group 4 HopeERD · Sales and Payments Monitoring System. All rights reserved.',
+  footerText: '© 2026 HopeERD · HOPE Group 4 · Sales & Business Records Management System.',
 } as const;

@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 interface NewJobRecordModalProps {
   isOpen: boolean;
   onClose: () => void;
-  empNo: string | number;
+  empNo: number;
   currentAssignment: {
     jobCode: string;
     jobDesc: string;

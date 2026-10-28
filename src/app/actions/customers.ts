@@ -22,7 +22,7 @@ function getManilaToday(): string {
 // ========================================================================
 
 const addCustomerSchema = z.object({
-  custNo: z.union([z.number(), z.string().trim().min(1)]),
+  custNo: z.number().int().positive('Customer number must be a positive integer.'),
   custName: z.string().trim().min(1, 'Customer name is required (R-03).').max(120),
   address: z.string().trim().min(1, 'Customer address is required (R-03).').max(255),
   payTerms: z.enum(['COD', '30D', '45D'], {
@@ -31,7 +31,7 @@ const addCustomerSchema = z.object({
 });
 
 const updateCustomerSchema = z.object({
-  custNo: z.union([z.number(), z.string().trim().min(1)]),
+  custNo: z.number().int().positive('Customer number must be a positive integer.'),
   custName: z.string().trim().min(1, 'Customer name is required (R-03).').max(120),
   address: z.string().trim().min(1, 'Customer address is required (R-03).').max(255),
   payTerms: z.enum(['COD', '30D', '45D'], {
@@ -40,7 +40,7 @@ const updateCustomerSchema = z.object({
 });
 
 const recordPaymentSchema = z.object({
-  orNo: z.union([z.number(), z.string().trim().min(1)]),
+  orNo: z.number().int().positive('OR number must be a positive integer (R-08).'),
   payDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Valid payment date in YYYY-MM-DD format is required.'),
   amount: z
     .number()
@@ -48,8 +48,8 @@ const recordPaymentSchema = z.object({
     .refine((val) => Number(val.toFixed(2)) === val, {
       message: 'Payment amount cannot have more than 2 decimal places (R-07).',
     }),
-  transNo: z.union([z.number(), z.string().trim().min(1)]),
-  custNo: z.union([z.number(), z.string().trim().min(1)]),
+  transNo: z.number().int().positive('Sales transaction number is required (R-05).'),
+  custNo: z.number().int().positive('Customer number is required.'),
 });
 
 export type AddCustomerInput = z.infer<typeof addCustomerSchema>;
@@ -244,7 +244,7 @@ export async function recordCustomerPaymentAction(input: RecordPaymentInput) {
     if (!sale) {
       return { error: `Transaction #${validated.transNo} does not exist in Sales records (R-05).` };
     }
-    if (String(sale.custNo) !== String(validated.custNo)) {
+    if (Number(sale.custNo) !== validated.custNo) {
       return { error: `That transaction (#${validated.transNo}) does not belong to this customer (#${validated.custNo}) (R-05).` };
     }
 

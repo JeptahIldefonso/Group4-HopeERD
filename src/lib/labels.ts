@@ -1,15 +1,18 @@
 // ========================================================================
-// Group 4 HopeERD: CENTRALIZED UI LABELS & COPY DECK
+// HopeERD: CENTRALIZED UI LABELS & COPY DECK
 // Single source of truth for navigation, page headers, KPI cards, and buttons.
 // ========================================================================
 
 import {
-  Home,
+  LayoutDashboard,
   ShoppingCart,
+  Receipt,
   Users,
   Package,
+  UserCheck,
   Building2,
-  BarChart3,
+  FileText,
+  Database,
   type LucideIcon,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/types';
@@ -18,7 +21,7 @@ export interface NavigationItem {
   href: string;
   label: string;
   caption: string;
-  section: 'OVERVIEW' | 'TRANSACTIONS' | 'CATALOG' | 'ORGANIZATION' | 'ANALYTICS';
+  section: 'OVERVIEW' | 'TRANSACTIONS' | 'MASTER DATA' | 'ORGANIZATION' | 'ANALYTICS' | 'SYSTEM';
   icon: LucideIcon;
   roles: UserRole[];
 }
@@ -26,40 +29,56 @@ export interface NavigationItem {
 export const navigationItems: NavigationItem[] = [
   {
     href: '/',
-    label: 'Home',
-    caption: 'ERD Overview',
+    label: 'Dashboard',
+    caption: 'Overview & metrics',
     section: 'OVERVIEW',
-    icon: Home,
+    icon: LayoutDashboard,
     roles: ['admin', 'sales', 'cashier'],
   },
   {
     href: '/sales',
     label: 'Sales',
-    caption: 'Sales Detail',
+    caption: 'Transactions & line items',
     section: 'TRANSACTIONS',
     icon: ShoppingCart,
     roles: ['admin', 'sales', 'cashier'],
   },
   {
+    href: '/payments',
+    label: 'Payments',
+    caption: 'Official receipts ledger',
+    section: 'TRANSACTIONS',
+    icon: Receipt,
+    roles: ['admin', 'sales', 'cashier'],
+  },
+  {
     href: '/customers',
     label: 'Customers',
-    caption: 'Payments',
-    section: 'TRANSACTIONS',
+    caption: 'Profiles & terms',
+    section: 'MASTER DATA',
     icon: Users,
     roles: ['admin', 'sales', 'cashier'],
   },
   {
     href: '/products',
-    label: 'Products',
-    caption: 'Price History',
-    section: 'CATALOG',
+    label: 'Products & Pricing',
+    caption: 'Catalog & price history',
+    section: 'MASTER DATA',
     icon: Package,
     roles: ['admin', 'sales', 'cashier'],
   },
   {
     href: '/employees',
     label: 'Employees',
-    caption: 'Job, Department',
+    caption: 'Staff profiles & history',
+    section: 'ORGANIZATION',
+    icon: UserCheck,
+    roles: ['admin'],
+  },
+  {
+    href: '/employees?tab=departments',
+    label: 'Departments & Jobs',
+    caption: 'Org structure & positions',
     section: 'ORGANIZATION',
     icon: Building2,
     roles: ['admin'],
@@ -67,17 +86,27 @@ export const navigationItems: NavigationItem[] = [
   {
     href: '/reports',
     label: 'Reports',
-    caption: 'Summaries',
+    caption: 'Summaries & records',
     section: 'ANALYTICS',
-    icon: BarChart3,
+    icon: FileText,
     roles: ['admin'],
+  },
+  {
+    href: '/database',
+    label: 'Database Overview',
+    caption: 'ERD schema & relations',
+    section: 'SYSTEM',
+    icon: Database,
+    roles: ['admin', 'sales', 'cashier'],
   },
 ];
 
 export const LABELS = {
   // Brand Header
-  brandName: 'Group 4 HopeERD',
-  brandSubtitle: 'Sales and Payments Monitoring System',
+  brandName: 'HopeERD',
+  brandSubtitle: 'Sales & Business Records Management System',
+  organization: 'HOPE Group 4',
+  category: 'Business Information System',
 
   // Navigation Items
   nav: navigationItems.map((item) => ({
@@ -95,42 +124,37 @@ export const LABELS = {
   // Page Titles and Subtitles
   pages: {
     home: {
-      title: 'Home',
-      subtitle: 'Canonical Hope ERD overview and live system verification.',
+      title: 'Dashboard',
+      subtitle: 'Sales and business records overview',
     },
     sales: {
       title: 'Sales',
-      subtitle: 'All recorded sales with the seller and their department.',
+      subtitle: 'Recorded transactions and their product line items.',
     },
     payments: {
       title: 'Payments',
-      subtitle: 'Official receipts ledger and payment records.',
+      subtitle: 'Official receipts and payment settlements associated with sales.',
     },
     customers: {
       title: 'Customers',
-      subtitle: 'Customer accounts, payment terms, and official receipts ledger.',
+      subtitle: 'Customer profiles, credit limits, and payment terms.',
     },
     products: {
-      title: 'Products',
-      subtitle: 'Product catalog, unit prices and price history.',
+      title: 'Products & Pricing',
+      subtitle: 'Product catalog, active unit prices, and historical pricing timeline.',
     },
     employees: {
       title: 'Employees',
-      subtitle: 'Employee records, job history and department assignments.',
+      subtitle: 'Employee profiles, current assignments, and job history.',
     },
     reports: {
       title: 'Reports',
-      subtitle: 'Sales and payments analytics across periods, employees, departments, and products.',
+      subtitle: 'Business records and transaction summaries derived from relational tables.',
     },
-  },
-
-  // Reports Overview Charts
-  charts: {
-    salesByMonthTitle: 'Sales by month',
-    salesByMonthSubtitle: 'Last 6 months',
-    deptTitle: 'Sales by department',
-    deptSubtitle: 'Based on the seller’s department on the sale date',
-    deptPeriod: 'This month',
+    database: {
+      title: 'Database Structure & Relationships',
+      subtitle: 'Explore the relational schema used by the HopeERD business information system.',
+    },
   },
 
   // Action Buttons
@@ -151,7 +175,7 @@ export const LABELS = {
     saleNo: 'Sale #',
     date: 'Date',
     customer: 'Customer',
-    salesRepDept: 'Sales rep and department',
+    salesRepDept: 'Sales Rep & Department',
     items: 'Items',
     total: 'Total',
     actions: 'Actions',

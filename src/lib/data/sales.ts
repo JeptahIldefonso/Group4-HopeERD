@@ -2,13 +2,13 @@ import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
 
 export interface SalesSummaryItem {
-  transNo: string | number;
+  transNo: number;
   salesDate: string;
-  custNo: string | number;
+  custNo: number;
   custName: string;
   custAddress: string;
   payTerms: string;
-  empNo: string | number;
+  empNo: number;
   repName: string;
   deptCode: string;
   deptName: string;
@@ -17,9 +17,9 @@ export interface SalesSummaryItem {
 }
 
 export interface SaleLineItem {
-  transNo: string | number;
+  transNo: number;
   salesDate: string;
-  custNo: string | number;
+  custNo: number;
   custName: string;
   prodCode: string;
   description: string;
@@ -31,10 +31,10 @@ export interface SaleLineItem {
 }
 
 export interface SaleReceiptItem {
-  orNo: string | number;
+  orNo: number;
   payDate: string;
   amount: number;
-  transNo: string | number;
+  transNo: number;
 }
 
 export interface SaleDetailData {
@@ -55,13 +55,13 @@ export interface SalesSummaryMetrics {
 
 export interface SaleLookupData {
   customers: Array<{
-    custNo: string | number;
+    custNo: number;
     custName: string;
     address: string;
     payTerms: string;
   }>;
   employees: Array<{
-    empNo: string | number;
+    empNo: number;
     fullName: string;
     deptCode: string;
     deptName: string;
@@ -128,13 +128,13 @@ export async function getSalesPageData(): Promise<{
   `).all() as any[];
 
   const sales: SalesSummaryItem[] = salesRows.map((r) => ({
-    transNo: r.transNo,
+    transNo: Number(r.transNo),
     salesDate: String(r.salesDate),
-    custNo: r.custNo,
+    custNo: Number(r.custNo),
     custName: String(r.custName),
     custAddress: String(r.custAddress || ''),
     payTerms: String(r.payTerms || 'COD'),
-    empNo: r.empNo,
+    empNo: Number(r.empNo),
     repName: String(r.repName),
     deptCode: String(r.deptCode),
     deptName: String(r.deptName),
@@ -163,9 +163,9 @@ export async function getSalesPageData(): Promise<{
   `).all() as any[];
 
   const lines: SaleLineItem[] = linesRows.map((r) => ({
-    transNo: r.transNo,
+    transNo: Number(r.transNo),
     salesDate: String(r.salesDate),
-    custNo: r.custNo,
+    custNo: Number(r.custNo),
     custName: String(r.custName),
     prodCode: String(r.prodCode),
     description: String(r.description),
@@ -206,7 +206,7 @@ export async function getSalesPageData(): Promise<{
 /**
  * Retrieve comprehensive sale detail with items, prices, and linked receipts
  */
-export async function getSaleDetailData(transNo: string | number): Promise<SaleDetailData | null> {
+export async function getSaleDetailData(transNo: number): Promise<SaleDetailData | null> {
   const dbPath = path.join(process.cwd(), 'hope.db');
   const db = new DatabaseSync(dbPath);
 
@@ -248,13 +248,13 @@ export async function getSaleDetailData(transNo: string | number): Promise<SaleD
   if (!saleRow) return null;
 
   const sale: SalesSummaryItem = {
-    transNo: saleRow.transNo,
+    transNo: Number(saleRow.transNo),
     salesDate: String(saleRow.salesDate),
-    custNo: saleRow.custNo,
+    custNo: Number(saleRow.custNo),
     custName: String(saleRow.custName),
     custAddress: String(saleRow.custAddress || ''),
     payTerms: String(saleRow.payTerms || 'COD'),
-    empNo: saleRow.empNo,
+    empNo: Number(saleRow.empNo),
     repName: String(saleRow.repName),
     deptCode: String(saleRow.deptCode),
     deptName: String(saleRow.deptName),
@@ -284,9 +284,9 @@ export async function getSaleDetailData(transNo: string | number): Promise<SaleD
   `).all(transNo) as any[];
 
   const items: SaleLineItem[] = itemsRows.map((r) => ({
-    transNo: r.transNo,
+    transNo: Number(r.transNo),
     salesDate: String(r.salesDate),
-    custNo: r.custNo,
+    custNo: Number(r.custNo),
     custName: String(r.custName),
     prodCode: String(r.prodCode),
     description: String(r.description),
@@ -306,10 +306,10 @@ export async function getSaleDetailData(transNo: string | number): Promise<SaleD
   `).all(transNo) as any[];
 
   const payments: SaleReceiptItem[] = paymentsRows.map((p) => ({
-    orNo: p.orNo ?? p.ORNo,
+    orNo: Number(p.orNo ?? p.ORNo),
     payDate: String(p.payDate),
     amount: Number(p.amount),
-    transNo: p.transNo,
+    transNo: Number(p.transNo),
   }));
 
   return {
@@ -367,13 +367,13 @@ export async function getSaleCreationLookups(): Promise<SaleLookupData> {
 
   return {
     customers: customers.map((c) => ({
-      custNo: c.custNo,
+      custNo: Number(c.custNo),
       custName: String(c.custName),
       address: String(c.address),
       payTerms: String(c.payTerms),
     })),
     employees: employees.map((e) => ({
-      empNo: e.empNo,
+      empNo: Number(e.empNo),
       fullName: String(e.fullName),
       deptCode: String(e.deptCode),
       deptName: String(e.deptName),
@@ -406,6 +406,6 @@ export async function getSalesLedger(): Promise<SalesSummaryItem[]> {
   const data = await getSalesPageData();
   return data.sales;
 }
-export async function getSaleInvoice(transNo: number | string): Promise<SaleInvoice | null> {
+export async function getSaleInvoice(transNo: number): Promise<SaleInvoice | null> {
   return getSaleDetailData(transNo);
 }

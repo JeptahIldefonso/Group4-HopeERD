@@ -10,15 +10,15 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, disabled, children, ...props }, ref) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-sans font-medium transition-all rounded-[4px] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245B48]/30 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.99] gap-2';
+      'inline-flex items-center justify-center font-sans font-medium transition-all rounded-[4px] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#176B52]/30 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.99] gap-2';
 
     const variants = {
-      primary: 'bg-[#245B48] text-white hover:bg-[#1C4939] active:bg-[#15392C] shadow-xs border border-[#245B48]',
-      default: 'bg-[#245B48] text-white hover:bg-[#1C4939] active:bg-[#15392C] shadow-xs border border-[#245B48]',
-      secondary: 'bg-[#F0F3F0] text-[#17231F] hover:bg-[#E9EDEA] active:bg-[#DDE3DE] border border-[#DDE3DE] shadow-xs',
-      outline: 'border border-[#DDE3DE] bg-white text-[#17231F] hover:bg-[#FAFBFA] hover:border-[#CBD5CE] active:bg-[#F0F3F0] shadow-xs',
-      ghost: 'bg-transparent text-[#52615B] hover:bg-[#F0F3F0] hover:text-[#17231F] active:bg-[#E9EDEA]',
-      destructive: 'bg-[#B42318] text-white hover:bg-[#991B1B] active:bg-[#7F1D1D] shadow-xs border border-transparent',
+      primary: 'bg-[#176B52] text-white hover:bg-[#125540] active:bg-[#0E4030] shadow-xs border border-[#176B52]',
+      default: 'bg-[#176B52] text-white hover:bg-[#125540] active:bg-[#0E4030] shadow-xs border border-[#176B52]',
+      secondary: 'bg-[#F5F7F8] text-[#172B3A] hover:bg-[#EEF2F5] active:bg-[#DCE3E8] border border-[#DCE3E8] shadow-xs',
+      outline: 'border border-[#DCE3E8] bg-white text-[#172B3A] hover:bg-[#F5F7F8] hover:border-[#CBD5E1] active:bg-[#EEF2F5] shadow-xs',
+      ghost: 'bg-transparent text-[#64748B] hover:bg-[#F5F7F8] hover:text-[#172B3A] active:bg-[#EEF2F5]',
+      destructive: 'bg-[#B91C1C] text-white hover:bg-[#991B1B] active:bg-[#7F1D1D] shadow-xs border border-transparent',
     };
 
     const sizes = {

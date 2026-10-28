@@ -25,15 +25,15 @@ export function Header({ userRole = 'admin' }: HeaderProps) {
   }, []);
 
   return (
-    <header className="h-14 sm:h-15 bg-white border-b border-[#DDE3DE] px-5 sm:px-7 flex items-center justify-between gap-4 shrink-0 select-none">
+    <header className="h-14 sm:h-15 bg-white border-b border-[#DCE3E8] px-5 sm:px-7 flex items-center justify-between gap-4 shrink-0 select-none">
       {/* Global Search Box (Left, compact) */}
       <div className="flex items-center">
         <GlobalSearchBar />
       </div>
 
       {/* Date display without seconds (Right) */}
-      <div className="flex items-center gap-2 text-xs sm:text-[13px] font-medium text-[#52615B] shrink-0 font-sans">
-        <Calendar className="w-3.5 h-3.5 text-[#7A8781]" />
+      <div className="flex items-center gap-2 text-xs sm:text-[13px] font-medium text-[#64748B] shrink-0 font-sans">
+        <Calendar className="w-3.5 h-3.5 text-[#94A3B8]" />
         <span>{dateString || 'Today'}</span>
       </div>
     </header>

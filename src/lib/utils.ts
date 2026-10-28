@@ -20,6 +20,19 @@ export function formatPHP(value: number | null | undefined): string {
   }).format(value);
 }
 
+// Alias for generic currency formatting
+export const formatCurrency = formatPHP;
+
+/**
+ * Format raw number with comma separators (e.g. 12,450)
+ */
+export function formatNumber(value: number | null | undefined): string {
+  if (value === null || value === undefined || isNaN(value)) {
+    return '0';
+  }
+  return new Intl.NumberFormat('en-PH').format(value);
+}
+
 /**
  * Format Date string (YYYY-MM-DD) to friendly format: "Oct 27, 2026"
  */

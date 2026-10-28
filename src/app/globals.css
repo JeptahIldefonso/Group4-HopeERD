@@ -4,21 +4,31 @@
 
 @layer base {
   :root {
-    --bg: #F5F6F4;
+    --bg: #F5F7F8;
     --bg-raised: #FFFFFF;
-    --bg-hover: #FAFBFA;
-    --bg-subtle: #F0F3F0;
+    --bg-hover: #FAFBFC;
+    --bg-subtle: #EEF2F5;
 
-    --fg: #17231F;
-    --fg-muted: #52615B;
-    --fg-subtle: #7A8781;
+    --fg: #172B3A;
+    --fg-muted: #64748B;
+    --fg-subtle: #94A3B8;
 
-    --border: #DDE3DE;
-    --border-strong: #CBD5CE;
+    --border: #DCE3E8;
+    --border-strong: #CBD5E1;
+
+    /* Primary Accent */
+    --primary: #176B52;
+    --primary-hover: #125540;
+    --primary-tint: #E8F3EE;
+
+    /* Statuses */
+    --status-success: #15803D;
+    --status-warning: #B45309;
+    --status-error: #B91C1C;
 
     /* ERD Module Subtle Enterprise Tints */
     --module-employees: #EAF0F6;
-    --module-products: #EAF2ED;
+    --module-products: #E8F3EE;
     --module-customers: #FAF4EB;
     --module-sales: #F6EBF0;
   }
@@ -33,8 +43,8 @@
   }
 
   ::selection {
-    background-color: #EAF2ED;
-    color: #17231F;
+    background-color: #E8F3EE;
+    color: #172B3A;
   }
 }
 
@@ -49,30 +59,27 @@
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #CBD5CE;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #A0AAA4;
+  background: #F5F7F8;
 }
 
-/* Print Styles for Invoices and Official Receipts */
+::-webkit-scrollbar-thumb {
+  background: #DCE3E8;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Print Stylesheet Overrides */
 @media print {
   body {
     background: #FFFFFF !important;
     color: #000000 !important;
   }
-  .no-print, nav, aside, header {
+  aside, header, nav, button, .no-print {
     display: none !important;
-  }
-  .print-only {
-    display: block !important;
-  }
-  .print-break-inside-avoid {
-    break-inside: avoid;
   }
 }

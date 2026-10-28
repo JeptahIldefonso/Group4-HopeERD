@@ -6,7 +6,7 @@ import { CreditCard } from 'lucide-react';
 import { RecordPaymentDialog } from '@/components/payments/RecordPaymentDialog';
 
 interface SaleRecordPaymentButtonProps {
-  transNo: string | number;
+  transNo: number;
 }
 
 export function SaleRecordPaymentButton({ transNo }: SaleRecordPaymentButtonProps) {

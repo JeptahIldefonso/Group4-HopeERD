@@ -23,11 +23,11 @@ import {
 export interface RecordPaymentDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  fixedTransNo?: string | number;
-  fixedCustNo?: string | number;
+  fixedTransNo?: number;
+  fixedCustNo?: number;
   initialSales?: SaleForPaymentOption[];
-  initialNextOr?: string | number;
-  onSuccess?: (orNo: string | number) => void;
+  initialNextOr?: number;
+  onSuccess?: (orNo: number) => void;
 }
 
 export function RecordPaymentDialog({
@@ -43,18 +43,18 @@ export function RecordPaymentDialog({
   const [isPending, startTransition] = useTransition();
 
   const [sales, setSales] = useState<SaleForPaymentOption[]>(initialSales || []);
-  const [nextOrPreview, setNextOrPreview] = useState<string | number>(initialNextOr || 'OR000166');
+  const [nextOrPreview, setNextOrPreview] = useState<number>(initialNextOr || 9050);
   const [loadingOptions, setLoadingOptions] = useState(!initialSales || initialSales.length === 0);
 
   // Form states
-  const [selectedTransNo, setSelectedTransNo] = useState<string | number>(fixedTransNo || '');
-  const [payDate, setPayDate] = useState<string>('2011-06-01');
+  const [selectedTransNo, setSelectedTransNo] = useState<number>(fixedTransNo || 0);
+  const [payDate, setPayDate] = useState<string>('2026-10-28');
   const [amount, setAmount] = useState<string>('');
   const [searchSaleQuery, setSearchSaleQuery] = useState<string>('');
 
   // Status & Feedback states
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successReceiptNo, setSuccessReceiptNo] = useState<string | number | null>(null);
+  const [successReceiptNo, setSuccessReceiptNo] = useState<number | null>(null);
 
   // Fetch or refresh options when dialog opens
   useEffect(() => {
@@ -77,10 +77,10 @@ export function RecordPaymentDialog({
         if (res.nextOrPreview) setNextOrPreview(res.nextOrPreview);
 
         // Pre-select if fixed or if single option
-        const targetTrans = fixedTransNo || (fixedCustNo && res.sales.length > 0 ? res.sales[0].transNo : res.sales[0]?.transNo || '');
+        const targetTrans = fixedTransNo || (fixedCustNo && res.sales.length > 0 ? res.sales[0].transNo : res.sales[0]?.transNo || 0);
         setSelectedTransNo(targetTrans);
 
-        const found = res.sales.find((s) => String(s.transNo) === String(targetTrans));
+        const found = res.sales.find((s) => s.transNo === targetTrans);
         if (found) {
           setAmount(found.totalAmount.toFixed(2));
         }
@@ -97,11 +97,11 @@ export function RecordPaymentDialog({
   // Filter sales based on search query
   const filteredSales = useMemo(() => {
     if (fixedTransNo) {
-      return sales.filter((s) => String(s.transNo) === String(fixedTransNo));
+      return sales.filter((s) => s.transNo === fixedTransNo);
     }
     let list = sales;
     if (fixedCustNo) {
-      list = list.filter((s) => String(s.custNo) === String(fixedCustNo));
+      list = list.filter((s) => s.custNo === fixedCustNo);
     }
     if (searchSaleQuery.trim()) {
       const q = searchSaleQuery.toLowerCase().trim();
@@ -116,13 +116,13 @@ export function RecordPaymentDialog({
   }, [sales, fixedTransNo, fixedCustNo, searchSaleQuery]);
 
   const activeSale = useMemo(() => {
-    return sales.find((s) => String(s.transNo) === String(selectedTransNo)) || null;
+    return sales.find((s) => s.transNo === selectedTransNo) || null;
   }, [sales, selectedTransNo]);
 
   // Update amount when selected transaction changes
-  const handleSaleSelect = (transNo: string | number) => {
+  const handleSaleSelect = (transNo: number) => {
     setSelectedTransNo(transNo);
-    const s = sales.find((item) => String(item.transNo) === String(transNo));
+    const s = sales.find((item) => item.transNo === transNo);
     if (s) {
       setAmount(s.totalAmount.toFixed(2));
     }
@@ -132,7 +132,7 @@ export function RecordPaymentDialog({
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!selectedTransNo) {
+    if (!selectedTransNo || selectedTransNo <= 0) {
       setErrorMessage('Please select a valid sales transaction.');
       return;
     }
@@ -341,7 +341,7 @@ export function RecordPaymentDialog({
               type="submit"
               variant="primary"
               size="sm"
-              disabled={isPending || !selectedTransNo}
+              disabled={isPending || !selectedTransNo || selectedTransNo <= 0}
             >
               {isPending ? 'Recording...' : 'Record Payment'}
             </Button>

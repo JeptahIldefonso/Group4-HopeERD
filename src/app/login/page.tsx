@@ -59,11 +59,11 @@ export default function LoginPage() {
             <span className="font-editorial text-sm font-semibold text-[#285B48] tracking-tight">H4</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-[19px] font-semibold text-[#24352D] leading-tight tracking-tight">
-              Group 4 HopeERD
+            <span className="text-[19px] font-bold text-[#172B3A] leading-tight tracking-tight">
+              HopeERD
             </span>
-            <span className="text-[12px] font-normal text-[#66736B] leading-tight mt-0.5">
-              Sales &amp; Payments Monitoring System
+            <span className="text-[12px] font-normal text-[#64748B] leading-tight mt-0.5">
+              Sales &amp; Business Records Management System
             </span>
           </div>
         </div>
@@ -354,8 +354,8 @@ export default function LoginPage() {
       </main>
 
       {/* Minimal Footer */}
-      <footer className="relative z-10 w-full max-w-5xl mx-auto px-6 py-6 text-center text-[12px] font-normal text-[#758078]">
-        Group 4 HopeERD &middot; Sales &amp; Payments Monitoring System
+      <footer className="relative z-10 w-full max-w-5xl mx-auto px-6 py-6 text-center text-[12px] font-normal text-[#64748B]">
+        HopeERD &middot; HOPE Group 4 &middot; Sales &amp; Business Records Management System
       </footer>
     </div>
   );

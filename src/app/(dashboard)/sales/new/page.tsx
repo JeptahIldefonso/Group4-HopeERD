@@ -22,12 +22,12 @@ export default async function NewSalePage({ searchParams }: PageProps) {
     redirect('/sales');
   }
 
-  const preSelectedCustNo = params.custNo || null;
+  const preSelectedCustNo = params.custNo ? parseInt(params.custNo, 10) : null;
 
   return (
     <NewSalePageView
       lookups={lookups}
-      preSelectedCustNo={preSelectedCustNo}
+      preSelectedCustNo={preSelectedCustNo && !isNaN(preSelectedCustNo) ? preSelectedCustNo : null}
       userRole={userRole}
     />
   );
