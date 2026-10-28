@@ -84,10 +84,10 @@ export default async function SaleDetailPage({ params }: PageProps) {
 
           <div className="text-left sm:text-right">
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#041a24] font-mono">
-              Sale #{sale.transNo}
+              Transaction #{sale.transNo}
             </h1>
             <div className="mt-1 text-xs text-[#41555f]">
-              <span>Date: </span>
+              <span>Sales Date: </span>
               <span className="font-semibold text-[#041a24]">{formatDate(sale.salesDate)}</span>
             </div>
           </div>
@@ -109,11 +109,13 @@ export default async function SaleDetailPage({ params }: PageProps) {
           </div>
 
           <div className="sm:text-right">
-            <span className="text-[#41555f] block mb-1 font-medium">Sales Attribution</span>
-            <div className="font-bold text-sm text-[#041a24]">{sale.repName}</div>
-            <div className="text-xs text-[#41555f] mt-0.5">Staff #{sale.empNo}</div>
+            <span className="text-[#41555f] block mb-1 font-medium">Employee Representative</span>
+            <div className="font-bold text-sm text-[#041a24]">
+              <span className="font-mono text-[#41555f] font-normal mr-1">#{sale.empNo}</span>
+              {sale.repName}
+            </div>
             <div className="text-xs text-[#41555f] mt-1">
-              Department on sale date: <strong>{sale.deptName}</strong> ({sale.deptCode})
+              Department: <strong>{sale.deptName}</strong> ({sale.deptCode})
             </div>
           </div>
         </div>
@@ -122,7 +124,7 @@ export default async function SaleDetailPage({ params }: PageProps) {
         <div className="py-6">
           <h2 className="text-sm font-semibold text-[#041a24] mb-3 flex items-center gap-1.5">
             <ShoppingBag className="h-4 w-4 text-[#41555f]" />
-            <span>Purchased Items ({items.length})</span>
+            <span>Sales Detail ({items.length})</span>
           </h2>
           <div className="overflow-x-auto rounded-[4px] border border-[rgba(4,26,36,0.12)]">
             <table className="w-full text-left text-xs">

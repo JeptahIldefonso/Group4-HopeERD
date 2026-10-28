@@ -63,7 +63,7 @@ export function SaleDetailPanel({
         <div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-semibold text-[#041a24]">
-              Sale #{sale.transNo}
+              Transaction #{sale.transNo}
             </span>
             <span className="text-xs text-[#41555f]">
               &bull; {formatDate(sale.salesDate)}
@@ -140,12 +140,13 @@ export function SaleDetailPanel({
           </div>
 
           <div>
-            <dt className="text-[#41555f] text-[11px]">Sales rep</dt>
+            <dt className="text-[#41555f] text-[11px]">Employee Representative</dt>
             <dd className="font-medium text-[#041a24] mt-0.5">
+              <span className="font-mono text-[#41555f] mr-1 font-normal">#{sale.empNo}</span>{' '}
               {sale.repName}
             </dd>
-            <dd className="font-mono text-[11px] text-[#41555f]">
-              Staff #{sale.empNo}
+            <dd className="text-[11px] text-[#41555f] mt-0.5">
+              {sale.deptName}
             </dd>
           </div>
 
@@ -167,7 +168,7 @@ export function SaleDetailPanel({
           <div className="flex items-center gap-2">
             <ShoppingBag className="h-3.5 w-3.5 text-[#41555f]" />
             <span className="text-xs font-semibold text-[#041a24]">
-              Items ({items.length})
+              Sales Detail ({items.length})
             </span>
           </div>
           <span className="text-[10px] text-[#41555f]">Point-in-time pricing</span>

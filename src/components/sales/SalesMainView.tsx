@@ -240,16 +240,14 @@ export function SalesMainView({
   const handleExportSummaryCSV = () => {
     const today = new Date().toISOString().split('T')[0];
     const headers = [
-      'Sale #',
-      'Date',
+      'Transaction number',
+      'Sales date',
       'Customer no.',
       'Customer',
-      'Sales rep employee no.',
-      'Sales rep',
+      'Employee no.',
+      'Employee representative',
       'Department code',
       'Department',
-      'Items',
-      'Total',
     ];
     const rows = filteredSales.map((s) => [
       s.transNo,
@@ -260,8 +258,6 @@ export function SalesMainView({
       `"${s.repName.replace(/"/g, '""')}"`,
       s.deptCode,
       `"${s.deptName.replace(/"/g, '""')}"`,
-      s.itemCount,
-      s.totalAmount.toFixed(2),
     ]);
 
     const csvContent =
@@ -280,8 +276,8 @@ export function SalesMainView({
   const handleExportLinesCSV = () => {
     const today = new Date().toISOString().split('T')[0];
     const headers = [
-      'Sale #',
-      'Date',
+      'Transaction number',
+      'Sales date',
       'Customer',
       'Product code',
       'Description',
@@ -364,7 +360,7 @@ export function SalesMainView({
                   className="w-full text-left px-3 py-2 text-[#041a24] hover:bg-[#FAF8F5] flex items-center gap-2 border-t border-[rgba(4,26,36,0.08)]"
                 >
                   <FileSpreadsheet className="h-3.5 w-3.5 text-[#41555f]" />
-                  <span>Sale line items</span>
+                  <span>Sales detail</span>
                 </button>
               </div>
             )}
@@ -419,7 +415,7 @@ export function SalesMainView({
                 : 'text-[#041a24] hover:bg-white/70 font-medium'
             }`}
           >
-            <span>Line items</span>
+            <span>Sales Detail</span>
             <span
               className={`text-xs font-mono tabular-nums px-2.5 py-0.5 rounded-full ${
                 activeView === 'lines'
@@ -512,13 +508,24 @@ export function SalesMainView({
       {/* 7.3 Results Summary Line */}
       <div className="flex items-center justify-between text-xs text-[#41555f] pt-1">
         <div>
-          <span className="font-semibold text-[#041a24] font-mono tabular-nums">
-            {filteredSales.length}
-          </span>{' '}
-          sales &bull; Total{' '}
-          <span className="font-semibold text-[#041a24] font-mono tabular-nums">
-            {formatPHP(filteredSalesTotal)}
-          </span>
+          {activeView === 'sales' ? (
+            <div>
+              <span className="font-semibold text-[#041a24] font-mono tabular-nums">
+                {filteredSales.length}
+              </span>{' '}
+              transactions recorded
+            </div>
+          ) : (
+            <div>
+              <span className="font-semibold text-[#041a24] font-mono tabular-nums">
+                {filteredLines.length}
+              </span>{' '}
+              sales detail items &bull; Total{' '}
+              <span className="font-semibold text-[#041a24] font-mono tabular-nums">
+                {formatPHP(filteredLines.reduce((acc, l) => acc + l.lineAmount, 0))}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -571,7 +578,7 @@ export function SalesMainView({
                           className="py-2.5 px-3 font-semibold cursor-pointer select-none whitespace-nowrap"
                         >
                           <div className="flex items-center gap-1">
-                            <span>Sale #</span>
+                            <span>Transaction Number</span>
                             {sortCol === 'transNo' ? (
                               sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
                             ) : (
@@ -584,7 +591,7 @@ export function SalesMainView({
                           className="py-2.5 px-3 font-semibold cursor-pointer select-none whitespace-nowrap"
                         >
                           <div className="flex items-center gap-1">
-                            <span>Date</span>
+                            <span>Sales Date</span>
                             {sortCol === 'salesDate' ? (
                               sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
                             ) : (
@@ -610,34 +617,8 @@ export function SalesMainView({
                           className="py-2.5 px-3 font-semibold cursor-pointer select-none min-w-[180px]"
                         >
                           <div className="flex items-center gap-1">
-                            <span>Sales rep and department</span>
+                            <span>Employee Representative</span>
                             {sortCol === 'repName' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
-                          onClick={() => handleSort('itemCount')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none text-center whitespace-nowrap"
-                        >
-                          <div className="flex items-center justify-center gap-1">
-                            <span>Items</span>
-                            {sortCol === 'itemCount' ? (
-                              sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
-                            ) : (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            )}
-                          </div>
-                        </th>
-                        <th
-                          onClick={() => handleSort('totalAmount')}
-                          className="py-2.5 px-3 font-semibold cursor-pointer select-none text-right whitespace-nowrap"
-                        >
-                          <div className="flex items-center justify-end gap-1">
-                            <span>Total</span>
-                            {sortCol === 'totalAmount' ? (
                               sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
                             ) : (
                               <ArrowUpDown className="h-3 w-3 text-neutral-400" />
@@ -674,17 +655,12 @@ export function SalesMainView({
                             </td>
                             <td className="py-2.5 px-3">
                               <div className="font-medium text-[#041a24]">
+                                <span className="font-mono text-[#41555f] mr-1.5 font-normal">#{s.empNo}</span>
                                 {s.repName}
                               </div>
                               <div className="text-[11px] text-[#41555f] mt-0.5">
                                 {s.deptName}
                               </div>
-                            </td>
-                            <td className="py-2.5 px-3 text-center font-mono tabular-nums text-[#041a24]">
-                              {s.itemCount} {s.itemCount === 1 ? 'item' : 'items'}
-                            </td>
-                            <td className="py-2.5 px-3 text-right font-mono tabular-nums font-semibold text-[#041a24] whitespace-nowrap">
-                              {formatPHP(s.totalAmount)}
                             </td>
                           </tr>
                         );
@@ -694,10 +670,10 @@ export function SalesMainView({
                 </div>
               )
             ) : (
-              // 7.4 LINE ITEMS VIEW
+              // 7.4 SALES DETAIL VIEW
               paginatedLines.length === 0 ? (
                 <div className="p-8 text-center text-xs text-[#41555f] space-y-2">
-                  <p className="font-semibold text-[#041a24]">No line items match your filters.</p>
+                  <p className="font-semibold text-[#041a24]">No sales detail records match your filters.</p>
                   <Button
                     variant="outline"
                     size="sm"
@@ -716,7 +692,7 @@ export function SalesMainView({
                           className="py-2.5 px-3 font-semibold cursor-pointer select-none whitespace-nowrap"
                         >
                           <div className="flex items-center gap-1">
-                            <span>Sale #</span>
+                            <span>Transaction Number</span>
                             {sortCol === 'transNo' ? (
                               sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
                             ) : (
@@ -729,7 +705,7 @@ export function SalesMainView({
                           className="py-2.5 px-3 font-semibold cursor-pointer select-none whitespace-nowrap"
                         >
                           <div className="flex items-center gap-1">
-                            <span>Date</span>
+                            <span>Sales Date</span>
                             {sortCol === 'salesDate' ? (
                               sortOrder === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />
                             ) : (
