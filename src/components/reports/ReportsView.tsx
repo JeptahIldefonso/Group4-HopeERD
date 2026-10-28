@@ -60,7 +60,7 @@ export function ReportsView({ data }: ReportsViewProps) {
   const handleExportCSV = () => {
     let headers: string[] = [];
     let rows: (string | number)[][] = [];
-    let filename = `HOPEERD_Report_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`;
+    let filename = `GROUP4_HopeERD_Report_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`;
 
     if (activeTab === 'period') {
       headers = ['Period (Month)', 'Orders Count', 'Total Sales'];
@@ -113,10 +113,10 @@ export function ReportsView({ data }: ReportsViewProps) {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs transition-colors whitespace-nowrap border ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm transition-all whitespace-nowrap border shadow-2xs ${
                   isActive
-                    ? 'bg-[#245B48] text-white border-[#245B48] shadow-sm font-semibold'
-                    : 'bg-white text-[#52615B] border-[#DDE3DE] hover:bg-[#F5F6F4]'
+                    ? 'bg-[#166B52] text-white border-[#166B52] font-semibold'
+                    : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 font-medium'
                 }`}
               >
                 <Icon className="h-3.5 w-3.5" />

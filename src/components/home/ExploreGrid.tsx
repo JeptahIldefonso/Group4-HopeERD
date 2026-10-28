@@ -24,10 +24,10 @@ export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {
       {/* Section Header */}
       <div>
         <h3 className="text-base sm:text-lg font-bold tracking-tight text-gray-900">
-          Explore Relational Subsystems
+          Explore System Modules
         </h3>
         <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
-          Four interconnected domains, each mapped to its relational tables and views.
+          Explore the four core business modules and their interconnected database tables.
         </p>
       </div>
 

@@ -325,7 +325,7 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
           <div
             className="min-w-[1080px] lg:min-w-full"
             role="img"
-            aria-label="HOPEERD Entity Relationship Diagram: 10 tables including DEPARTMENT, JOB, EMPLOYEE, JOBHISTORY, CUSTOMER, PRODUCT, PRICEHIST, SALES, SALESDETAIL, PAYMENT, and 9 relationships."
+            aria-label="GROUP 4 Hope ERD Entity Relationship Diagram: 10 tables including DEPARTMENT, JOB, EMPLOYEE, JOBHISTORY, CUSTOMER, PRODUCT, PRICEHIST, SALES, SALESDETAIL, PAYMENT, and 9 relationships."
           >
             <svg
               viewBox="0 0 1240 610"
@@ -596,11 +596,6 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
             })}
           </div>
         </div>
-
-        {/* Narrative Line */}
-        <p className="text-xs sm:text-[13px] text-[#52615B] leading-relaxed italic">
-          &ldquo;A customer makes sales. Each sale has items, is handled by an employee, and can have payments. Product prices and employee jobs are kept as history by effective date.&rdquo;
-        </p>
       </div>
     </div>
   );

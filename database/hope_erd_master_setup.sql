@@ -6,7 +6,6 @@
 -- Cleanup
 DROP VIEW IF EXISTS personnel CASCADE;
 DROP VIEW IF EXISTS receiptDetail CASCADE;
-DROP VIEW IF EXISTS priceHist CASCADE;
 DROP VIEW IF EXISTS v_sales_details_priced CASCADE;
 DROP VIEW IF EXISTS v_sales_with_dept CASCADE;
 DROP VIEW IF EXISTS v_sales_summary CASCADE;
@@ -119,9 +118,8 @@ CREATE VIEW receiptDetail AS
   SELECT transNo, prodCode, quantity 
   FROM SALESDETAIL;
 
-CREATE VIEW priceHist AS 
-  SELECT effDate, prodCode, unitPrice 
-  FROM PRICEHIST;
+-- Note: In PostgreSQL, PRICEHIST table already has columns (effDate, prodCode, unitPrice),
+-- so a view named priceHist is redundant and causes relation "pricehist" already exists.
 
 -- Data Insert
 -- ========================================================================

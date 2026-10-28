@@ -266,7 +266,7 @@ export function EmployeesListView({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#DDE3DE] pb-4">
         <div>
           <nav className="flex items-center text-xs text-[#52615B] mb-1 font-mono uppercase tracking-[0.12em]">
-            <span>HOPEERD</span>
+            <span>GROUP 4 Hope ERD</span>
             <span className="mx-1.5">·</span>
             <span className="text-[#17231F] font-semibold">Employees</span>
           </nav>
@@ -434,10 +434,10 @@ export function EmployeesListView({
               <button
                 type="button"
                 onClick={() => setStatusTab('ALL')}
-                className={`py-2 px-3 text-xs font-medium border-b-2 transition-colors ${
+                className={`py-2.5 px-4 text-xs sm:text-sm font-medium border-b-2 transition-colors cursor-pointer ${
                   statusTab === 'ALL'
-                    ? 'border-[#245B48] text-[#245B48] font-semibold'
-                    : 'border-transparent text-[#52615B] hover:text-[#17231F]'
+                    ? 'border-[#166B52] text-[#166B52] font-semibold'
+                    : 'border-transparent text-gray-500 hover:text-gray-900'
                 }`}
               >
                 All ({tabCounts.all})
@@ -445,10 +445,10 @@ export function EmployeesListView({
               <button
                 type="button"
                 onClick={() => setStatusTab('Active')}
-                className={`py-2 px-3 text-xs font-medium border-b-2 transition-colors ${
+                className={`py-2.5 px-4 text-xs sm:text-sm font-medium border-b-2 transition-colors cursor-pointer ${
                   statusTab === 'Active'
-                    ? 'border-[#245B48] text-[#245B48] font-semibold'
-                    : 'border-transparent text-[#52615B] hover:text-[#17231F]'
+                    ? 'border-[#166B52] text-[#166B52] font-semibold'
+                    : 'border-transparent text-gray-500 hover:text-gray-900'
                 }`}
               >
                 Active ({tabCounts.active})
@@ -456,10 +456,10 @@ export function EmployeesListView({
               <button
                 type="button"
                 onClick={() => setStatusTab('Separated')}
-                className={`py-2 px-3 text-xs font-medium border-b-2 transition-colors ${
+                className={`py-2.5 px-4 text-xs sm:text-sm font-medium border-b-2 transition-colors cursor-pointer ${
                   statusTab === 'Separated'
-                    ? 'border-[#245B48] text-[#245B48] font-semibold'
-                    : 'border-transparent text-[#52615B] hover:text-[#17231F]'
+                    ? 'border-[#166B52] text-[#166B52] font-semibold'
+                    : 'border-transparent text-gray-500 hover:text-gray-900'
                 }`}
               >
                 Separated ({tabCounts.separated})

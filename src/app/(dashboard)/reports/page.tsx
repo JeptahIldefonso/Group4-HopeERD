@@ -13,7 +13,7 @@ export default async function ReportsPage() {
       {/* Page Header */}
       <div className="border-b border-[#DDE3DE] pb-4">
         <nav className="flex items-center text-xs text-[#52615B] mb-1 font-mono uppercase tracking-[0.12em]">
-          <span>HOPEERD</span>
+          <span>GROUP 4 Hope ERD</span>
           <span className="mx-1.5">·</span>
           <span className="text-[#17231F] font-semibold">Reports &amp; Analytics</span>
         </nav>

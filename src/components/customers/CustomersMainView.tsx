@@ -132,7 +132,7 @@ export function CustomersMainView({
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[#DDE3DE] pb-4">
         <div>
           <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-[#52615B] block">
-            HOPEERD · Customers &amp; Payments
+            GROUP 4 Hope ERD · Customers &amp; Payments
           </span>
           <h1 className="text-2xl sm:text-[28px] font-semibold tracking-tight text-[#17231F] mt-1">
             Customers &amp; Payments

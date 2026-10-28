@@ -330,7 +330,7 @@ export function ProductsMainView({
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[#DDE3DE] pb-4">
         <div>
           <span className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#7A8781] block">
-            HOPEERD · Products
+            GROUP 4 Hope ERD · Products
           </span>
           <h1 className="font-sans text-2xl sm:text-[28px] font-semibold tracking-tight text-[#17231F] mt-1">
             Products
@@ -371,22 +371,22 @@ export function ProductsMainView({
       {/* Filter and View Controls Bar */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pt-1">
         {/* Left: View Tabs */}
-        <div className="inline-flex p-1 bg-[#F0F2EF] rounded-[4px] border border-[#DDE3DE] gap-1">
+        <div className="inline-flex p-1.5 bg-gray-100 rounded-xl border border-gray-200 gap-1.5 shadow-2xs">
           <button
             type="button"
             onClick={() => updateUrl({ view: 'products', page: '1' })}
-            className={`inline-flex items-center gap-2 px-5 py-2 text-xs sm:text-sm font-semibold rounded-[3px] transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-2.5 px-6 py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
               activeView === 'products'
-                ? 'bg-[#245B48] text-white shadow-xs'
-                : 'text-[#52615B] hover:text-[#17231F] hover:bg-white/60 font-medium'
+                ? 'bg-[#166B52] text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white/70 font-medium'
             }`}
           >
             <span>Products</span>
             <span
-              className={`text-[11px] font-mono tabular-nums px-2 py-0.2 rounded-full ${
+              className={`text-[11px] font-mono tabular-nums px-2.5 py-0.5 rounded-full ${
                 activeView === 'products'
                   ? 'bg-white/20 text-white font-bold'
-                  : 'bg-[#DDE3DE] text-[#17231F] font-semibold'
+                  : 'bg-gray-200 text-gray-700 font-semibold'
               }`}
             >
               {filteredProducts.length}
@@ -395,18 +395,18 @@ export function ProductsMainView({
           <button
             type="button"
             onClick={() => updateUrl({ view: 'history', page: '1' })}
-            className={`inline-flex items-center gap-2 px-5 py-2 text-xs sm:text-sm font-semibold rounded-[3px] transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-2.5 px-6 py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all cursor-pointer ${
               activeView === 'history'
-                ? 'bg-[#245B48] text-white shadow-xs'
-                : 'text-[#52615B] hover:text-[#17231F] hover:bg-white/60 font-medium'
+                ? 'bg-[#166B52] text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white/70 font-medium'
             }`}
           >
             <span>Price history</span>
             <span
-              className={`text-[11px] font-mono tabular-nums px-2 py-0.2 rounded-full ${
+              className={`text-[11px] font-mono tabular-nums px-2.5 py-0.5 rounded-full ${
                 activeView === 'history'
                   ? 'bg-white/20 text-white font-bold'
-                  : 'bg-[#DDE3DE] text-[#17231F] font-semibold'
+                  : 'bg-gray-200 text-gray-700 font-semibold'
               }`}
             >
               {filteredPriceHistory.length}

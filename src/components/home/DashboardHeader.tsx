@@ -17,13 +17,13 @@ export function DashboardHeader({
 }: DashboardHeaderProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
-      {/* Welcome Title & Subtitle */}
+      {/* Dashboard Title & Description */}
       <div>
         <h1 className="text-2xl sm:text-[26px] font-bold text-gray-900 tracking-tight">
-          Welcome back, {fullName}!
+          Dashboard
         </h1>
-        <p className="text-sm text-gray-500 mt-0.5">
-          Here&apos;s what&apos;s happening with your business today.
+        <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+          Overview 3NF data managed
         </p>
       </div>
 

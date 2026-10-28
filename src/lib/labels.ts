@@ -113,7 +113,7 @@ export const navigationItems: NavigationItem[] = [
 
 export const LABELS = {
   // Brand Header
-  brandName: 'HopeERD',
+  brandName: 'GROUP 4 Hope ERD',
   brandSubtitle: 'Business Information System',
 
   // Navigation Items
