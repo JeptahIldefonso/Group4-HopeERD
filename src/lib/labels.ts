@@ -1,6 +1,6 @@
 // ========================================================================
-// HopeERD: CENTRALIZED UI LABELS & COPY DECK
-// Single source of truth for navigation, page headers, KPI cards, and buttons.
+// HOPEERD: CENTRALIZED UI LABELS & COPY DECK
+// Configured to match the exact navigation hierarchy and copy from the design.
 // ========================================================================
 
 import {
@@ -8,10 +8,10 @@ import {
   ShoppingCart,
   Receipt,
   Users,
-  Package,
-  UserCheck,
-  Building2,
-  FileText,
+  Box,
+  User,
+  Network,
+  BarChart3,
   Database,
   type LucideIcon,
 } from 'lucide-react';
@@ -21,7 +21,7 @@ export interface NavigationItem {
   href: string;
   label: string;
   caption: string;
-  section: 'OVERVIEW' | 'TRANSACTIONS' | 'MASTER DATA' | 'ORGANIZATION' | 'ANALYTICS' | 'SYSTEM';
+  section: 'MAIN' | 'TRANSACTIONS' | 'MASTER DATA' | 'ORGANIZATION' | 'ANALYTICS' | 'SYSTEM';
   icon: LucideIcon;
   roles: UserRole[];
 }
@@ -31,22 +31,22 @@ export const navigationItems: NavigationItem[] = [
     href: '/',
     label: 'Dashboard',
     caption: 'Overview & metrics',
-    section: 'OVERVIEW',
+    section: 'MAIN',
     icon: LayoutDashboard,
     roles: ['admin', 'sales', 'cashier'],
   },
   {
     href: '/sales',
     label: 'Sales',
-    caption: 'Transactions & line items',
+    caption: 'Sales transactions',
     section: 'TRANSACTIONS',
     icon: ShoppingCart,
     roles: ['admin', 'sales', 'cashier'],
   },
   {
-    href: '/payments',
+    href: '/customers',
     label: 'Payments',
-    caption: 'Official receipts ledger',
+    caption: 'Payment records',
     section: 'TRANSACTIONS',
     icon: Receipt,
     roles: ['admin', 'sales', 'cashier'],
@@ -54,7 +54,7 @@ export const navigationItems: NavigationItem[] = [
   {
     href: '/customers',
     label: 'Customers',
-    caption: 'Profiles & terms',
+    caption: 'Accounts & balances',
     section: 'MASTER DATA',
     icon: Users,
     roles: ['admin', 'sales', 'cashier'],
@@ -62,39 +62,39 @@ export const navigationItems: NavigationItem[] = [
   {
     href: '/products',
     label: 'Products & Pricing',
-    caption: 'Catalog & price history',
+    caption: 'Catalog & prices',
     section: 'MASTER DATA',
-    icon: Package,
+    icon: Box,
     roles: ['admin', 'sales', 'cashier'],
   },
   {
     href: '/employees',
     label: 'Employees',
-    caption: 'Staff profiles & history',
+    caption: 'Staff directory',
     section: 'ORGANIZATION',
-    icon: UserCheck,
+    icon: User,
     roles: ['admin'],
   },
   {
-    href: '/employees?tab=departments',
+    href: '/employees',
     label: 'Departments & Jobs',
-    caption: 'Org structure & positions',
+    caption: 'Positions & hierarchy',
     section: 'ORGANIZATION',
-    icon: Building2,
+    icon: Network,
     roles: ['admin'],
   },
   {
     href: '/reports',
     label: 'Reports',
-    caption: 'Summaries & records',
+    caption: 'Analytics & summaries',
     section: 'ANALYTICS',
-    icon: FileText,
+    icon: BarChart3,
     roles: ['admin'],
   },
   {
-    href: '/database',
+    href: '/#erd',
     label: 'Database Overview',
-    caption: 'ERD schema & relations',
+    caption: '10 tables & ERD',
     section: 'SYSTEM',
     icon: Database,
     roles: ['admin', 'sales', 'cashier'],
@@ -103,10 +103,8 @@ export const navigationItems: NavigationItem[] = [
 
 export const LABELS = {
   // Brand Header
-  brandName: 'HopeERD',
+  brandName: 'HOPEERD',
   brandSubtitle: 'Sales & Business Records Management System',
-  organization: 'HOPE Group 4',
-  category: 'Business Information System',
 
   // Navigation Items
   nav: navigationItems.map((item) => ({
@@ -116,44 +114,40 @@ export const LABELS = {
 
   // Role Display Badges
   roles: {
-    admin: 'Admin',
-    sales: 'Sales',
-    cashier: 'Cashier',
+    admin: 'Administrator',
+    sales: 'Sales Representative',
+    cashier: 'Cashier / Billing',
   } as Record<UserRole, string>,
 
   // Page Titles and Subtitles
   pages: {
     home: {
       title: 'Dashboard',
-      subtitle: 'Sales and business records overview',
+      subtitle: 'Sales & Business Records Management System overview and live activity.',
     },
     sales: {
       title: 'Sales',
-      subtitle: 'Recorded transactions and their product line items.',
+      subtitle: 'All recorded sales with seller, customer and item breakdown.',
     },
     payments: {
       title: 'Payments',
-      subtitle: 'Official receipts and payment settlements associated with sales.',
+      subtitle: 'Official receipts ledger and payment records.',
     },
     customers: {
       title: 'Customers',
-      subtitle: 'Customer profiles, credit limits, and payment terms.',
+      subtitle: 'Customer accounts, payment terms, and official receipts ledger.',
     },
     products: {
       title: 'Products & Pricing',
-      subtitle: 'Product catalog, active unit prices, and historical pricing timeline.',
+      subtitle: 'Product catalog, unit prices and pricing history.',
     },
     employees: {
       title: 'Employees',
-      subtitle: 'Employee profiles, current assignments, and job history.',
+      subtitle: 'Employee records, job history and department assignments.',
     },
     reports: {
-      title: 'Reports',
-      subtitle: 'Business records and transaction summaries derived from relational tables.',
-    },
-    database: {
-      title: 'Database Structure & Relationships',
-      subtitle: 'Explore the relational schema used by the HopeERD business information system.',
+      title: 'Reports & Analytics',
+      subtitle: 'Sales and payments analytics across periods, employees, departments, and products.',
     },
   },
 
@@ -161,28 +155,27 @@ export const LABELS = {
   buttons: {
     newSale: 'New Sale',
     recordPayment: 'Record Payment',
+    addProduct: 'Add Product',
+    addCustomer: 'Add Customer',
+    viewErd: 'View ERD →',
+    viewAll: 'View All →',
     view: 'View',
     receipt: 'Receipt',
     exportCsv: 'Export CSV',
     print: 'Print Document',
     filterAll: 'All time',
     signOut: 'Sign out',
-    addCustomer: 'Add customer',
   },
 
   // Table Column Headers
   table: {
-    saleNo: 'Sale #',
+    transNo: 'Transaction No.',
     date: 'Date',
     customer: 'Customer',
-    salesRepDept: 'Sales Rep & Department',
-    items: 'Items',
-    total: 'Total',
-    actions: 'Actions',
-    orNo: 'OR #',
+    employee: 'Employee',
     amount: 'Amount',
-    receipt: 'Receipt',
-    view: 'View',
+    status: 'Status',
+    actions: 'Actions',
   },
 
   // Empty State Fallbacks

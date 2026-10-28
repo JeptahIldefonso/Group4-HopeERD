@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
 import { ArrowRight, Lock } from 'lucide-react';
 import { ERD_MODULES } from '@/lib/erd';
 import type { UserRole } from '@/lib/types';
@@ -13,10 +12,10 @@ interface ExploreGridProps {
 }
 
 const MODULE_TINT_STYLES: Record<string, { bg: string; border: string; text: string }> = {
-  employees: { bg: '#EAF0F6', border: '#B4C9DC', text: '#1E3A5F' },
-  products: { bg: '#EAF2ED', border: '#B2D0BC', text: '#245B48' },
-  customers: { bg: '#FAF4EB', border: '#DECEB8', text: '#643916' },
-  sales: { bg: '#F6EBF0', border: '#D6B4C4', text: '#59203A' },
+  employees: { bg: '#EFF6FF', border: '#BFDBFE', text: '#1E40AF' },
+  products: { bg: '#EAF5EE', border: '#ABDBB7', text: '#1B5E43' },
+  customers: { bg: '#FFFBEB', border: '#FDE68A', text: '#92400E' },
+  sales: { bg: '#FDF2F8', border: '#FBCFE8', text: '#9D174D' },
 };
 
 export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {
@@ -24,16 +23,16 @@ export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {
     <div className="space-y-4 font-sans">
       {/* Section Header */}
       <div>
-        <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#17231F]">
-          Explore the system
-        </h2>
-        <p className="text-xs sm:text-sm text-[#52615B] mt-0.5">
-          Four sections, each built on its own relational tables.
+        <h3 className="text-base sm:text-lg font-bold tracking-tight text-gray-900">
+          Explore Relational Subsystems
+        </h3>
+        <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+          Four interconnected domains, each mapped to its relational tables and views.
         </p>
       </div>
 
       {/* Grid: 2 columns on desktop, 1 on mobile */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
         {ERD_MODULES.map((mod) => {
           const tint = MODULE_TINT_STYLES[mod.id] || MODULE_TINT_STYLES.sales;
           const canAccess = mod.roles.includes(userRole);
@@ -41,25 +40,25 @@ export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {
           return (
             <div
               key={mod.id}
-              className="bg-white rounded-[4px] border border-[#DDE3DE] p-6 flex flex-col justify-between gap-5 hover:border-[#245B48] transition-colors shadow-xs"
+              className="bg-white rounded-xl border border-gray-200 p-5 flex flex-col justify-between gap-4 hover:border-[#1B5E43] transition-colors shadow-2xs"
             >
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {/* Header: Order Number Badge + Module Name + Admin Badge if applicable */}
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2.5">
                     <span
-                      className="w-7 h-7 rounded-[2px] border border-[#CBD5CE] flex items-center justify-center font-mono font-bold text-xs"
-                      style={{ backgroundColor: tint.bg, color: tint.text }}
+                      className="w-7 h-7 rounded-lg border flex items-center justify-center font-bold text-xs"
+                      style={{ backgroundColor: tint.bg, borderColor: tint.border, color: tint.text }}
                     >
                       {mod.order}
                     </span>
-                    <h3 className="text-base font-bold text-[#17231F] tracking-tight">
+                    <h4 className="text-sm sm:text-base font-bold text-gray-900 tracking-tight">
                       {mod.name}
-                    </h3>
+                    </h4>
                   </div>
 
                   {!canAccess && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[2px] bg-[#FDECEA] text-[#B42318] border border-[#F9C8C4] text-[10px] font-mono uppercase tracking-wider font-semibold">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 text-[10px] font-semibold uppercase tracking-wider">
                       <Lock className="w-3 h-3 stroke-[2]" />
                       <span>Admin only</span>
                     </span>
@@ -73,51 +72,47 @@ export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {
                     return (
                       <span
                         key={tName}
-                        className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[2px] bg-[#F0F3F0] border border-[#DDE3DE] font-mono text-[11px] text-[#17231F]"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-gray-50 border border-gray-200 text-[11px] text-gray-800"
                       >
                         <span className="font-semibold">{tName}</span>
-                        <span className="text-[#52615B] font-normal">({rowCount})</span>
+                        <span className="text-gray-500 font-normal">({rowCount})</span>
                       </span>
                     );
                   })}
                 </div>
 
                 {/* Description of Main list and Detail */}
-                <div className="space-y-1.5 text-xs text-[#52615B] pt-1">
+                <div className="space-y-1 text-xs text-gray-500 pt-1">
                   <div>
-                    <span className="font-medium text-[#17231F]">Main list: </span>
+                    <span className="font-medium text-gray-700">Main view: </span>
                     <span>{mod.mainList}</span>
                   </div>
                   <div>
-                    <span className="font-medium text-[#17231F]">Detail: </span>
+                    <span className="font-medium text-gray-700">Records & Detail: </span>
                     <span>{mod.detail}</span>
                   </div>
                 </div>
               </div>
 
               {/* Bottom Action Button */}
-              <div className="pt-3 border-t border-[#E9EDEA]">
+              <div className="pt-3 border-t border-gray-100">
                 {canAccess ? (
-                  <Link href={mod.href} className="inline-block w-full">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full justify-between h-9 text-xs font-medium hover:border-[#245B48] hover:text-[#245B48] cursor-pointer"
-                    >
-                      <span>Open {mod.name}</span>
-                      <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
-                    </Button>
-                  </Link>
-                ) : (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled
-                    className="w-full justify-between h-9 text-xs font-medium opacity-50 cursor-not-allowed bg-[#F0F3F0]"
+                  <Link
+                    href={mod.href}
+                    className="w-full flex items-center justify-between px-3.5 py-2 rounded-lg bg-white hover:bg-gray-50 border border-gray-200 text-gray-800 hover:text-[#1B5E43] hover:border-[#1B5E43] text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
                   >
                     <span>Open {mod.name}</span>
-                    <Lock className="w-3.5 h-3.5" />
-                  </Button>
+                    <ArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#1B5E43]" />
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    className="w-full flex items-center justify-between px-3.5 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-400 text-xs font-medium cursor-not-allowed"
+                  >
+                    <span>Open {mod.name}</span>
+                    <Lock className="w-3.5 h-3.5 text-gray-400" />
+                  </button>
                 )}
               </div>
             </div>

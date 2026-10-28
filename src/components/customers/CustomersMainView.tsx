@@ -129,16 +129,16 @@ export function CustomersMainView({
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[#DCE3E8] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[#DDE3DE] pb-4">
         <div>
-          <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-[#64748B] block">
-            HopeERD · Customers
+          <span className="text-[11px] font-mono uppercase tracking-[0.15em] text-[#52615B] block">
+            HOPEERD · Customers &amp; Payments
           </span>
-          <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-[#172B3A] mt-1">
-            Customers
+          <h1 className="text-2xl sm:text-[28px] font-semibold tracking-tight text-[#17231F] mt-1">
+            Customers &amp; Payments
           </h1>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-1">
-            Customer profiles, credit limits, and payment terms.
+          <p className="text-xs sm:text-sm text-[#52615B] mt-1">
+            Customer directory, payment terms, and official receipts ledger.
           </p>
         </div>
       </div>
@@ -188,20 +188,20 @@ export function CustomersMainView({
                       onClick={() => updateUrl({ custNo: String(c.custNo) })}
                       className={`w-full text-left px-3.5 py-3 transition-colors flex items-center justify-between cursor-pointer ${
                         isSelected
-                          ? 'bg-[#E8F3EE] text-[#176B52] font-semibold border-l-4 border-[#176B52]'
-                          : 'hover:bg-[#F5F7F8] text-[#172B3A]'
+                          ? 'bg-[#EAF2ED] text-[#245B48] font-semibold border-l-4 border-[#245B48]'
+                          : 'hover:bg-[#F5F6F4] text-[#17231F]'
                       }`}
                     >
                       <div className="min-w-0 pr-2">
-                        <p className={`text-xs leading-snug truncate ${isSelected ? 'font-semibold text-[#176B52]' : 'font-medium text-[#172B3A]'}`}>
+                        <p className={`text-xs leading-snug truncate ${isSelected ? 'font-semibold text-[#245B48]' : 'font-medium text-[#17231F]'}`}>
                           {c.custName}
                         </p>
-                        <p className="text-[11px] font-mono text-[#64748B] mt-0.5">
+                        <p className="text-[11px] font-mono text-[#52615B] mt-0.5">
                           Customer #{c.custNo}
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="text-[10px] font-mono text-[#64748B] px-1.5 py-0.5 rounded bg-[#EEF2F5] border border-[#DCE3E8]">
+                        <span className="text-[10px] font-mono text-[#52615B] px-1.5 py-0.5 rounded bg-[#F0F3F0] border border-[#DDE3DE]">
                           {c.payTerms}
                         </span>
                       </div>

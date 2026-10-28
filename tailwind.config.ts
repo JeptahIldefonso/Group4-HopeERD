@@ -11,85 +11,70 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Standardized Enterprise Palette
-        navy: {
-          900: '#172B3A', // Primary text
-          800: '#1F384C',
-          700: '#2A4A62',
+        emerald: {
+          50: '#EAF5EE',
+          100: '#D5ECD9',
+          200: '#ABDBB7',
+          300: '#75C38B',
+          400: '#42A663',
+          500: '#228B47',
+          600: '#1B5E43', // Primary brand green
+          700: '#154C36',
+          800: '#103B2A',
+          900: '#0B291D',
         },
-        deepgreen: {
-          50: '#E8F3EE',  // Soft tint
-          100: '#D1E7DC',
-          500: '#1E8767',
-          DEFAULT: '#176B52', // Primary buttons & brand accent
-          hover: '#125540',   // Button hover
-          active: '#0E4030',
-        },
-        slate: {
-          500: '#64748B', // Secondary text
-          400: '#94A3B8', // Muted text
-          300: '#CBD5E1', // Hairline / subtle
-        },
-        softgray: {
-          DEFAULT: '#DCE3E8', // Borders
-          subtle: '#EEF2F5',
-        },
-        status: {
-          success: '#15803D',
-          warning: '#B45309',
-          error: '#B91C1C',
-        },
-        // Backward-compatible semantic aliases
         forest: {
-          50: '#E8F3EE',
-          100: '#D1E7DC',
-          200: '#A8C6B2',
-          500: '#1E8767',
-          600: '#176B52',
-          700: '#125540',
-          800: '#0E4030',
+          50: '#EAF5EE',
+          100: '#D5ECD9',
+          200: '#ABDBB7',
+          500: '#228B47',
+          600: '#1B5E43',
+          700: '#154C36',
+          800: '#103B2A',
         },
         charcoal: {
-          900: '#172B3A',
-          700: '#64748B',
-          500: '#64748B',
-          400: '#94A3B8',
+          900: '#111827',
+          800: '#1F2937',
+          700: '#374151',
+          600: '#4B5563',
+          500: '#6B7280',
+          400: '#9CA3AF',
         },
         border: {
-          standard: '#DCE3E8',
-          strong: '#CBD5E1',
-          divider: '#EEF2F5',
+          DEFAULT: '#E5E7EB',
+          subtle: '#F1F5F9',
+          strong: '#D1D5DB',
         },
         paper: {
-          DEFAULT: '#F5F7F8',
+          DEFAULT: '#F8FAFC',
           raised: '#FFFFFF',
-          hover: '#FAFBFC',
-          subtle: '#EEF2F5',
+          hover: '#F9FAFB',
+          subtle: '#F1F5F9',
         },
         ink: {
-          DEFAULT: '#172B3A',
-          muted: '#64748B',
-          subtle: '#94A3B8',
-          faint: '#CBD5E1',
+          DEFAULT: '#111827',
+          muted: '#4B5563',
+          subtle: '#6B7280',
+          faint: '#9CA3AF',
         },
-        hairline: '#DCE3E8',
-        'hairline-strong': '#CBD5E1',
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        mono: ['var(--font-mono)', 'JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'Courier New', 'monospace'],
-        editorial: ['var(--font-editorial)', 'Newsreader', 'Georgia', 'serif'],
+        mono: ['var(--font-mono)', 'JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       borderRadius: {
-        DEFAULT: '4px',
-        sm: '2px',
-        md: '4px',
-        lg: '6px',
-        xl: '8px',
+        DEFAULT: '8px',
+        sm: '4px',
+        md: '6px',
+        lg: '8px',
+        xl: '12px',
+        '2xl': '16px',
       },
       boxShadow: {
-        paper: '0 1px 3px rgba(23, 43, 58, 0.05), 0 1px 2px rgba(23, 43, 58, 0.03)',
-        'paper-raised': '0 4px 6px -1px rgba(23, 43, 58, 0.07), 0 2px 4px -1px rgba(23, 43, 58, 0.04)',
+        '2xs': '0 1px 2px 0 rgba(0, 0, 0, 0.04)',
+        xs: '0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px 0 rgba(0, 0, 0, 0.04)',
+        sm: '0 2px 4px 0 rgba(0, 0, 0, 0.05)',
+        md: '0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04)',
       },
     },
   },

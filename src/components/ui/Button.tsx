@@ -10,15 +10,15 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, disabled, children, ...props }, ref) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-sans font-medium transition-all rounded-[4px] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#176B52]/30 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.99] gap-2';
+      'inline-flex items-center justify-center font-sans font-medium transition-all rounded-lg select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B5E43]/25 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.99] gap-2 cursor-pointer';
 
     const variants = {
-      primary: 'bg-[#176B52] text-white hover:bg-[#125540] active:bg-[#0E4030] shadow-xs border border-[#176B52]',
-      default: 'bg-[#176B52] text-white hover:bg-[#125540] active:bg-[#0E4030] shadow-xs border border-[#176B52]',
-      secondary: 'bg-[#F5F7F8] text-[#172B3A] hover:bg-[#EEF2F5] active:bg-[#DCE3E8] border border-[#DCE3E8] shadow-xs',
-      outline: 'border border-[#DCE3E8] bg-white text-[#172B3A] hover:bg-[#F5F7F8] hover:border-[#CBD5E1] active:bg-[#EEF2F5] shadow-xs',
-      ghost: 'bg-transparent text-[#64748B] hover:bg-[#F5F7F8] hover:text-[#172B3A] active:bg-[#EEF2F5]',
-      destructive: 'bg-[#B91C1C] text-white hover:bg-[#991B1B] active:bg-[#7F1D1D] shadow-xs border border-transparent',
+      primary: 'bg-[#1B5E43] text-white hover:bg-[#154C36] active:bg-[#103B2A] shadow-2xs border border-[#1B5E43]',
+      default: 'bg-[#1B5E43] text-white hover:bg-[#154C36] active:bg-[#103B2A] shadow-2xs border border-[#1B5E43]',
+      secondary: 'bg-[#EAF5EE] text-[#1B5E43] hover:bg-[#DDF2E3] active:bg-[#C9E7D1] border border-transparent shadow-2xs',
+      outline: 'border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-300 active:bg-gray-100 shadow-2xs',
+      ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200',
+      destructive: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-2xs border border-transparent',
     };
 
     const sizes = {

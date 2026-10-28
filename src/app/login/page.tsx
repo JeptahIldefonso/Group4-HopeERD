@@ -4,6 +4,8 @@ import React, { useState, useTransition } from 'react';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { loginAction, registerAction } from '@/app/actions/auth';
 import { TopographicCanvas } from '@/components/ambient/TopographicCanvas';
+import { HopeLogo } from '@/components/brand/HopeLogo';
+import { BRAND } from '@/lib/brand';
 
 export default function LoginPage() {
   const [mode, setMode] = useState<'signin' | 'register'>('signin');
@@ -54,16 +56,13 @@ export default function LoginPage() {
       {/* Brand Header */}
       <header className="relative z-10 w-full max-w-5xl mx-auto px-6 py-6 sm:py-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {/* Circular H4 brand mark */}
-          <div className="w-9 h-9 rounded-full bg-white border border-[#E0E5E0] flex items-center justify-center shadow-xs shrink-0">
-            <span className="font-editorial text-sm font-semibold text-[#285B48] tracking-tight">H4</span>
-          </div>
+          <HopeLogo size={36} className="shrink-0" />
           <div className="flex flex-col">
-            <span className="text-[19px] font-bold text-[#172B3A] leading-tight tracking-tight">
-              HopeERD
+            <span className="text-[19px] font-bold text-gray-900 leading-tight tracking-tight">
+              {BRAND.name}
             </span>
-            <span className="text-[12px] font-normal text-[#64748B] leading-tight mt-0.5">
-              Sales &amp; Business Records Management System
+            <span className="text-[12px] font-normal text-gray-500 leading-tight mt-0.5">
+              {BRAND.systemName}
             </span>
           </div>
         </div>
@@ -72,7 +71,7 @@ export default function LoginPage() {
       {/* Main Authentication Section */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-12 w-full max-w-md mx-auto">
         {/* Pure White Architectural Authentication Card */}
-        <div className="w-full bg-white border border-[#E0E5E0] rounded-[6px] shadow-[0_4px_20px_rgba(32,41,35,0.04),0_1px_3px_rgba(32,41,35,0.03)] p-7 sm:p-8 space-y-6">
+        <div className="w-full bg-white border border-gray-200 rounded-2xl shadow-xl p-7 sm:p-8 space-y-6">
           {/* Left-Aligned Card Heading & Supporting Text */}
           <div className="text-left">
             <h1 className="text-[25px] font-semibold text-[#202923] tracking-tight leading-tight">
@@ -354,8 +353,8 @@ export default function LoginPage() {
       </main>
 
       {/* Minimal Footer */}
-      <footer className="relative z-10 w-full max-w-5xl mx-auto px-6 py-6 text-center text-[12px] font-normal text-[#64748B]">
-        HopeERD &middot; HOPE Group 4 &middot; Sales &amp; Business Records Management System
+      <footer className="relative z-10 w-full max-w-5xl mx-auto px-6 py-6 text-center text-xs font-normal text-gray-500">
+        {BRAND.name} &middot; {BRAND.systemName}
       </footer>
     </div>
   );

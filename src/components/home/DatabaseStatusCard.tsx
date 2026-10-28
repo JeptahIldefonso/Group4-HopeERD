@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useTransition } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { RefreshCw, ArrowRight, Database } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import type { HomeSummaryResult } from '@/lib/data/home';
 
@@ -24,17 +23,17 @@ export function DatabaseStatusCard({ summary }: DatabaseStatusCardProps) {
   if (!summary.success || !summary.data) {
     // Failure State
     return (
-      <div className="bg-white rounded-[4px] border border-[#DCE3E8] p-5 shadow-xs font-sans">
+      <div className="bg-white rounded-[4px] border border-[#DDE3DE] p-6 shadow-xs font-sans">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#B91C1C] shrink-0" />
-              <h2 className="text-sm sm:text-base font-semibold text-[#172B3A] tracking-tight">
-                Database Connection Unavailable
+              <span className="w-2.5 h-2.5 rounded-full bg-[#B42318] shrink-0" />
+              <h2 className="text-sm sm:text-base font-semibold text-[#17231F] tracking-tight">
+                Cannot reach the database.
               </h2>
             </div>
-            <p className="text-xs text-[#64748B] pl-4.5">
-              Unable to reach PostgreSQL instance. Verify network credentials or server status.
+            <p className="text-xs text-[#52615B] pl-4.5">
+              Check your connection and try again.
             </p>
           </div>
 
@@ -48,7 +47,7 @@ export function DatabaseStatusCard({ summary }: DatabaseStatusCardProps) {
               className="gap-1.5 text-xs cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isPending ? 'animate-spin' : ''}`} />
-              <span>{isPending ? 'Retrying...' : 'Retry Connection'}</span>
+              <span>{isPending ? 'Retrying...' : 'Retry'}</span>
             </Button>
           </div>
         </div>
@@ -60,45 +59,46 @@ export function DatabaseStatusCard({ summary }: DatabaseStatusCardProps) {
   const { checkedAt, totalTables, totalRelationships, totalRows } = summary.data;
 
   return (
-    <div className="bg-white rounded-[4px] border border-[#DCE3E8] p-5 shadow-xs font-sans">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="bg-white rounded-[4px] border border-[#DDE3DE] p-6 shadow-xs font-sans">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         {/* Connection Status Text */}
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#15803D] shrink-0" />
-            <span className="text-xs font-mono uppercase tracking-wider text-[#15803D] font-semibold">
-              Database Connection: Connected
-            </span>
-            <span className="text-xs text-[#CBD5E1]">·</span>
-            <span className="text-xs text-[#64748B] font-medium">PostgreSQL (Supabase)</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#24734D] shrink-0 animate-pulse" />
+            <h2 className="text-sm sm:text-base font-semibold text-[#17231F] tracking-tight">
+              Database connection verified.
+            </h2>
           </div>
-          <p className="text-xs text-[#64748B] pl-4 leading-relaxed">
-            All 10 relational tables verified and accessible. Last checked at {checkedAt}.
+          <p className="text-xs text-[#52615B] pl-4.5 leading-relaxed">
+            Connected to Supabase (PostgreSQL). All 10 tables responded. Checked {checkedAt}.
           </p>
         </div>
 
-        {/* Right Metric Chips and ERD Link */}
-        <div className="flex flex-wrap items-center gap-2.5 pl-4 md:pl-0 shrink-0">
-          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono font-medium rounded-[2px] bg-[#F5F7F8] text-[#172B3A] border border-[#DCE3E8]">
+        {/* Right Metric Chips and Refresh Button */}
+        <div className="flex flex-wrap items-center gap-3 pl-4.5 md:pl-0 shrink-0">
+          <span className="inline-flex items-center px-2.5 py-1 text-xs font-mono font-medium rounded-[2px] bg-[#F0F3F0] text-[#17231F] border border-[#DDE3DE]">
             {totalTables} tables
           </span>
 
-          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono font-medium rounded-[2px] bg-[#F5F7F8] text-[#172B3A] border border-[#DCE3E8]">
+          <span className="inline-flex items-center px-2.5 py-1 text-xs font-mono font-medium rounded-[2px] bg-[#F0F3F0] text-[#17231F] border border-[#DDE3DE]">
             {totalRelationships} relationships
           </span>
 
-          <span className="inline-flex items-center px-2 py-0.5 text-xs font-mono font-semibold rounded-[2px] bg-[#E8F3EE] text-[#176B52] border border-[#D1E7DC]">
-            {totalRows} records
+          <span className="inline-flex items-center px-2.5 py-1 text-xs font-mono font-medium rounded-[2px] bg-[#EAF2ED] text-[#245B48] border border-[#C6E6D2] font-semibold">
+            {totalRows} rows
           </span>
 
-          <Link
-            href="/database"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#176B52] hover:text-[#125540] hover:underline px-2 py-1 rounded transition-colors ml-1"
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={isPending}
+            onClick={handleRefresh}
+            className="gap-1.5 text-xs cursor-pointer ml-1"
           >
-            <Database className="w-3.5 h-3.5" />
-            <span>View ERD Structure</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+            <RefreshCw className={`w-3.5 h-3.5 ${isPending ? 'animate-spin' : ''}`} />
+            <span>{isPending ? 'Checking...' : 'Check now'}</span>
+          </Button>
         </div>
       </div>
     </div>

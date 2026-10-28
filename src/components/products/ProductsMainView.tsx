@@ -327,16 +327,16 @@ export function ProductsMainView({
   return (
     <div className="space-y-6">
       {/* 9.1 Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[#DCE3E8] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-[#DDE3DE] pb-4">
         <div>
-          <span className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#64748B] block">
-            HopeERD · Products &amp; Pricing
+          <span className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#7A8781] block">
+            HOPEERD · Products
           </span>
-          <h1 className="font-sans text-2xl sm:text-[28px] font-bold tracking-tight text-[#172B3A] mt-1">
-            Products &amp; Pricing
+          <h1 className="font-sans text-2xl sm:text-[28px] font-semibold tracking-tight text-[#17231F] mt-1">
+            Products
           </h1>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-1">
-            Product catalog, unit prices and historical price records.
+          <p className="text-xs sm:text-sm text-[#52615B] mt-1">
+            Product catalog, unit prices and price history.
           </p>
         </div>
 

@@ -35,19 +35,19 @@ export default async function ReceiptDetailPage({ params }: PageProps) {
   return (
     <div className="max-w-2xl mx-auto space-y-6 pt-2 sm:pt-4">
       {/* Top Action Controls (Hidden on print) */}
-      <div className="print:hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-[#DCE3E8]">
+      <div className="print:hidden flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-[#DDE3DE]">
         <Link
-          href="/payments"
-          className="inline-flex items-center gap-1.5 text-xs text-[#64748B] hover:text-[#172B3A] transition-colors"
+          href={`/customers?custNo=${receipt.customer.custNo}`}
+          className="inline-flex items-center gap-1.5 text-xs text-[#52615B] hover:text-[#17231F] transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          <span>Back to Payments</span>
+          <span>Back to Customers &amp; Payments</span>
         </Link>
 
         <div className="flex items-center gap-2">
           <Link href={`/sales/${receipt.transNo}`}>
             <Button size="sm" variant="outline" className="gap-1.5 text-xs">
-              <ExternalLink className="h-3.5 w-3.5 text-[#64748B]" />
+              <ExternalLink className="h-3.5 w-3.5 text-[#52615B]" />
               <span>View Sale #{receipt.transNo}</span>
             </Button>
           </Link>
@@ -55,21 +55,21 @@ export default async function ReceiptDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Official Receipt Document */}
-      <div className="bg-white rounded-[4px] border border-[#DCE3E8] shadow-sm p-8 sm:p-10 print:border-none print:shadow-none print:p-0 text-[#172B3A]">
+      {/* Official Receipt Document (Zero Debt / Zero Balance Vocabulary) */}
+      <div className="bg-white rounded-lg border border-[#DDE3DE] shadow-sm p-8 sm:p-10 print:border-none print:shadow-none print:p-0 text-[#17231F]">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-6 border-b-2 border-[#172B3A]">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-6 border-b-2 border-[#17231F]">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold tracking-tight text-[#172B3A]">
+              <span className="text-2xl font-bold tracking-tight text-[#17231F]">
                 {BRAND.name}
               </span>
-              <span className="rounded bg-[#E8F3EE] border border-[#CBD5E1] px-2 py-0.5 text-[10px] font-sans font-semibold text-[#176B52]">
+              <span className="rounded bg-[#EAF2ED] border border-[#CCD5CD] px-2 py-0.5 text-[10px] font-sans font-semibold text-[#245B48]">
                 OFFICIAL RECEIPT
               </span>
             </div>
-            <p className="text-xs text-[#64748B] font-sans mt-1">
-              {BRAND.systemName}
+            <p className="text-xs text-[#52615B] font-sans mt-1">
+              Sales and Payments Monitoring System
             </p>
             <p className="text-xs text-[#7A8781]">
               Metro Manila, Philippines

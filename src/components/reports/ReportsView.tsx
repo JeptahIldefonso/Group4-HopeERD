@@ -19,10 +19,17 @@ import {
   Receipt,
   Download,
   Filter,
-  FileSpreadsheet,
-  Banknote,
-  TrendingUp,
+  BarChart3,
 } from 'lucide-react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 
 interface ReportsViewProps {
   data: ReportsData;
@@ -49,19 +56,13 @@ export function ReportsView({ data }: ReportsViewProps) {
     return data.paymentsByPeriod.filter((r) => r.period === periodFilter);
   }, [data.paymentsByPeriod, periodFilter]);
 
-  // Summary Metrics for Overview
-  const totalInvoicedSales = data.salesByPeriod.reduce((acc, r) => acc + r.totalSales, 0);
-  const totalOrdersCount = data.salesByPeriod.reduce((acc, r) => acc + r.ordersCount, 0);
-  const totalPaymentsAmount = data.paymentsByPeriod.reduce((acc, r) => acc + r.totalPayments, 0);
-  const totalReceiptsCount = data.paymentsByPeriod.reduce((acc, r) => acc + r.receiptsCount, 0);
-
   // Export handlers
   const handleExportCSV = () => {
     let headers: string[] = [];
     let rows: (string | number)[][] = [];
-    let filename = `HopeERD_Report_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`;
+    let filename = `HOPEERD_Report_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`;
 
-    if (activeTab === 'overview' || activeTab === 'period') {
+    if (activeTab === 'period') {
       headers = ['Period (Month)', 'Orders Count', 'Total Sales'];
       rows = filteredSalesByPeriod.map((r) => [r.period, r.ordersCount, r.totalSales]);
     } else if (activeTab === 'employee') {
@@ -92,104 +93,53 @@ export function ReportsView({ data }: ReportsViewProps) {
   };
 
   return (
-    <div className="space-y-6 pt-2 sm:pt-4 font-sans">
+    <div className="space-y-6 pt-2 sm:pt-4">
       {/* Top Filter and Tab Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#DCE3E8] pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#DDE3DE] pb-3">
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-          <button
-            type="button"
-            onClick={() => setActiveTab('overview')}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[4px] transition-colors cursor-pointer ${
-              activeTab === 'overview'
-                ? 'bg-[#176B52] text-white shadow-xs'
-                : 'text-[#64748B] hover:text-[#172B3A] hover:bg-[#F5F7F8]'
-            }`}
-          >
-            <FileSpreadsheet className="h-3.5 w-3.5" />
-            <span>Executive Overview</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('period')}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[4px] transition-colors cursor-pointer ${
-              activeTab === 'period'
-                ? 'bg-[#176B52] text-white shadow-xs'
-                : 'text-[#64748B] hover:text-[#172B3A] hover:bg-[#F5F7F8]'
-            }`}
-          >
-            <Calendar className="h-3.5 w-3.5" />
-            <span>Sales by Period</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('employee')}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[4px] transition-colors cursor-pointer ${
-              activeTab === 'employee'
-                ? 'bg-[#176B52] text-white shadow-xs'
-                : 'text-[#64748B] hover:text-[#172B3A] hover:bg-[#F5F7F8]'
-            }`}
-          >
-            <User className="h-3.5 w-3.5" />
-            <span>Sales by Employee</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('department')}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[4px] transition-colors cursor-pointer ${
-              activeTab === 'department'
-                ? 'bg-[#176B52] text-white shadow-xs'
-                : 'text-[#64748B] hover:text-[#172B3A] hover:bg-[#F5F7F8]'
-            }`}
-          >
-            <Building className="h-3.5 w-3.5" />
-            <span>Department Share</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('product')}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[4px] transition-colors cursor-pointer ${
-              activeTab === 'product'
-                ? 'bg-[#176B52] text-white shadow-xs'
-                : 'text-[#64748B] hover:text-[#172B3A] hover:bg-[#F5F7F8]'
-            }`}
-          >
-            <Package className="h-3.5 w-3.5" />
-            <span>Product Sales</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('payments')}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[4px] transition-colors cursor-pointer ${
-              activeTab === 'payments'
-                ? 'bg-[#176B52] text-white shadow-xs'
-                : 'text-[#64748B] hover:text-[#172B3A] hover:bg-[#F5F7F8]'
-            }`}
-          >
-            <Receipt className="h-3.5 w-3.5" />
-            <span>Payments Summary</span>
-          </button>
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          {[
+            { id: 'overview' as const, label: 'Overview', icon: BarChart3 },
+            { id: 'period' as const, label: 'Sales by period', icon: Calendar },
+            { id: 'employee' as const, label: 'Sales by employee', icon: User },
+            { id: 'department' as const, label: 'Sales by department', icon: Building },
+            { id: 'product' as const, label: 'Sales by product', icon: Package },
+            { id: 'payments' as const, label: 'Payments by period', icon: Receipt },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs transition-colors whitespace-nowrap border ${
+                  isActive
+                    ? 'bg-[#245B48] text-white border-[#245B48] shadow-sm font-semibold'
+                    : 'bg-white text-[#52615B] border-[#DDE3DE] hover:bg-[#F5F6F4]'
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Right Tools: Period filter and Export */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        {/* Period Filter and CSV Export */}
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           {(activeTab === 'period' || activeTab === 'payments') && (
             <div className="flex items-center gap-1.5">
-              <Filter className="h-3.5 w-3.5 text-[#64748B]" />
+              <Filter className="h-3.5 w-3.5 text-[#7A8781]" />
               <select
                 value={periodFilter}
-                onChange={(e) => setPeriodFilter(e.target.value as PeriodFilter)}
-                className="h-8 rounded-[4px] border border-[#DCE3E8] bg-white px-2.5 text-xs text-[#172B3A] focus:border-[#176B52] focus:outline-none"
+                onChange={(e) => setPeriodFilter(e.target.value as any)}
+                className="rounded-md border border-[#CCD5CD] bg-white px-2 py-1 text-xs text-[#17231F] focus:border-[#245B48] focus:outline-none"
               >
-                <option value="ALL">All Periods</option>
+                <option value="ALL">All time</option>
                 <option value="2026">Year 2026</option>
-                <option value="2026-10">October 2026</option>
-                <option value="2026-09">September 2026</option>
+                <option value="2026-10">This month (Oct 2026)</option>
+                <option value="2026-09">Last month (Sep 2026)</option>
               </select>
             </div>
           )}
@@ -199,187 +149,107 @@ export function ReportsView({ data }: ReportsViewProps) {
             variant="outline"
             size="sm"
             onClick={handleExportCSV}
-            className="gap-1.5 text-xs cursor-pointer"
+            className="gap-1.5 text-xs"
           >
-            <Download className="h-3.5 w-3.5 text-[#64748B]" />
+            <Download className="h-3.5 w-3.5 text-[#52615B]" />
             <span>Export CSV</span>
           </Button>
         </div>
       </div>
 
-      {/* Report 0: Executive Overview (Clean panels, boxes, and structured tables — No graphs) */}
+      {/* Report 0: Overview Charts */}
       {activeTab === 'overview' && (
         <div className="space-y-6">
-          {/* Top KPI Metric Boxes */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white rounded-[4px] border border-[#DCE3E8] p-5 shadow-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">
-                  Invoiced Sales
-                </span>
-                <div className="w-7 h-7 rounded bg-[#E8F3EE] flex items-center justify-center text-[#176B52]">
-                  <Banknote className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-2xl font-bold text-[#172B3A] mt-2 tabular-nums">
-                {formatPHP(totalInvoicedSales)}
-              </div>
-              <p className="text-[11px] text-[#64748B] mt-1">
-                Across {totalOrdersCount} sales transactions
-              </p>
-            </div>
-
-            <div className="bg-white rounded-[4px] border border-[#DCE3E8] p-5 shadow-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">
-                  Total Receipts
-                </span>
-                <div className="w-7 h-7 rounded bg-[#E8F5E9] flex items-center justify-center text-[#15803D]">
-                  <Receipt className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-2xl font-bold text-[#172B3A] mt-2 tabular-nums">
-                {formatPHP(totalPaymentsAmount)}
-              </div>
-              <p className="text-[11px] text-[#64748B] mt-1">
-                Settled through {totalReceiptsCount} official vouchers
-              </p>
-            </div>
-
-            <div className="bg-white rounded-[4px] border border-[#DCE3E8] p-5 shadow-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">
-                  Product Lines
-                </span>
-                <div className="w-7 h-7 rounded bg-[#EEF2F5] flex items-center justify-center text-[#172B3A]">
-                  <Package className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-2xl font-bold text-[#172B3A] mt-2 tabular-nums">
-                {data.salesByProduct.length} SKUs
-              </div>
-              <p className="text-[11px] text-[#64748B] mt-1">
-                Active catalog items with sales history
-              </p>
-            </div>
-
-            <div className="bg-white rounded-[4px] border border-[#DCE3E8] p-5 shadow-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">
-                  Workforce Divisions
-                </span>
-                <div className="w-7 h-7 rounded bg-[#EAF0F6] flex items-center justify-center text-[#1E3A5F]">
-                  <Building className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-2xl font-bold text-[#172B3A] mt-2 tabular-nums">
-                {data.salesByDepartment.length} Depts
-              </div>
-              <p className="text-[11px] text-[#64748B] mt-1">
-                Divisions generating commercial orders
-              </p>
-            </div>
-          </div>
-
-          {/* Two Structured Overview Tables */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Sales by Month Panel & Table */}
-            <div className="bg-white rounded-[4px] border border-[#DCE3E8] shadow-xs overflow-hidden">
-              <div className="p-4 border-b border-[#DCE3E8] bg-[#FAFBFC] flex items-center justify-between">
-                <div>
-                  <h3 className="text-sm font-bold text-[#172B3A]">
-                    Monthly Sales Summary
-                  </h3>
-                  <p className="text-xs text-[#64748B] mt-0.5">
-                    Historical invoiced sales by month
-                  </p>
-                </div>
-                <span className="text-xs font-mono text-[#64748B]">
-                  {data.salesByPeriod.length} periods
-                </span>
+            {/* Sales by Month Chart */}
+            <div className="bg-white rounded-lg border border-[#DDE3DE] p-5 shadow-sm">
+              <div className="border-b border-[#DDE3DE] pb-3 mb-4">
+                <h3 className="text-sm font-semibold text-[#17231F] tracking-tight">
+                  Sales by month
+                </h3>
+                <p className="text-xs text-[#52615B] mt-0.5">
+                  Monthly invoiced sales volume across recorded periods
+                </p>
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead className="bg-[#FAFBFC] border-b border-[#EEF2F5]">
-                    <tr>
-                      <th className="py-2.5 px-4 text-left font-semibold text-[#64748B]">Month</th>
-                      <th className="py-2.5 px-4 text-right font-semibold text-[#64748B]">Orders</th>
-                      <th className="py-2.5 px-4 text-right font-semibold text-[#64748B]">Total Amount</th>
-                      <th className="py-2.5 px-4 text-right font-semibold text-[#64748B]">Share %</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#EEF2F5]">
-                    {data.salesByPeriod.map((row) => {
-                      const share = totalInvoicedSales > 0 ? (row.totalSales / totalInvoicedSales) * 100 : 0;
-                      return (
-                        <tr key={row.period} className="hover:bg-[#F5F7F8]">
-                          <td className="py-2.5 px-4 font-mono font-medium text-[#172B3A]">
-                            {row.period}
-                          </td>
-                          <td className="py-2.5 px-4 text-right font-mono text-[#64748B]">
-                            {row.ordersCount}
-                          </td>
-                          <td className="py-2.5 px-4 text-right font-mono font-bold text-[#172B3A] tabular-nums">
-                            {formatPHP(row.totalSales)}
-                          </td>
-                          <td className="py-2.5 px-4 text-right font-mono text-[#176B52]">
-                            {share.toFixed(1)}%
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+              <div className="h-[280px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={data.salesByPeriod} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E9EDEA" />
+                    <XAxis
+                      dataKey="period"
+                      tickLine={false}
+                      axisLine={{ stroke: '#DDE3DE' }}
+                      tick={{ fill: '#52615B', fontSize: 11 }}
+                    />
+                    <YAxis
+                      tickLine={false}
+                      axisLine={{ stroke: '#DDE3DE' }}
+                      tick={{ fill: '#52615B', fontSize: 11 }}
+                      tickFormatter={(v) => `₱${(v / 1000).toFixed(0)}k`}
+                    />
+                    <Tooltip
+                      formatter={(value: any) => [formatPHP(Number(value) || 0), 'Sales Total']}
+                      labelFormatter={(label) => `Month: ${label}`}
+                      contentStyle={{
+                        backgroundColor: '#FFFFFF',
+                        border: '1px solid #DDE3DE',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                      }}
+                    />
+                    <Bar dataKey="totalSales" fill="#245B48" radius={[3, 3, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Department Breakdown Panel & Table */}
-            <div className="bg-white rounded-[4px] border border-[#DCE3E8] shadow-xs overflow-hidden">
-              <div className="p-4 border-b border-[#DCE3E8] bg-[#FAFBFC] flex items-center justify-between">
-                <div>
-                  <h3 className="text-sm font-bold text-[#172B3A]">
-                    Department Revenue Allocation
-                  </h3>
-                  <p className="text-xs text-[#64748B] mt-0.5">
-                    Revenue generated by employee department
-                  </p>
-                </div>
-                <span className="text-xs font-mono text-[#64748B]">
-                  {data.salesByDepartment.length} departments
-                </span>
+            {/* Sales by Department Chart */}
+            <div className="bg-white rounded-lg border border-[#DDE3DE] p-5 shadow-sm">
+              <div className="border-b border-[#DDE3DE] pb-3 mb-4">
+                <h3 className="text-sm font-semibold text-[#17231F] tracking-tight">
+                  Sales by department
+                </h3>
+                <p className="text-xs text-[#52615B] mt-0.5">
+                  Point-in-time revenue contribution by workforce division
+                </p>
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead className="bg-[#FAFBFC] border-b border-[#EEF2F5]">
-                    <tr>
-                      <th className="py-2.5 px-4 text-left font-semibold text-[#64748B]">Department</th>
-                      <th className="py-2.5 px-4 text-right font-semibold text-[#64748B]">Orders</th>
-                      <th className="py-2.5 px-4 text-right font-semibold text-[#64748B]">Revenue</th>
-                      <th className="py-2.5 px-4 text-right font-semibold text-[#64748B]">Share</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#EEF2F5]">
-                    {data.salesByDepartment.map((row) => (
-                      <tr key={row.deptCode} className="hover:bg-[#F5F7F8]">
-                        <td className="py-2.5 px-4">
-                          <div className="font-semibold text-[#172B3A]">{row.deptName}</div>
-                          <div className="text-[10px] font-mono text-[#64748B]">{row.deptCode}</div>
-                        </td>
-                        <td className="py-2.5 px-4 text-right font-mono text-[#64748B]">
-                          {row.ordersCount}
-                        </td>
-                        <td className="py-2.5 px-4 text-right font-mono font-bold text-[#172B3A] tabular-nums">
-                          {formatPHP(row.totalSales)}
-                        </td>
-                        <td className="py-2.5 px-4 text-right">
-                          <span className="inline-block px-1.5 py-0.5 rounded text-[10.5px] font-mono font-semibold bg-[#E8F3EE] text-[#176B52]">
-                            {row.sharePct.toFixed(1)}%
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="h-[280px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={data.salesByDepartment}
+                    layout="vertical"
+                    margin={{ top: 10, right: 20, left: 20, bottom: 0 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E9EDEA" />
+                    <XAxis
+                      type="number"
+                      tickLine={false}
+                      axisLine={{ stroke: '#DDE3DE' }}
+                      tick={{ fill: '#52615B', fontSize: 11 }}
+                      tickFormatter={(v) => `₱${(v / 1000).toFixed(0)}k`}
+                    />
+                    <YAxis
+                      type="category"
+                      dataKey="deptName"
+                      tickLine={false}
+                      axisLine={{ stroke: '#DDE3DE' }}
+                      tick={{ fill: '#17231F', fontSize: 11 }}
+                      width={110}
+                    />
+                    <Tooltip
+                      formatter={(value: any) => [formatPHP(Number(value) || 0), 'Department Sales']}
+                      contentStyle={{
+                        backgroundColor: '#FFFFFF',
+                        border: '1px solid #DDE3DE',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                      }}
+                    />
+                    <Bar dataKey="totalSales" fill="#17231F" radius={[0, 3, 3, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </div>
           </div>
@@ -388,29 +258,35 @@ export function ReportsView({ data }: ReportsViewProps) {
 
       {/* Report 1: Sales by period */}
       {activeTab === 'period' && (
-        <div className="bg-white rounded-[4px] border border-[#DCE3E8] overflow-hidden shadow-xs">
-          <div className="p-4 border-b border-[#DCE3E8] bg-[#FAFBFC] flex items-center justify-between">
-            <h3 className="text-sm font-bold text-[#172B3A]">
+        <div className="bg-white rounded-lg border border-[#DDE3DE] overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-[#DDE3DE] bg-[#FAFBFA] flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-[#17231F]">
               Sales by Period
             </h3>
-            <span className="text-xs text-[#64748B]">
+            <span className="text-xs text-[#52615B]">
               {filteredSalesByPeriod.length} months recorded
             </span>
           </div>
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-[#DCE3E8] bg-[#FAFBFC] text-[#64748B] text-xs font-semibold">
+              <tr className="border-b border-[#DDE3DE] bg-[#FAFBFA] text-[#17231F] text-xs font-semibold">
                 <th className="py-2.5 px-4">Period (Month)</th>
                 <th className="py-2.5 px-4 text-right">Orders Count</th>
                 <th className="py-2.5 px-4 text-right">Total Sales</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#EEF2F5] text-[#172B3A]">
+            <tbody className="divide-y divide-[#E9EDEA] text-[#17231F]">
               {filteredSalesByPeriod.map((row) => (
-                <tr key={row.period} className="hover:bg-[#F5F7F8]">
-                  <td className="py-3 px-4 font-mono font-medium">{row.period}</td>
-                  <td className="py-3 px-4 text-right font-mono">{row.ordersCount}</td>
-                  <td className="py-3 px-4 text-right font-mono font-bold">{formatPHP(row.totalSales)}</td>
+                <tr key={row.period} className="hover:bg-[#F5F6F4]">
+                  <td className="py-2.5 px-4 font-mono font-medium text-[#17231F]">
+                    {row.period}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums text-[#52615B]">
+                    {row.ordersCount}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums font-semibold text-[#17231F]">
+                    {formatPHP(row.totalSales)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -420,33 +296,43 @@ export function ReportsView({ data }: ReportsViewProps) {
 
       {/* Report 2: Sales by employee */}
       {activeTab === 'employee' && (
-        <div className="bg-white rounded-[4px] border border-[#DCE3E8] overflow-hidden shadow-xs">
-          <div className="p-4 border-b border-[#DCE3E8] bg-[#FAFBFC] flex items-center justify-between">
-            <h3 className="text-sm font-bold text-[#172B3A]">
-              Sales Performance by Employee
+        <div className="bg-white rounded-lg border border-[#DDE3DE] overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-[#DDE3DE] bg-[#FAFBFA] flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-[#17231F]">
+              Sales Representative Performance
             </h3>
-            <span className="text-xs text-[#64748B]">
-              {data.salesByEmployee.length} staff records
+            <span className="text-xs text-[#52615B]">
+              Ranked by total sales generated
             </span>
           </div>
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-[#DCE3E8] bg-[#FAFBFC] text-[#64748B] text-xs font-semibold">
+              <tr className="border-b border-[#DDE3DE] bg-[#FAFBFA] text-[#17231F] text-xs font-semibold">
                 <th className="py-2.5 px-4">Employee #</th>
-                <th className="py-2.5 px-4">Employee Name</th>
+                <th className="py-2.5 px-4">Name</th>
                 <th className="py-2.5 px-4">Department</th>
-                <th className="py-2.5 px-4 text-right">Orders Handled</th>
-                <th className="py-2.5 px-4 text-right">Total Sales Revenue</th>
+                <th className="py-2.5 px-4 text-right">Orders</th>
+                <th className="py-2.5 px-4 text-right">Total Sales</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#EEF2F5] text-[#172B3A]">
+            <tbody className="divide-y divide-[#E9EDEA] text-[#17231F]">
               {data.salesByEmployee.map((row) => (
-                <tr key={row.empNo} className="hover:bg-[#F5F7F8]">
-                  <td className="py-3 px-4 font-mono text-xs">{row.empNo}</td>
-                  <td className="py-3 px-4 font-medium">{row.empName}</td>
-                  <td className="py-3 px-4 text-[#64748B] text-xs">{row.deptName}</td>
-                  <td className="py-3 px-4 text-right font-mono">{row.ordersCount}</td>
-                  <td className="py-3 px-4 text-right font-mono font-bold">{formatPHP(row.totalSales)}</td>
+                <tr key={row.empNo} className="hover:bg-[#F5F6F4]">
+                  <td className="py-2.5 px-4 font-mono text-[#52615B] text-xs">
+                    #{row.empNo}
+                  </td>
+                  <td className="py-2.5 px-4 font-medium text-[#17231F]">
+                    {row.empName}
+                  </td>
+                  <td className="py-2.5 px-4 text-[#52615B] text-xs">
+                    {row.deptName}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums text-[#52615B]">
+                    {row.ordersCount}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums font-semibold text-[#17231F]">
+                    {formatPHP(row.totalSales)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -456,33 +342,41 @@ export function ReportsView({ data }: ReportsViewProps) {
 
       {/* Report 3: Sales by department */}
       {activeTab === 'department' && (
-        <div className="bg-white rounded-[4px] border border-[#DCE3E8] overflow-hidden shadow-xs">
-          <div className="p-4 border-b border-[#DCE3E8] bg-[#FAFBFC] flex items-center justify-between">
-            <h3 className="text-sm font-bold text-[#172B3A]">
-              Department Revenue Allocation
+        <div className="bg-white rounded-lg border border-[#DDE3DE] overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-[#DDE3DE] bg-[#FAFBFA] flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-[#17231F]">
+              Department Revenue Attribution
             </h3>
-            <span className="text-xs text-[#64748B]">
-              {data.salesByDepartment.length} departments
+            <span className="text-xs text-[#52615B]">
+              From seller department on sale date
             </span>
           </div>
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-[#DCE3E8] bg-[#FAFBFC] text-[#64748B] text-xs font-semibold">
+              <tr className="border-b border-[#DDE3DE] bg-[#FAFBFA] text-[#17231F] text-xs font-semibold">
                 <th className="py-2.5 px-4">Code</th>
-                <th className="py-2.5 px-4">Department</th>
-                <th className="py-2.5 px-4 text-right">Orders Count</th>
-                <th className="py-2.5 px-4 text-right">Total Revenue</th>
+                <th className="py-2.5 px-4">Department Name</th>
+                <th className="py-2.5 px-4 text-right">Orders</th>
+                <th className="py-2.5 px-4 text-right">Total Sales</th>
                 <th className="py-2.5 px-4 text-right">Revenue Share</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#EEF2F5] text-[#172B3A]">
+            <tbody className="divide-y divide-[#E9EDEA] text-[#17231F]">
               {data.salesByDepartment.map((row) => (
-                <tr key={row.deptCode} className="hover:bg-[#F5F7F8]">
-                  <td className="py-3 px-4 font-mono text-xs">{row.deptCode}</td>
-                  <td className="py-3 px-4 font-medium">{row.deptName}</td>
-                  <td className="py-3 px-4 text-right font-mono">{row.ordersCount}</td>
-                  <td className="py-3 px-4 text-right font-mono font-bold">{formatPHP(row.totalSales)}</td>
-                  <td className="py-3 px-4 text-right font-mono text-[#176B52] font-semibold">
+                <tr key={row.deptCode} className="hover:bg-[#F5F6F4]">
+                  <td className="py-2.5 px-4 font-mono text-xs text-[#52615B]">
+                    {row.deptCode}
+                  </td>
+                  <td className="py-2.5 px-4 font-medium text-[#17231F]">
+                    {row.deptName}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums text-[#52615B]">
+                    {row.ordersCount}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums font-semibold text-[#17231F]">
+                    {formatPHP(row.totalSales)}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums text-[#245B48] font-semibold">
                     {row.sharePct.toFixed(1)}%
                   </td>
                 </tr>
@@ -492,37 +386,45 @@ export function ReportsView({ data }: ReportsViewProps) {
         </div>
       )}
 
-      {/* Report 4: Product performance */}
+      {/* Report 4: Sales by product */}
       {activeTab === 'product' && (
-        <div className="bg-white rounded-[4px] border border-[#DCE3E8] overflow-hidden shadow-xs">
-          <div className="p-4 border-b border-[#DCE3E8] bg-[#FAFBFC] flex items-center justify-between">
-            <h3 className="text-sm font-bold text-[#172B3A]">
-              Product Performance &amp; Quantities Sold
+        <div className="bg-white rounded-lg border border-[#DDE3DE] overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-[#DDE3DE] bg-[#FAFBFA] flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-[#17231F]">
+              Product Catalog Sales &amp; Units Sold
             </h3>
-            <span className="text-xs text-[#64748B]">
+            <span className="text-xs text-[#52615B]">
               {data.salesByProduct.length} catalog items
             </span>
           </div>
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-[#DCE3E8] bg-[#FAFBFC] text-[#64748B] text-xs font-semibold">
-                <th className="py-2.5 px-4">Product Code</th>
-                <th className="py-2.5 px-4">Description</th>
-                <th className="py-2.5 px-4">Unit</th>
+              <tr className="border-b border-[#DDE3DE] bg-[#FAFBFA] text-[#17231F] text-xs font-semibold">
+                <th className="py-2.5 px-4">Code</th>
+                <th className="py-2.5 px-4">Product Description</th>
                 <th className="py-2.5 px-4 text-right">Current Price</th>
                 <th className="py-2.5 px-4 text-right">Units Sold</th>
-                <th className="py-2.5 px-4 text-right">Total Invoiced</th>
+                <th className="py-2.5 px-4 text-right">Total Revenue</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#EEF2F5] text-[#172B3A]">
+            <tbody className="divide-y divide-[#E9EDEA] text-[#17231F]">
               {data.salesByProduct.map((row) => (
-                <tr key={row.prodCode} className="hover:bg-[#F5F7F8]">
-                  <td className="py-3 px-4 font-mono text-xs font-semibold text-[#172B3A]">{row.prodCode}</td>
-                  <td className="py-3 px-4 font-medium">{row.description}</td>
-                  <td className="py-3 px-4 text-xs font-mono text-[#64748B]">{row.unit}</td>
-                  <td className="py-3 px-4 text-right font-mono">{formatPHP(row.currentPrice)}</td>
-                  <td className="py-3 px-4 text-right font-mono font-semibold">{row.unitsSold}</td>
-                  <td className="py-3 px-4 text-right font-mono font-bold text-[#176B52]">{formatPHP(row.totalRevenue)}</td>
+                <tr key={row.prodCode} className="hover:bg-[#F5F6F4]">
+                  <td className="py-2.5 px-4 font-mono text-xs text-[#52615B]">
+                    {row.prodCode}
+                  </td>
+                  <td className="py-2.5 px-4 font-medium text-[#17231F] max-w-sm truncate" title={row.description}>
+                    {row.description}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums text-[#52615B]">
+                    {formatPHP(row.currentPrice)}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums text-[#17231F] font-medium">
+                    {row.unitsSold}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums font-semibold text-[#17231F]">
+                    {formatPHP(row.totalRevenue)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -532,29 +434,35 @@ export function ReportsView({ data }: ReportsViewProps) {
 
       {/* Report 5: Payments by period */}
       {activeTab === 'payments' && (
-        <div className="bg-white rounded-[4px] border border-[#DCE3E8] overflow-hidden shadow-xs">
-          <div className="p-4 border-b border-[#DCE3E8] bg-[#FAFBFC] flex items-center justify-between">
-            <h3 className="text-sm font-bold text-[#172B3A]">
-              Payments by Period
+        <div className="bg-white rounded-lg border border-[#DDE3DE] overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-[#DDE3DE] bg-[#FAFBFA] flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-[#17231F]">
+              Payment Remittances by Period
             </h3>
-            <span className="text-xs text-[#64748B]">
+            <span className="text-xs text-[#52615B]">
               {filteredPaymentsByPeriod.length} months recorded
             </span>
           </div>
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-[#DCE3E8] bg-[#FAFBFC] text-[#64748B] text-xs font-semibold">
+              <tr className="border-b border-[#DDE3DE] bg-[#FAFBFA] text-[#17231F] text-xs font-semibold">
                 <th className="py-2.5 px-4">Period (Month)</th>
                 <th className="py-2.5 px-4 text-right">Receipts Count</th>
-                <th className="py-2.5 px-4 text-right">Total Payments</th>
+                <th className="py-2.5 px-4 text-right">Total Payments Received</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#EEF2F5] text-[#172B3A]">
+            <tbody className="divide-y divide-[#E9EDEA] text-[#17231F]">
               {filteredPaymentsByPeriod.map((row) => (
-                <tr key={row.period} className="hover:bg-[#F5F7F8]">
-                  <td className="py-3 px-4 font-mono font-medium">{row.period}</td>
-                  <td className="py-3 px-4 text-right font-mono">{row.receiptsCount}</td>
-                  <td className="py-3 px-4 text-right font-mono font-bold">{formatPHP(row.totalPayments)}</td>
+                <tr key={row.period} className="hover:bg-[#F5F6F4]">
+                  <td className="py-2.5 px-4 font-mono font-medium text-[#17231F]">
+                    {row.period}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums text-[#52615B]">
+                    {row.receiptsCount}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums font-semibold text-[#17231F]">
+                    {formatPHP(row.totalPayments)}
+                  </td>
                 </tr>
               ))}
             </tbody>

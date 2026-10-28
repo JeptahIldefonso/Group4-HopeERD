@@ -1,20 +1,19 @@
 // ========================================================================
-// HopeERD: BRANDING & SYSTEM METADATA
-// Single source of truth for application identity, naming, and copy.
+// HOPEERD: BRANDING & SYSTEM METADATA
+// Matches the official enterprise dashboard specification
 // ========================================================================
 
 export const BRAND = {
-  name: 'HopeERD',
-  shortName: 'HopeERD',
+  name: 'HOPEERD',
+  companyName: 'HOPEERD',
+  shortName: 'HOPEERD',
   systemName: 'Sales & Business Records Management System',
-  organization: 'HOPE Group 4',
-  category: 'Business Information System',
-  fullTitle: 'HopeERD — Sales & Business Records Management System',
-  tagline: 'Sales & Business Records Management System',
-  description: 'Business information system to monitor sales transactions, payments, product pricing, customers, and employee records.',
-  purpose: 'Monitor sales transactions, payments, product pricing, customers, and employee records.',
-  welcomeText: 'Welcome to HopeERD. Monitor sales transactions, payments, product pricing, customers, and employee records.',
-  homeIntro: 'Sales and business records overview for HOPE Group 4 operations.',
+  fullTitle: 'HOPEERD — Sales & Business Records Management System',
+  tagline: 'Enterprise PC Hardware Sales & Business Records Ledger',
+  description: 'Operations system for point-in-time sales recording, official receipt payments, and customer accounts.',
+  welcomeText: 'Welcome to HOPEERD Sales & Business Records Management System. Use this system to record sales, track inventory, and monitor payments.',
+  infoStripText: 'HOPEERD supplies PC parts such as processors, graphics cards, memory and storage. Use this system to record sales and receive payments.',
+  homeIntro: 'HOPEERD keeps our sales, customers, products and employees in one unified database.',
   domain: 'hope-group4.vercel.app',
   currency: {
     symbol: '₱',
@@ -22,5 +21,5 @@ export const BRAND = {
   },
   locale: 'en-PH',
   timezone: 'Asia/Manila',
-  footerText: '© 2026 HopeERD · HOPE Group 4 · Sales & Business Records Management System.',
+  footerText: '© 2026 HOPEERD · Sales & Business Records Management System. All rights reserved.',
 } as const;
