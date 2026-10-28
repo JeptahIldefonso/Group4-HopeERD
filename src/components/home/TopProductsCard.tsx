@@ -72,7 +72,7 @@ export function TopProductsCard({ products }: TopProductsCardProps) {
             <div className="flex items-center gap-3 min-w-0">
               {getProductIcon(p.category)}
               <div className="min-w-0">
-                <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate group-hover:text-[#1B5E43] transition-colors">
+                <div className="text-xs sm:text-sm font-semibold text-gray-900 truncate group-hover:text-[#166B52] transition-colors">
                   {p.name}
                 </div>
                 <div className="text-[11px] text-gray-400 mt-0.5">

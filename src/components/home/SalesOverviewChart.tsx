@@ -109,7 +109,7 @@ export function SalesOverviewChart({ data }: SalesOverviewChartProps) {
               }}
               activeDot={{
                 r: 5.5,
-                fill: '#1B5E43',
+                fill: '#166B52',
                 stroke: '#FFFFFF',
                 strokeWidth: 2,
               }}

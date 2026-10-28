@@ -15,7 +15,7 @@ export function DashboardKpis({ kpis }: DashboardKpisProps) {
       value: kpis.totalSalesFormatted,
       trend: kpis.salesGrowth,
       subtext: 'vs. last 30 days',
-      iconBg: 'bg-[#1B5E43]',
+      iconBg: 'bg-[#166B52]',
       renderIcon: () => (
         <span className="text-white font-bold text-lg leading-none select-none">₱</span>
       ),

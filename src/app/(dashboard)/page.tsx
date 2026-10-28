@@ -77,7 +77,7 @@ export default async function HomePage({ searchParams }: PageProps) {
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
                 <span>Relational Database Architecture</span>
-                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#EAF5EE] text-[#1B5E43]">
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#E8F3EE] text-[#166B52]">
                   10 Tables · 9 Foreign Keys
                 </span>
               </h2>

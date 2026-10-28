@@ -13,7 +13,7 @@ interface ExploreGridProps {
 
 const MODULE_TINT_STYLES: Record<string, { bg: string; border: string; text: string }> = {
   employees: { bg: '#EFF6FF', border: '#BFDBFE', text: '#1E40AF' },
-  products: { bg: '#EAF5EE', border: '#ABDBB7', text: '#1B5E43' },
+  products: { bg: '#E8F3EE', border: '#B4DBC2', text: '#166B52' },
   customers: { bg: '#FFFBEB', border: '#FDE68A', text: '#92400E' },
   sales: { bg: '#FDF2F8', border: '#FBCFE8', text: '#9D174D' },
 };
@@ -40,7 +40,7 @@ export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {
           return (
             <div
               key={mod.id}
-              className="bg-white rounded-xl border border-gray-200 p-5 flex flex-col justify-between gap-4 hover:border-[#1B5E43] transition-colors shadow-2xs"
+              className="bg-white rounded-xl border border-gray-200 p-5 flex flex-col justify-between gap-4 hover:border-[#166B52] transition-colors shadow-2xs"
             >
               <div className="space-y-3">
                 {/* Header: Order Number Badge + Module Name + Admin Badge if applicable */}
@@ -99,10 +99,10 @@ export function ExploreGrid({ counts, userRole = 'admin' }: ExploreGridProps) {
                 {canAccess ? (
                   <Link
                     href={mod.href}
-                    className="w-full flex items-center justify-between px-3.5 py-2 rounded-lg bg-white hover:bg-gray-50 border border-gray-200 text-gray-800 hover:text-[#1B5E43] hover:border-[#1B5E43] text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                    className="w-full flex items-center justify-between px-3.5 py-2 rounded-lg bg-white hover:bg-gray-50 border border-gray-200 text-gray-800 hover:text-[#166B52] hover:border-[#166B52] text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
                   >
                     <span>Open {mod.name}</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#1B5E43]" />
+                    <ArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#166B52]" />
                   </Link>
                 ) : (
                   <button

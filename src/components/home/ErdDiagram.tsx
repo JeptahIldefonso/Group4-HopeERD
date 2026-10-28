@@ -17,7 +17,7 @@ interface ErdDiagramProps {
 // Module styling lookup with subtle enterprise tints
 const MODULE_COLORS: Record<string, { bg: string; border: string; text: string }> = {
   employees: { bg: '#EFF6FF', border: '#BFDBFE', text: '#1E40AF' },
-  products: { bg: '#EAF5EE', border: '#ABDBB7', text: '#1B5E43' },
+  products: { bg: '#E8F3EE', border: '#B4DBC2', text: '#166B52' },
   customers: { bg: '#FFFBEB', border: '#FDE68A', text: '#92400E' },
   sales: { bg: '#FDF2F8', border: '#FBCFE8', text: '#9D174D' },
 };
@@ -357,7 +357,7 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
                     <path
                       d={rel.d}
                       fill="none"
-                      stroke={isActive ? '#1B5E43' : '#9CA3AF'}
+                      stroke={isActive ? '#166B52' : '#9CA3AF'}
                       strokeWidth={isActive ? '2' : '1.25'}
                     />
 
@@ -452,7 +452,7 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
                       width={geom.width}
                       height={geom.height}
                       fill="#FFFFFF"
-                      stroke={isActive ? '#1B5E43' : '#E5E7EB'}
+                      stroke={isActive ? '#166B52' : '#E5E7EB'}
                       strokeWidth={isActive ? '2' : '1'}
                       rx="6"
                       filter="url(#erd-subtle-shadow)"
@@ -526,7 +526,7 @@ export function ErdDiagram({ counts, userRole = 'admin' }: ErdDiagramProps) {
                             y={yPos}
                             textAnchor="end"
                             className={`font-mono text-[9px] ${
-                              tag ? 'fill-[#1B5E43] font-bold' : 'fill-[#6B7280]'
+                              tag ? 'fill-[#166B52] font-bold' : 'fill-[#6B7280]'
                             }`}
                           >
                             {tag || col.type.toLowerCase()}

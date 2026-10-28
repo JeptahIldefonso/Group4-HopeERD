@@ -31,7 +31,7 @@ export function HopeLogo({ className = '', size = 32 }: HopeLogoProps) {
       {/* Left Face */}
       <path
         d="M6 14.5L19 22V36L6 28.5V14.5Z"
-        fill="#1B5E43"
+        fill="#166B52"
       />
       <path
         d="M9 17.5L17.5 22.5V32.5L9 27.5V17.5Z"

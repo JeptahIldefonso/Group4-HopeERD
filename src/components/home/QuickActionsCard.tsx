@@ -27,10 +27,10 @@ export function QuickActionsCard({
           {/* Action 1: New Sale (Primary Solid Emerald) */}
           <Link
             href="/sales/new"
-            className="flex items-center gap-2.5 px-3.5 py-3 rounded-xl bg-[#1B5E43] hover:bg-[#154C36] text-white text-xs sm:text-sm font-semibold shadow-2xs transition-colors cursor-pointer"
+            className="flex items-center gap-2.5 px-3.5 py-3 rounded-xl bg-[#166B52] hover:bg-[#11523E] text-white text-xs sm:text-sm font-semibold shadow-2xs transition-colors cursor-pointer"
           >
             <ShoppingCart className="w-4 h-4 shrink-0 text-white" />
-            <span className="truncate">New Sale</span>
+            <span className="truncate">+ New Sale</span>
           </Link>
 
           {/* Action 2: Record Payment (Outlined) */}
@@ -65,8 +65,8 @@ export function QuickActionsCard({
       {/* 2. Database Overview Card */}
       <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-2xs space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#EAF5EE] border border-emerald-100 flex items-center justify-center shrink-0">
-            <Database className="w-5 h-5 text-[#1B5E43]" />
+          <div className="w-9 h-9 rounded-lg bg-[#E8F3EE] border border-emerald-100 flex items-center justify-center shrink-0">
+            <Database className="w-5 h-5 text-[#166B52]" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-gray-900 leading-tight">
@@ -82,7 +82,7 @@ export function QuickActionsCard({
           <button
             type="button"
             onClick={onViewErd}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#EAF5EE] hover:bg-[#DDF2E3] text-[#1B5E43] text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#E8F3EE] hover:bg-[#D5EADB] text-[#166B52] text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
           >
             <span>View ERD</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -90,7 +90,7 @@ export function QuickActionsCard({
         ) : (
           <a
             href="#erd"
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#EAF5EE] hover:bg-[#DDF2E3] text-[#1B5E43] text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#E8F3EE] hover:bg-[#D5EADB] text-[#166B52] text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
           >
             <span>View ERD</span>
             <ArrowRight className="w-3.5 h-3.5" />

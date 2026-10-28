@@ -64,7 +64,7 @@ export function RecentTransactionsCard({ transactions }: RecentTransactionsCardP
                 </td>
                 <td className="py-3 px-5 sm:px-6 whitespace-nowrap">
                   {tx.status === 'Completed' ? (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EAF5EE] text-[#1B5E43]">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#E8F3EE] text-[#166B52]">
                       Completed
                     </span>
                   ) : (

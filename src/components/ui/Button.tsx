@@ -10,14 +10,14 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, disabled, children, ...props }, ref) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-sans font-medium transition-all rounded-lg select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B5E43]/25 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.99] gap-2 cursor-pointer';
+      'inline-flex items-center justify-center font-sans font-medium transition-all rounded-lg select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#166B52]/25 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.99] gap-2 cursor-pointer';
 
     const variants = {
-      primary: 'bg-[#1B5E43] text-white hover:bg-[#154C36] active:bg-[#103B2A] shadow-2xs border border-[#1B5E43]',
-      default: 'bg-[#1B5E43] text-white hover:bg-[#154C36] active:bg-[#103B2A] shadow-2xs border border-[#1B5E43]',
-      secondary: 'bg-[#EAF5EE] text-[#1B5E43] hover:bg-[#DDF2E3] active:bg-[#C9E7D1] border border-transparent shadow-2xs',
-      outline: 'border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-300 active:bg-gray-100 shadow-2xs',
-      ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200',
+      primary: 'bg-[#166B52] text-white hover:bg-[#11523E] active:bg-[#0E4232] shadow-2xs border border-[#166B52]',
+      default: 'bg-[#166B52] text-white hover:bg-[#11523E] active:bg-[#0E4232] shadow-2xs border border-[#166B52]',
+      secondary: 'bg-[#E8F3EE] text-[#166B52] hover:bg-[#D5EADB] active:bg-[#C2E0CC] border border-transparent shadow-2xs',
+      outline: 'border border-[#E2E8F0] bg-white text-[#1F2937] hover:bg-[#F5F7F6] hover:border-gray-300 active:bg-gray-100 shadow-2xs',
+      ghost: 'bg-transparent text-[#64748B] hover:bg-[#F5F7F6] hover:text-[#1F2937] active:bg-gray-200',
       destructive: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-2xs border border-transparent',
     };
 
