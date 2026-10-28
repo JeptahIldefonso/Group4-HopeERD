@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #F4F4F0;
+  --bg-raised: #FFFFFF;
+  --bg-hover: #EAEAE4;
+  --bg-subtle: #DFDFD7;
+  --fg: #041a24;
+  --fg-muted: #1c313b;
+  --fg-subtle: #41555f;
+  --accent: #041a24;
+  --accent-dim: rgba(4, 26, 36, 0.05);
+  --border: rgba(4, 26, 36, 0.16);
+  --border-strong: #041a24;
+  --border-hover: #041a24;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  background-color: var(--bg);
+  color: var(--fg);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+::selection {
+  background-color: var(--fg);
+  color: var(--bg-raised);
+}
+
+/* Custom Minimalist Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(4, 26, 36, 0.25);
+  border-radius: 1px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(4, 26, 36, 0.5);
+}
+
+/* Editorial Monochromatic Typography Utility */
+.font-editorial {
+  font-family: var(--font-editorial), Newsreader, Georgia, serif;
+}
+
+.hairline-border {
+  border: 1px solid var(--border);
+}
+
+/* Broadsheet Column Dividers */
+.broadsheet-rule {
+  border-top: 2px solid var(--fg);
+}
+
+.broadsheet-rule-thin {
+  border-top: 1px solid var(--border);
+}

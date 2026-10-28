@@ -1,0 +1,364 @@
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import { Button } from '@/components/ui/Button';
+import { formatPHP } from '@/lib/utils';
+import type {
+  ReportsData,
+  SalesByPeriodRow,
+  SalesByEmployeeRow,
+  SalesByDepartmentRow,
+  SalesByProductRow,
+  PaymentsByPeriodRow,
+} from '@/lib/data/reports';
+import {
+  Calendar,
+  User,
+  Building,
+  Package,
+  Receipt,
+  Download,
+  Filter,
+} from 'lucide-react';
+
+interface ReportsViewProps {
+  data: ReportsData;
+}
+
+type ReportTab = 'period' | 'employee' | 'department' | 'product' | 'payments';
+type PeriodFilter = 'ALL' | '2026' | '2026-10' | '2026-09';
+
+export function ReportsView({ data }: ReportsViewProps) {
+  const [activeTab, setActiveTab] = useState<ReportTab>('period');
+  const [periodFilter, setPeriodFilter] = useState<PeriodFilter>('ALL');
+
+  // Filter Sales By Period
+  const filteredSalesByPeriod = useMemo(() => {
+    if (periodFilter === 'ALL') return data.salesByPeriod;
+    if (periodFilter === '2026') return data.salesByPeriod.filter((r) => r.period.startsWith('2026'));
+    return data.salesByPeriod.filter((r) => r.period === periodFilter);
+  }, [data.salesByPeriod, periodFilter]);
+
+  // Filter Payments By Period
+  const filteredPaymentsByPeriod = useMemo(() => {
+    if (periodFilter === 'ALL') return data.paymentsByPeriod;
+    if (periodFilter === '2026') return data.paymentsByPeriod.filter((r) => r.period.startsWith('2026'));
+    return data.paymentsByPeriod.filter((r) => r.period === periodFilter);
+  }, [data.paymentsByPeriod, periodFilter]);
+
+  // Export handlers
+  const handleExportCSV = () => {
+    let headers: string[] = [];
+    let rows: (string | number)[][] = [];
+    let filename = `HOPE_Group4_Report_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`;
+
+    if (activeTab === 'period') {
+      headers = ['Period (Month)', 'Orders Count', 'Total Sales'];
+      rows = filteredSalesByPeriod.map((r) => [r.period, r.ordersCount, r.totalSales]);
+    } else if (activeTab === 'employee') {
+      headers = ['Employee #', 'Employee Name', 'Department', 'Orders Count', 'Total Sales'];
+      rows = data.salesByEmployee.map((r) => [r.empNo, `"${r.empName}"`, `"${r.deptName}"`, r.ordersCount, r.totalSales]);
+    } else if (activeTab === 'department') {
+      headers = ['Department Code', 'Department Name', 'Orders Count', 'Total Sales', 'Revenue Share %'];
+      rows = data.salesByDepartment.map((r) => [r.deptCode, `"${r.deptName}"`, r.ordersCount, r.totalSales, r.sharePct.toFixed(1) + '%']);
+    } else if (activeTab === 'product') {
+      headers = ['Product Code', 'Description', 'Unit', 'Price', 'Units Sold', 'Total Revenue'];
+      rows = data.salesByProduct.map((r) => [r.prodCode, `"${r.description}"`, r.unit, r.currentPrice, r.unitsSold, r.totalRevenue]);
+    } else if (activeTab === 'payments') {
+      headers = ['Period (Month)', 'Receipts Count', 'Total Payments'];
+      rows = filteredPaymentsByPeriod.map((r) => [r.period, r.receiptsCount, r.totalPayments]);
+    }
+
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <div className="space-y-6 pt-2 sm:pt-4">
+      {/* Top Filter and Tab Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-neutral-200 pb-3">
+        {/* Navigation Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          {[
+            { id: 'period' as const, label: 'Sales by period', icon: Calendar },
+            { id: 'employee' as const, label: 'Sales by employee', icon: User },
+            { id: 'department' as const, label: 'Sales by department', icon: Building },
+            { id: 'product' as const, label: 'Sales by product', icon: Package },
+            { id: 'payments' as const, label: 'Payments by period', icon: Receipt },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors whitespace-nowrap border ${
+                  isActive
+                    ? 'bg-neutral-900 text-white border-neutral-900 shadow-sm'
+                    : 'bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50'
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Period Filter and CSV Export */}
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          {(activeTab === 'period' || activeTab === 'payments') && (
+            <div className="flex items-center gap-1.5">
+              <Filter className="h-3.5 w-3.5 text-neutral-400" />
+              <select
+                value={periodFilter}
+                onChange={(e) => setPeriodFilter(e.target.value as any)}
+                className="rounded border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-700 focus:border-neutral-900 focus:outline-none"
+              >
+                <option value="ALL">All time</option>
+                <option value="2026">Year 2026</option>
+                <option value="2026-10">This month (Oct 2026)</option>
+                <option value="2026-09">Last month (Sep 2026)</option>
+              </select>
+            </div>
+          )}
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleExportCSV}
+            className="gap-1.5 text-xs"
+          >
+            <Download className="h-3.5 w-3.5 text-neutral-500" />
+            <span>Export CSV</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Report 1: Sales by period */}
+      {activeTab === 'period' && (
+        <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-neutral-100 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-neutral-900">
+              Sales by Period
+            </h3>
+            <span className="text-xs text-neutral-500">
+              {filteredSalesByPeriod.length} months recorded
+            </span>
+          </div>
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-neutral-200 bg-neutral-50 text-neutral-600 text-xs font-medium">
+                <th className="py-2.5 px-4">Period (Month)</th>
+                <th className="py-2.5 px-4 text-right">Orders Count</th>
+                <th className="py-2.5 px-4 text-right">Total Sales</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200 text-neutral-800">
+              {filteredSalesByPeriod.map((row) => (
+                <tr key={row.period} className="hover:bg-neutral-50/70">
+                  <td className="py-2.5 px-4 font-mono font-medium text-neutral-900">
+                    {row.period}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums text-neutral-600">
+                    {row.ordersCount}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums font-semibold text-neutral-900">
+                    {formatPHP(row.totalSales)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Report 2: Sales by employee */}
+      {activeTab === 'employee' && (
+        <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-neutral-100 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-neutral-900">
+              Sales Representative Performance
+            </h3>
+            <span className="text-xs text-neutral-500">
+              Ranked by total sales generated
+            </span>
+          </div>
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-neutral-200 bg-neutral-50 text-neutral-600 text-xs font-medium">
+                <th className="py-2.5 px-4">Employee #</th>
+                <th className="py-2.5 px-4">Name</th>
+                <th className="py-2.5 px-4">Department</th>
+                <th className="py-2.5 px-4 text-right">Orders</th>
+                <th className="py-2.5 px-4 text-right">Total Sales</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200 text-neutral-800">
+              {data.salesByEmployee.map((row) => (
+                <tr key={row.empNo} className="hover:bg-neutral-50/70">
+                  <td className="py-2.5 px-4 font-mono text-neutral-600 text-xs">
+                    #{row.empNo}
+                  </td>
+                  <td className="py-2.5 px-4 font-medium text-neutral-900">
+                    {row.empName}
+                  </td>
+                  <td className="py-2.5 px-4 text-neutral-600 text-xs">
+                    {row.deptName}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums text-neutral-600">
+                    {row.ordersCount}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums font-semibold text-neutral-900">
+                    {formatPHP(row.totalSales)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Report 3: Sales by department */}
+      {activeTab === 'department' && (
+        <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-neutral-100 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-neutral-900">
+              Department Revenue Attribution
+            </h3>
+            <span className="text-xs text-neutral-500">
+              From seller department on sale date
+            </span>
+          </div>
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-neutral-200 bg-neutral-50 text-neutral-600 text-xs font-medium">
+                <th className="py-2.5 px-4">Code</th>
+                <th className="py-2.5 px-4">Department Name</th>
+                <th className="py-2.5 px-4 text-right">Orders</th>
+                <th className="py-2.5 px-4 text-right">Total Sales</th>
+                <th className="py-2.5 px-4 text-right">Revenue Share</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200 text-neutral-800">
+              {data.salesByDepartment.map((row) => (
+                <tr key={row.deptCode} className="hover:bg-neutral-50/70">
+                  <td className="py-2.5 px-4 font-mono text-xs text-neutral-600">
+                    {row.deptCode}
+                  </td>
+                  <td className="py-2.5 px-4 font-medium text-neutral-900">
+                    {row.deptName}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums text-neutral-600">
+                    {row.ordersCount}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums font-semibold text-neutral-900">
+                    {formatPHP(row.totalSales)}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums text-neutral-700 font-medium">
+                    {row.sharePct.toFixed(1)}%
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Report 4: Sales by product */}
+      {activeTab === 'product' && (
+        <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-neutral-100 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-neutral-900">
+              Product Catalog Sales & Units Sold
+            </h3>
+            <span className="text-xs text-neutral-500">
+              {data.salesByProduct.length} catalog items
+            </span>
+          </div>
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-neutral-200 bg-neutral-50 text-neutral-600 text-xs font-medium">
+                <th className="py-2.5 px-4">Code</th>
+                <th className="py-2.5 px-4">Product Description</th>
+                <th className="py-2.5 px-4 text-right">Current Price</th>
+                <th className="py-2.5 px-4 text-right">Units Sold</th>
+                <th className="py-2.5 px-4 text-right">Total Revenue</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200 text-neutral-800">
+              {data.salesByProduct.map((row) => (
+                <tr key={row.prodCode} className="hover:bg-neutral-50/70">
+                  <td className="py-2.5 px-4 font-mono text-xs text-neutral-600">
+                    {row.prodCode}
+                  </td>
+                  <td className="py-2.5 px-4 font-medium text-neutral-900 max-w-sm truncate" title={row.description}>
+                    {row.description}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums text-neutral-600">
+                    {formatPHP(row.currentPrice)}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums text-neutral-900 font-medium">
+                    {row.unitsSold}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums font-semibold text-neutral-900">
+                    {formatPHP(row.totalRevenue)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Report 5: Payments by period */}
+      {activeTab === 'payments' && (
+        <div className="bg-white rounded-lg border border-neutral-200 overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-neutral-100 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-neutral-900">
+              Payment Remittances by Period
+            </h3>
+            <span className="text-xs text-neutral-500">
+              {filteredPaymentsByPeriod.length} months recorded
+            </span>
+          </div>
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-neutral-200 bg-neutral-50 text-neutral-600 text-xs font-medium">
+                <th className="py-2.5 px-4">Period (Month)</th>
+                <th className="py-2.5 px-4 text-right">Receipts Count</th>
+                <th className="py-2.5 px-4 text-right">Total Payments Received</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200 text-neutral-800">
+              {filteredPaymentsByPeriod.map((row) => (
+                <tr key={row.period} className="hover:bg-neutral-50/70">
+                  <td className="py-2.5 px-4 font-mono font-medium text-neutral-900">
+                    {row.period}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums text-neutral-600">
+                    {row.receiptsCount}
+                  </td>
+                  <td className="py-2.5 px-4 text-right font-mono tabular-nums font-semibold text-neutral-900">
+                    {formatPHP(row.totalPayments)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}

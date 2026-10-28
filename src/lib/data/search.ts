@@ -1,0 +1,163 @@
+import { DatabaseSync } from 'node:sqlite';
+import path from 'node:path';
+import { createClient } from '@/lib/supabase/server';
+import { formatPHP, formatDate } from '@/lib/utils';
+import { parseProductDescription } from '@/lib/products';
+
+export interface GlobalSearchResult {
+  type: 'customer' | 'sale' | 'product';
+  id: string | number;
+  title: string;
+  subtitle: string;
+  url: string;
+}
+
+export async function globalSearch(query: string): Promise<GlobalSearchResult[]> {
+  const trimmed = query.trim();
+  if (!trimmed || trimmed.length < 1) return [];
+
+  const isSupabaseConfigured =
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your-project') &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.includes('your-anon');
+
+  if (isSupabaseConfigured) {
+    try {
+      const supabase = await createClient();
+      const results: GlobalSearchResult[] = [];
+
+      // 1. Customers
+      const { data: customers } = await supabase
+        .from('CUSTOMER')
+        .select('custNo, custName, payTerms')
+        .ilike('custName', `%${trimmed}%`)
+        .limit(4);
+
+      if (customers) {
+        customers.forEach((c) => {
+          results.push({
+            type: 'customer',
+            id: c.custNo,
+            title: c.custName,
+            subtitle: `Customer #${c.custNo} • Terms: ${c.payTerms}`,
+            url: `/customers/${c.custNo}`,
+          });
+        });
+      }
+
+      // 2. Sales by transaction number
+      const transNum = parseInt(trimmed, 10);
+      let salesQuery = supabase.from('v_sales_summary').select('*');
+      if (!isNaN(transNum)) {
+        salesQuery = salesQuery.eq('transNo', transNum);
+      } else {
+        salesQuery = salesQuery.ilike('custName', `%${trimmed}%`);
+      }
+      const { data: sales } = await salesQuery.limit(4);
+
+      if (sales) {
+        sales.forEach((s) => {
+          results.push({
+            type: 'sale',
+            id: s.transNo,
+            title: `Sale #${s.transNo} — ${s.custName}`,
+            subtitle: `${formatDate(s.salesDate)} • Total: ${formatPHP(s.totalAmount)}`,
+            url: `/sales/${s.transNo}`,
+          });
+        });
+      }
+
+      // 3. Products by code or description
+      const { data: products } = await supabase
+        .from('v_product_sales_analytics')
+        .select('*')
+        .or(`prodCode.ilike.%${trimmed}%,description.ilike.%${trimmed}%`)
+        .limit(4);
+
+      if (products) {
+        products.forEach((p) => {
+          const parsed = parseProductDescription(p.prodCode, p.description, p.unit);
+          results.push({
+            type: 'product',
+            id: p.prodCode,
+            title: `${p.prodCode} — ${parsed.title}`,
+            subtitle: `${p.unit} • Price: ${formatPHP(p.currentPrice || 0)}`,
+            url: `/products/${p.prodCode}`,
+          });
+        });
+      }
+
+      return results;
+    } catch {
+      // Fallback to SQLite
+    }
+  }
+
+  // Local SQLite search
+  return getLocalSearchResults(trimmed);
+}
+
+function getLocalSearchResults(query: string): GlobalSearchResult[] {
+  const dbPath = path.join(process.cwd(), 'hope.db');
+  const db = new DatabaseSync(dbPath);
+  const results: GlobalSearchResult[] = [];
+  const likePattern = `%${query}%`;
+
+  // 1. Search Customers by name or number
+  const customers = db.prepare(`
+    SELECT custNo, custName, payTerms
+    FROM CUSTOMER
+    WHERE custName LIKE ? OR CAST(custNo AS TEXT) LIKE ?
+    LIMIT 4
+  `).all(likePattern, likePattern) as any[];
+
+  customers.forEach((c) => {
+    results.push({
+      type: 'customer',
+      id: c.custNo,
+      title: c.custName,
+      subtitle: `Customer #${c.custNo} • Terms: ${c.payTerms}`,
+      url: `/customers/${c.custNo}`,
+    });
+  });
+
+  // 2. Search Sales Transactions by transNo or customer name
+  const sales = db.prepare(`
+    SELECT transNo, salesDate, custName, totalAmount
+    FROM v_sales_summary
+    WHERE CAST(transNo AS TEXT) LIKE ? OR custName LIKE ?
+    LIMIT 4
+  `).all(likePattern, likePattern) as any[];
+
+  sales.forEach((s) => {
+    results.push({
+      type: 'sale',
+      id: s.transNo,
+      title: `Sale #${s.transNo} — ${s.custName}`,
+      subtitle: `${formatDate(s.salesDate)} • Total: ${formatPHP(s.totalAmount)}`,
+      url: `/sales/${s.transNo}`,
+    });
+  });
+
+  // 3. Search Products by prodCode or description
+  const products = db.prepare(`
+    SELECT prodCode, description, unit, currentPrice
+    FROM v_product_sales_analytics
+    WHERE prodCode LIKE ? OR description LIKE ?
+    LIMIT 4
+  `).all(likePattern, likePattern) as any[];
+
+  products.forEach((p) => {
+    const parsed = parseProductDescription(p.prodCode, p.description, p.unit);
+    results.push({
+      type: 'product',
+      id: p.prodCode,
+      title: `${p.prodCode} — ${parsed.title}`,
+      subtitle: `${p.unit} • Price: ${formatPHP(p.currentPrice || 0)}`,
+      url: `/products/${p.prodCode}`,
+    });
+  });
+
+  return results;
+}
