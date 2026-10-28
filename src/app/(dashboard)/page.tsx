@@ -40,10 +40,7 @@ export default async function HomePage({ searchParams }: PageProps) {
         isConnected={summary.success}
       />
 
-      {/* 2. Top 4 KPI Metric Cards */}
-      {data?.kpis && <DashboardKpis kpis={data.kpis} />}
-
-      {/* 3. Operational Transactions Ledger & Quick Actions */}
+      {/* 2. Operational Transactions Ledger & Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <div className="lg:col-span-2">
           {data?.recentTransactions && (
@@ -58,7 +55,7 @@ export default async function HomePage({ searchParams }: PageProps) {
         </div>
       </div>
 
-      {/* 4. Database Overview & Interactive Canonical ERD Section */}
+      {/* 3. Database Overview & Interactive Canonical ERD Section */}
       <div id="erd" className="pt-2">
         <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-7 shadow-2xs space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-4">
@@ -87,6 +84,11 @@ export default async function HomePage({ searchParams }: PageProps) {
             />
           </div>
         </div>
+      </div>
+
+      {/* 4. KPI Metric Cards (Moved to the very bottom) */}
+      <div className="pt-2">
+        {data?.kpis && <DashboardKpis kpis={data.kpis} />}
       </div>
     </div>
   );
