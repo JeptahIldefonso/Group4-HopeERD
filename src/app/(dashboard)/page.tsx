@@ -3,7 +3,6 @@ import { getCurrentUser } from '@/app/actions/auth';
 import { getHomeSummary } from '@/lib/data/home';
 import { DashboardHeader } from '@/components/home/DashboardHeader';
 import { DashboardKpis } from '@/components/home/DashboardKpis';
-import { QuickActionsCard } from '@/components/home/QuickActionsCard';
 import { RecentTransactionsCard } from '@/components/home/RecentTransactionsCard';
 import { ErdDiagram } from '@/components/home/ErdDiagram';
 import { ExploreGrid } from '@/components/home/ExploreGrid';
@@ -40,20 +39,12 @@ export default async function HomePage({ searchParams }: PageProps) {
         isConnected={summary.success}
       />
 
-      {/* 2. Operational Transactions Ledger & Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        <div className="lg:col-span-2">
-          {data?.recentTransactions && (
-            <RecentTransactionsCard transactions={data.recentTransactions} />
-          )}
+      {/* 2. Operational Transactions Ledger */}
+      {data?.recentTransactions && (
+        <div>
+          <RecentTransactionsCard transactions={data.recentTransactions} />
         </div>
-        <div className="lg:col-span-1">
-          <QuickActionsCard
-            totalTables={data?.totalTables || 10}
-            totalRelationships={data?.totalRelationships || 9}
-          />
-        </div>
-      </div>
+      )}
 
       {/* 3. Database Overview & Interactive Canonical ERD Section */}
       <div id="erd" className="pt-2">
