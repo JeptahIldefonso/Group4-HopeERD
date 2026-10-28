@@ -3,48 +3,29 @@
 import React, { useEffect, useRef } from 'react';
 
 // ============================================================================
-// LIGHT ENTERPRISE TOPOGRAPHIC PRECISION CONFIGURATION
-// Subtle pale gray-green elevation contours on off-white/light-gray background
+// MATTE LIGHT TOPOGRAPHIC CONTOUR CONFIGURATION
+// Soft off-white background with subtle pale sage-gray & darker contour lines.
+// Zero flares, zero glowing spots, matte and evenly lit cartographic texture.
 // ============================================================================
 export const TOPO_CONFIG = {
-  // Density of contour elevation rings across screen (spacious, clear)
-  lineDensity: 22.0,
+  // Line density across the screen
+  lineDensity: 20.0,
   // Standard contour line width in physical screen pixels
-  lineWidthPixels: 1.25,
+  lineWidthPixels: 1.15,
   // Index contour line width (every 5th line slightly bolder)
-  indexLineWidthPixels: 2.15,
-  // Visibility: highlighted contour lines (crisp, clearly defined)
-  lineOpacity: 0.32,
-  indexLineOpacity: 0.48,
-  blurAmount: '0px',
-  vignetteOpacity: 0.35,
+  indexLineWidthPixels: 1.85,
+  // Opacity
+  lineOpacity: 0.90,
+  indexLineOpacity: 0.95,
+  // Animation speed: slow, serene drift
+  animationSpeed: 0.012,
+  grainStrength: 0.002,
 
-  // Speed of gentle undulating terrain drift
-  animationSpeed: 0.020,
-
-  // Soft cursor interaction (gentle subtle glimmer)
-  starSpikeLength: 0.055,
-  starDiagSpikeLength: 0.035,
-  starBrightness: 0.15,
-  mouseLerp: 0.08,
-  mouseFadeSpeed: 0.06,
-
-  // Micro film grain to eliminate digital banding
-  grainStrength: 0.003,
-
-  // Color Palette: Light enterprise colors
-  // Off-white / light-gray base with highlighted sage-green contours
+  // Exact recommended color palette (Normalized RGB 0.0 - 1.0)
   colors: {
-    baseBg: [0.961, 0.965, 0.957], // #F5F6F4 Main page background
-    surfaceSubtle: [0.938, 0.945, 0.934], // #EFF1EE Secondary surface
-    surfaceSection: [0.908, 0.922, 0.908], // #E7EBE7 Subtle section background
-    contourSage: [0.380, 0.480, 0.420], // Highlighted sage-emerald contour (#617A6B)
-    indexHighlight: [0.220, 0.340, 0.270], // Highlight index contour (#385745)
-    // Subtle mouse glimmer
-    starNucleus: [0.85, 0.92, 0.88],
-    starHalo: [0.88, 0.94, 0.90],
-    starSpike: [0.82, 0.90, 0.85],
-    starDiag: [0.86, 0.92, 0.88],
+    baseBg: [0.9686, 0.9725, 0.9608], // #F7F8F5 Soft off-white main background
+    contourSage: [0.8353, 0.8667, 0.8392], // #D5DDD6 Pale sage-gray contour lines
+    indexHighlight: [0.7176, 0.7686, 0.7255], // #B7C4B9 Darker contour lines
   },
 };
 
@@ -59,9 +40,7 @@ const FRAGMENT_SHADER_SOURCE = `
 precision highp float;
 
 uniform vec2 u_resolution;
-uniform vec2 u_mouse;
 uniform float u_time;
-uniform float u_mouse_intensity;
 
 // 2D Simplex Noise for natural geographic elevation contours
 vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -101,9 +80,6 @@ void main() {
   vec2 uv = st;
   uv.x *= aspect;
 
-  vec2 mouse = u_mouse;
-  mouse.x *= aspect;
-
   // Cartographic diagonal rotation (~26 degree slope)
   float angle = -0.45;
   mat2 rot = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
@@ -123,7 +99,7 @@ void main() {
   float contourCoord = elevation * ${TOPO_CONFIG.lineDensity.toFixed(1)};
   float distFromCenter = abs(fract(contourCoord) - 0.5);
 
-  // Index contour (every 5th line is slightly bolder)
+  // Index contour (every 5th line is slightly darker)
   float indexCoord = contourCoord / 5.0;
   float indexDist = abs(fract(indexCoord) - 0.5);
 
@@ -143,60 +119,17 @@ void main() {
     float indexLine = 1.0 - smoothstep(0.003, 0.016, indexDist);
   #endif
 
-  // Colors: Light enterprise base
-  vec3 c_bg_base    = vec3(${TOPO_CONFIG.colors.baseBg.join(', ')});
-  vec3 c_bg_subtle  = vec3(${TOPO_CONFIG.colors.surfaceSubtle.join(', ')});
-  vec3 c_bg_section = vec3(${TOPO_CONFIG.colors.surfaceSection.join(', ')});
-  vec3 c_sage       = vec3(${TOPO_CONFIG.colors.contourSage.join(', ')});
-  vec3 c_hi         = vec3(${TOPO_CONFIG.colors.indexHighlight.join(', ')});
+  // Exact light enterprise palette
+  vec3 c_bg_base = vec3(${TOPO_CONFIG.colors.baseBg.join(', ')});
+  vec3 c_sage    = vec3(${TOPO_CONFIG.colors.contourSage.join(', ')});
+  vec3 c_hi      = vec3(${TOPO_CONFIG.colors.indexHighlight.join(', ')});
 
-  vec3 c_star_nucleus = vec3(${TOPO_CONFIG.colors.starNucleus.join(', ')});
-  vec3 c_star_halo    = vec3(${TOPO_CONFIG.colors.starHalo.join(', ')});
-  vec3 c_star_spike   = vec3(${TOPO_CONFIG.colors.starSpike.join(', ')});
-  vec3 c_star_diag    = vec3(${TOPO_CONFIG.colors.starDiag.join(', ')});
-
-  // Gentle light elevation gradient
-  vec3 col = mix(c_bg_base, c_bg_subtle, smoothstep(0.15, 0.75, elevation));
-  col = mix(col, c_bg_section, smoothstep(0.40, 0.85, elevation) * 0.25);
-
-  // Render subtle contour lines in pale gray-green
+  // Matte, evenly lit surface with subtle sage contours
+  vec3 col = c_bg_base;
   col = mix(col, c_sage, line * ${TOPO_CONFIG.lineOpacity.toFixed(2)});
   col = mix(col, c_hi, indexLine * ${TOPO_CONFIG.indexLineOpacity.toFixed(2)});
 
-  // Soft subtle cursor tracking
-  vec2 toMouse = uv - mouse;
-  float r = length(toMouse);
-
-  float nucleus = exp(-r * 320.0);
-  float halo = exp(-r * 55.0) * 0.35;
-
-  float spikeLen = ${TOPO_CONFIG.starSpikeLength.toFixed(4)};
-  float taperH = pow(max(0.0, 1.0 - abs(toMouse.x) / spikeLen), 2.2);
-  float profileH = exp(-abs(toMouse.y) * 450.0);
-  float spikeH = taperH * profileH;
-
-  float taperV = pow(max(0.0, 1.0 - abs(toMouse.y) / spikeLen), 2.2);
-  float profileV = exp(-abs(toMouse.x) * 450.0);
-  float spikeV = taperV * profileV;
-
-  vec2 diagMouse = mat2(0.7071, -0.7071, 0.7071, 0.7071) * toMouse;
-  float diagLen = ${TOPO_CONFIG.starDiagSpikeLength.toFixed(4)};
-  float taperD1 = pow(max(0.0, 1.0 - abs(diagMouse.x) / diagLen), 2.4);
-  float profileD1 = exp(-abs(diagMouse.y) * 500.0);
-  float spikeD1 = taperD1 * profileD1;
-
-  float taperD2 = pow(max(0.0, 1.0 - abs(diagMouse.y) / diagLen), 2.4);
-  float profileD2 = exp(-abs(diagMouse.x) * 500.0);
-  float spikeD2 = taperD2 * profileD2;
-
-  vec3 starCol = c_star_nucleus * nucleus
-               + c_star_halo * halo * 0.50
-               + c_star_spike * (spikeH + spikeV) * 0.60
-               + c_star_diag * (spikeD1 + spikeD2) * 0.40;
-
-  col += starCol * (${TOPO_CONFIG.starBrightness.toFixed(2)} * u_mouse_intensity);
-
-  // Subtle film grain
+  // Subtle film grain to eliminate digital banding
   float grain = (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * ${TOPO_CONFIG.grainStrength.toFixed(4)};
   col += vec3(grain);
 
@@ -217,10 +150,6 @@ export function TopographicCanvas() {
 
     const handleMotionChange = (e: MediaQueryListEvent) => {
       isReducedMotion = e.matches;
-      if (isReducedMotion) {
-        mouse.intensity = 0;
-        mouse.targetIntensity = 0;
-      }
     };
     mediaQuery.addEventListener('change', handleMotionChange);
 
@@ -238,11 +167,7 @@ export function TopographicCanvas() {
       if (!ctx) return;
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      grad.addColorStop(0, '#F5F6F4');
-      grad.addColorStop(0.6, '#F0F2EF');
-      grad.addColorStop(1, '#E9EDE9');
-      ctx.fillStyle = grad;
+      ctx.fillStyle = '#F7F8F5';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       return;
     }
@@ -302,18 +227,8 @@ export function TopographicCanvas() {
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
     const uResolution = gl.getUniformLocation(program, 'u_resolution');
-    const uMouse = gl.getUniformLocation(program, 'u_mouse');
     const uTime = gl.getUniformLocation(program, 'u_time');
-    const uMouseIntensity = gl.getUniformLocation(program, 'u_mouse_intensity');
 
-    const mouse = {
-      x: 0.5,
-      y: 0.5,
-      targetX: 0.5,
-      targetY: 0.5,
-      intensity: 0,
-      targetIntensity: 0,
-    };
     let animationFrameId: number;
     let lastTime = 0;
     let accumulatedTime = 0;
@@ -328,26 +243,7 @@ export function TopographicCanvas() {
       gl?.viewport(0, 0, width, height);
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isReducedMotion) return;
-      mouse.targetX = e.clientX / window.innerWidth;
-      mouse.targetY = 1.0 - e.clientY / window.innerHeight;
-      mouse.targetIntensity = 1.0;
-    };
-
-    const handleMouseLeave = () => {
-      mouse.targetIntensity = 0.0;
-    };
-
-    const handleMouseEnter = () => {
-      if (isReducedMotion) return;
-      mouse.targetIntensity = 1.0;
-    };
-
     window.addEventListener('resize', handleResize);
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    document.addEventListener('mouseleave', handleMouseLeave);
-    document.addEventListener('mouseenter', handleMouseEnter);
     handleResize();
 
     const render = (now: number) => {
@@ -357,21 +253,12 @@ export function TopographicCanvas() {
         const delta = lastTime ? (now - lastTime) * 0.001 : 0.016;
         accumulatedTime += Math.min(delta, 0.1);
         lastTime = now;
-
-        mouse.x += (mouse.targetX - mouse.x) * TOPO_CONFIG.mouseLerp;
-        mouse.y += (mouse.targetY - mouse.y) * TOPO_CONFIG.mouseLerp;
-        mouse.intensity +=
-          (mouse.targetIntensity - mouse.intensity) *
-          TOPO_CONFIG.mouseFadeSpeed;
       } else {
         accumulatedTime = 0.5;
-        mouse.intensity = 0;
       }
 
       gl.uniform2f(uResolution, canvas.width, canvas.height);
-      gl.uniform2f(uMouse, mouse.x, mouse.y);
       gl.uniform1f(uTime, accumulatedTime);
-      gl.uniform1f(uMouseIntensity, mouse.intensity);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
 
@@ -382,9 +269,6 @@ export function TopographicCanvas() {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-      document.removeEventListener('mouseenter', handleMouseEnter);
       mediaQuery.removeEventListener('change', handleMotionChange);
       cancelAnimationFrame(animationFrameId);
       if (gl) {
@@ -398,23 +282,20 @@ export function TopographicCanvas() {
 
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-0 h-full w-full overflow-hidden select-none bg-[#F5F6F4]"
+      className="pointer-events-none fixed inset-0 z-0 h-full w-full overflow-hidden select-none bg-[#F7F8F5]"
       aria-hidden="true"
     >
-      {/* Topographic WebGL Canvas */}
+      {/* Matte Topographic WebGL Canvas */}
       <canvas
         ref={canvasRef}
         className="h-full w-full transform-gpu"
-        style={{
-          filter: TOPO_CONFIG.blurAmount !== '0px' ? `blur(${TOPO_CONFIG.blurAmount})` : undefined,
-        }}
       />
 
-      {/* Subtle radial soft vignette keeping the central authentication zone visually clean and calm */}
+      {/* Subtle radial soft vignette keeping the central authentication zone visually clean */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `radial-gradient(ellipse at center, rgba(245, 246, 244, 0.70) 20%, rgba(245, 246, 244, 0.15) 80%)`,
+          background: `radial-gradient(ellipse at center, rgba(247, 248, 245, 0.65) 25%, rgba(247, 248, 245, 0.15) 80%)`,
         }}
       />
     </div>
